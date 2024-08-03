@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Test Client</title>
+    <style>
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            height: 200px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body>
+<h2>WebSocket Client Tester</h2>
+<div>
+    <input type="text" id="ip" placeholder="Enter IP address (e.g., localhost)">
+    <input type="text" id="port" placeholder="Enter port (e.g., 8090)">
+    <button onclick="connect()">Connect</button>
+    <button onclick="disconnect()">Disconnect</button>
+</div>
+<div>
+    <input type="text" id="message" placeholder="Enter message">
+    <button onclick="sendMessage()">Send Message</button>
+</div>
+<div id="messages"></div>
+
+<script>
+    var ws;
+
+    function connect() {
+        var ip = document.getElementById('ip').value.trim();
+        var port = document.getElementById('port').value.trim();
+        var wsUri = `ws://${ip}:${port}`;
+        ws = new WebSocket(wsUri);
+
+        ws.onopen = function (evt) {
+            log("Connected to WebSocket server.");
+        };
+
+        ws.onclose = function (evt) {
+            log("Disconnected from WebSocket server.");
+        };
+
+        ws.onmessage = function (evt) {
+            log("Received: " + evt.data);
+        };
+
+        ws.onerror = function (evt) {
+            log("Error: " + evt.data);
+        };
+    }
+
+    function disconnect() {
+        if (ws) {
+            ws.close();
+            ws = null;
+        }
+    }
+
+    function sendMessage() {
+        var message = document.getElementById('message').value;
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(message);
+            log("Sent: " + message);
+        } else {
+            log("WebSocket is not connected.");
+        }
+    }
+
+    function log(message) {
+        var output = document.getElementById("messages");
+        var pre = document.createElement("p");
+        pre.style.wordWrap = "break-word";
+        pre.innerHTML = message;
+        output.appendChild(pre);
+    }
+</script>
+</body>
+</html>

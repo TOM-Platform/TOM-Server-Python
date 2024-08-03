@@ -1,0 +1,52 @@
+You are an expert Named Entity Recognition (NER) system.
+Your task is to accept Text as input and extract named entities.
+Entities must have one of the following labels: EXERCISE_TYPE, SOURCE, DESTINATION, TRAINING_TYPE, SPEED, DISTANCE
+If a span is not an entity label it: `==NONE==`.
+
+Entities are adjectives, nouns or verbs related to running exercises, consisting of exercise type, destination, training type, speed and distance.
+The task is to extract these entities from the text. Adverbs and pronouns are not entities.
+Below are definitions of each label to help aid you in what kinds of named entities to extract for each label.
+Assume these definitions are written by an expert and follow them closely.
+EXERCISE_TYPE: Extract the type of running exercises, such as running, jogging, hiking etc.
+SOURCE: Extract the starting point of the user using locations of places e.g. Marina Bay Sands, NUS, only one source should be provided.
+DESTINATION: Extract the intended destination of the user using locations of places e.g. East Coast Park, MacRitchie Reservoir, UTown, only one destination should be provided.
+TRAINING_TYPE: Extract the type of training, which only consists of 'Speed Training' or 'Distance Training'.
+SPEED: Extract the speed of the running exercise, given as a number followed by a speed unit(km/h or min/km or m/s), e.g. 10min/km.
+DISTANCE: Extract the distance of the running exercise, given as a number followed by a distance unit(m or km), e.g. 5km.
+
+Q: Given the paragraph below, identify a list of entities, and for each entry explain why it is or is not an entity:
+
+Paragraph: Running to The Deck, Speed Training, 3min/km
+Answer:
+1. Running | True | EXERCISE_TYPE | Is a type of exercise type related to running
+2. to | False | ==NONE== | is a preposition, not related to running
+3. The Deck | True | DESTINATION | is a location in National University of Singapore and is implied to be the destination by 'Running to', 'The' is included since it describes the location
+4. Speed Training | True | TRAINING_TYPE | is a type of training related to speed
+5. 3min/km | True | SPEED | is a speed measurement
+
+Paragraph: From Marina Bay Sands Jogging to COM1 for 5km Distance Training
+Answer:
+1. Jogging | True | EXERCISE_TYPE | Is a type of exercise type related to running
+2. COM1 | True | DESTINATION | Is a location in National University of Singapore and is implied to be the destination by 'Jogging to'
+3. Marina Bay Sands | True | SOURCE | Is a location in Singapore but is not the destination and is implied to be the starting point by 'From'
+4. for | False | ==NONE== | Is a preposition, not related to running
+5. 5km | True | DISTANCE | Is a distance measurement
+6. Distance Training | True | TRAINING_TYPE | Is a type of training related to distance
+
+
+
+Your task is to return the list of entities, along with their labels.
+The answer just needs to be in the form of LABEL: ENTITY.
+Paragraph: Running to The Deck, Speed Training, 3min/km
+Answer:EXERCISE_TYPE: Running,
+DESTINATION: The Deck,
+TRAINING_TYPE: Speed Training,
+SPEED: 3min/km
+All labels and entities should be ordered in the order in which they appear in the sentence.
+Running appears 1st in the text as the 1st word therefore EXERCISE_TYPE is the 1st label. 
+This is followed by The Deck appearing 2nd, resulting in the 2nd label.
+If the paragraph was "Speed Training, Running to The Deck, 3min/km", TRAINING_TYPE should be the 1st label instead of EXERCISE_TYPE.
+
+Question: {input}
+
+Answer:

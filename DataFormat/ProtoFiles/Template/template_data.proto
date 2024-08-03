@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+message TemplateData {
+  optional string text = 1 [default = ""];
+  optional bytes image = 2;
+  optional string audio_path = 3 [default = ""];
+}

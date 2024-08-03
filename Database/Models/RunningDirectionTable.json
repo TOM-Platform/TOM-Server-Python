@@ -1,0 +1,54 @@
+{
+  "table_name": "RunningDirectionTable",
+  "columns": [
+    {
+      "name": "timestamp",
+      "type": "int64",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "start_time",
+      "type": "int64",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "dest_dist",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "dest_duration",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_dist",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_duration",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_instr",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_direction",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "timestamp"
+}

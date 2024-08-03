@@ -1,0 +1,24 @@
+{
+  "table_name": "OtherTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "int_value",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "string_value",
+      "type": "string",
+      "nullable": false,
+      "unique": true
+    }
+  ],
+  "primary_key": "id"
+}

@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+// FIXME: need to manually rename import on generated file (see https://github.com/protocolbuffers/protobuf/issues/1491)
+// need to add `from .` in front of `import route_data_pb2 as route__data__pb2`
+import "route_data.proto";
+
+message RandomRoutesData {
+  repeated RouteData routes = 1;
+}

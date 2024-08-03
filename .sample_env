@@ -1,0 +1,86 @@
+# Sample environment variables (DO NOT change the names as they are directly referred by other files)
+
+# Note: All environment variables are considered strings. If you want to use Integers or Booleans, you must convert them when accessing them. Empty strings may be covered to None.
+# So use Utilities.environment_utility.py for easier access
+
+# Environment variables declared here are automatically set in main.py (line 17)
+
+# To use multiprocessing.Lock on write operations of shared memory dict set environment variable
+SHARED_MEMORY_USE_LOCK=1
+
+#Note: Logging, levels: DEBUG = 10, INFO = 20, WARNING = 30, ERROR = 40, CRITICAL = 50
+LOG_LEVEL = 10
+LOG_FILE = "logs/logbook.log"
+
+#NOTE: General
+SERVER_IP = ""
+SERVER_PORT = 8090
+
+#NOTE: Data Saving
+DATABASE_NAME = "TOM"
+DATABASE_URL = "sqlite:///Database"
+MODELS_FILE_PATH = "./Database/Models"
+MODELS_FILE_EXT = ".json"
+
+#NOTE: Credentials
+HOLOLENS_CREDENTIAL_FILE = "hololens_credential.json"
+FITBIT_CREDENTIAL_FILE = "fitbit_credential.json"
+GOOGLE_MAPS_CREDENTIAL_FILE = "google_maps_credential.json"
+GOOGLE_CLOUD_CREDENTIAL_FILE = "google_cloud_credentials.json"
+OPENAI_CREDENTIAL_FILE = "openai_credential.json"
+GEMINI_CREDENTIAL_FILE = "gemini_credential.json"
+ANTHROPIC_CREDENTIAL_FILE = "anthropic_credential.json"
+ORS_CREDENTIAL_FILE = "ors_credential.json"
+GEOAPIFY_CREDENTIAL_FILE = "geoapify_credential.json"
+
+
+#NOTE: Map options, map keys can be found in /base_keys.py
+# 0 is Nominatim OSM, 1 is Google Maps
+PLACES_OPTION = 1
+# 0 is OpenRouteService, 1 is Google Maps
+DIRECTIONS_OPTION = 1
+# 0 is Geoapify, 1 is Google Maps
+STATIC_MAPS_OPTION = 1
+# 0 is api key, 1 is localhost with docker
+ORS_OPTION = 0
+
+#NOTE: Services
+
+
+#NOTE: Camera
+CAMERA_VIDEO_SOURCE = 0
+
+#NOTE: YoloV8
+YOLO_MODEL = "./Processors/Yolov8/weights/model.pt"
+YOLO_CONFIDENCE_LEVEL = 0.5
+YOLO_INFERENCE = True
+YOLO_VERBOSE = False
+
+
+#NOTE: Video Output
+VIDEO_OUTPUT_SAVE = False
+VIDEO_OUTPUT_PATH = "video_output.avi"
+
+#NOTE: Whisper
+WHISPER_TRANSCRIPTION_MODEL = "base.en"
+# https://huggingface.co/j-hartmann/emotion-english-distilroberta-base
+EMOTION_MODEL_FROM_TEXT = "j-hartmann/emotion-english-distilroberta-base"
+
+WHISPER_MEDIAPIPE = "modules/recorder/classifier.tflite"
+WHISPER_YAMNET = "https://www.kaggle.com/models/google/yamnet/TensorFlow2/yamnet/1"
+
+WHISPER_MIC = "pulse"
+WHISPER_SAMPLE_RATE = 16000
+
+# maximum number of seconds that this will allow a phrase to continue before stopping and returning
+# the part of the phrase processed before the time limit was reached.
+# The resulting audio will be the phrase cut off at the time limit.
+# If ``WHISPER_WINDOW`` is ``None``, there will be no phrase time limit.
+WHISPER_WINDOW = 10
+# minimum number of seconds of audio so that this will be considered as a phrase, else it waits until the phrase is long enough
+WHISPER_PHRASE_THRESHOLD = 3
+WHISPER_ENERGY_THRESHOLD = 1000
+
+#NOTE: FPV
+# 0 is full length, 1 is short
+FPV_OPTION = 1

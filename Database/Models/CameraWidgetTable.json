@@ -1,0 +1,42 @@
+{
+  "table_name": "CameraWidgetTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "camera_frame",
+      "type": "json",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "camera_frame_width",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "camera_frame_height",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "camera_fps",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "created_datetime",
+      "type": "datetime",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "id"
+}

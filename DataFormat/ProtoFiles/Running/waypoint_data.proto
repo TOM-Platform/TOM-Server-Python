@@ -1,0 +1,6 @@
+syntax = "proto2";
+
+message Waypoint {
+  optional double lat = 1 [default = 0];
+  optional double lng = 2 [default = 0];
+}

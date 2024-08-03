@@ -1,0 +1,28 @@
+input:
+  - name: "audio"
+    entrypoint: "audio_widget.AudioWidget.start"
+    exitpoint: ""
+    next:
+      - "processing:whisper"
+      - "processing:backgroundAudioClassifier"
+processing:
+  - name: "whisper"
+    entrypoint: "Whisper.transcribe.Transcriber.to_text"
+    exitpoint: ""
+    next:
+      - "service:audioTesting"
+      - "processing:emotionClassifier"
+  - name: "emotionClassifier"
+    entrypoint: "EmotionClassifier.emotion_classifier.EmotionClassifier.analyse_emotion"
+    exitpoint: ""
+    next: 
+      - "service:audioTesting"
+  - name: "backgroundAudioClassifier"
+    entrypoint: "BackgroundAudioClassifier.background_audio_classifier.BackgroundAudioClassifier.get_context"
+    exitpoint: ""
+    next:
+      - "service:audioTesting"
+service:
+  - name: "audioTesting"
+    entrypoint: "testing_service.audio_testing_service.AudioTestingService.run"
+    exitpoint: ""

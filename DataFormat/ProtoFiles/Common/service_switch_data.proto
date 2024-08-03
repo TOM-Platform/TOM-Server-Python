@@ -1,0 +1,5 @@
+syntax = "proto2";
+
+message ServiceSwitchData {
+  optional string detail = 1 [default = ""];
+}

@@ -1,0 +1,7 @@
+syntax = "proto2";
+import "waypoint_data.proto";
+
+message WaypointsListData {
+  repeated Waypoint waypoints_list = 1;
+}
+

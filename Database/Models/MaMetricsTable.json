@@ -1,0 +1,78 @@
+{
+  "table_name": "MaMetricsTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "total_reaction_time",
+      "type": "double",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "good_punch",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "off_target",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "bad_angle",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "uncategorized",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "total_punches",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "punch_dict",
+      "type": "json",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "datetime",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "session_duration",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "interval_duration",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "raw_data",
+      "type": "json",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "id"
+}

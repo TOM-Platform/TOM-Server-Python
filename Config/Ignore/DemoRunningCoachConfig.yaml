@@ -1,0 +1,23 @@
+input:
+  - name: "websocket"
+    entrypoint: "websocket_widget.WebsocketWidget.start"
+    exitpoint: ""
+    next:
+      - "service:runningDemo"
+service:
+  - name: "runningDemo"
+    entrypoint: "running_service.running_demo_service.RunningDemoService.run"
+    exitpoint: ""
+    next:
+      - "service:running"
+  - name: "running"
+    entrypoint: "running_service.running_service.RunningService.run"
+    exitpoint: ""
+    next:
+      - "output:websocket"
+output:
+  - name: "websocket"
+    entrypoint: "websocket_output.WebsocketOutput.send"
+    exitpoint: ""
+
+

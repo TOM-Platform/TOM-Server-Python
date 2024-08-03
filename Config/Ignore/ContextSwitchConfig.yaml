@@ -1,0 +1,10 @@
+input:
+  - name: "websocket"
+    entrypoint: "websocket_widget.WebsocketWidget.start"
+    exitpoint: ""
+    next:
+      - "service:context"
+service:
+  - name: "context"
+    entrypoint: "context_service.context_service.ContextService.run"
+    exitpoint: ""

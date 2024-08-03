@@ -1,0 +1,48 @@
+{
+  "table_name": "RunningCameraTable",
+  "columns": [
+    {
+      "name": "timestamp",
+      "type": "int64",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "position_x",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "position_y",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "position_z",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "rotation_x",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "rotation_y",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "rotation_z",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "timestamp"
+}

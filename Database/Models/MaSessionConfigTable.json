@@ -1,0 +1,18 @@
+{
+  "table_name": "MaSessionConfigTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "session_config",
+      "type": "json",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "id"
+}

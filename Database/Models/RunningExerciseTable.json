@@ -1,0 +1,66 @@
+{
+  "table_name": "RunningExerciseTable",
+  "columns": [
+    {
+      "name": "timestamp",
+      "type": "int64",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "start_time",
+      "type": "int64",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "calories",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "heart_rate",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "distance",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "speed",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "avg_speed",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "bearing",
+      "type": "integer",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_lat",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "curr_lng",
+      "type": "float",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "timestamp"
+}
