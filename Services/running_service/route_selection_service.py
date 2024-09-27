@@ -41,7 +41,18 @@ from base_keys import (
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 class RouteSelectionService(BaseComponent):
+    """
+    RouteSelectionService is responsible for managing the selection of running routes for the user.
+
+    This class handles:
+    - Waiting for the user's current location before generating routes.
+    - Generating random routes based on the user's training distance.
+    - Allowing the user to select a route.
+    - Saving the selected route for the running session.
+    """
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(COMPONENT_NOT_STARTED_STATUS)
@@ -191,7 +202,7 @@ class RouteSelectionService(BaseComponent):
             RunningCurrentData.polyline = chosen_route.direction_data.polyline
 
         DistanceTrainingParams.target_distance = (
-            chosen_route.direction_data.dest_dist / 1000
+                chosen_route.direction_data.dest_dist / 1000
         )
         output_data = build_running_target_data(
             distance=DistanceTrainingParams.target_distance,

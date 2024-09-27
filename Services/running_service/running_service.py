@@ -1,34 +1,44 @@
 import threading
+from Utilities import logging_utility
+from Services.running_service.running_keys import (
+    EXERCISE_WEAR_OS_DATA,
+    INFO_WAIT_WEAROS_DATA,
+)
 from Services.running_service.training_mode_selection_service import (
     TrainingModeSelectionService,
 )
 from base_keys import (
     COMPONENT_NOT_STARTED_STATUS,
+    COMPONENT_IS_RUNNING_STATUS,
     ORIGIN_KEY,
     WEBSOCKET_MESSAGE,
     WEBSOCKET_DATATYPE,
-    COMPONENT_IS_RUNNING_STATUS,
+    RUNNING_DEMO_SERVICE
 )
-
 from base_component import BaseComponent
-from base_keys import RUNNING_DEMO_SERVICE
 from .route_selection_service import RouteSelectionService
 from .running_coach_service import RunningCoachService
 from .running_current_data import RunningCurrentData
 from .running_service_params import BaseParams
 from .running_ui_service import RunningUiService
-from Services.running_service.running_keys import (
-    EXERCISE_WEAR_OS_DATA,
-    INFO_WAIT_WEAROS_DATA,
-)
-
-from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
+
 
 # For a visual representation of the flow of the running service,
 # it can be found here: https://app.diagrams.net/#G1XB0Bq9sTHAix-52nNto3T1y3TD19FL4k
 class RunningService(BaseComponent):
+    """
+    RunningService is responsible for handling the entire flow of running coach functionalities
+    such as route selection, training mode management, coach services, and UI updates.
+
+    Key functionalities:
+    - Handles different states of running services like demo mode and wearOS data reception.
+    - Manages the selection of routes and interaction with the running coach.
+    - Runs UI updates and services in separate threads.
+    - Maintains communication with other components using websocket messages.
+    """
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(COMPONENT_NOT_STARTED_STATUS)

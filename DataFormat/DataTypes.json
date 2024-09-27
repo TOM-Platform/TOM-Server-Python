@@ -1,332 +1,391 @@
 {
   "SERVICE_SWITCH_DATA": {
-    "key": 7000,
+    "key": 1,
     "proto_file": "Common/service_switch_data_pb2.py",
     "components": [
       "service:context"
     ]
   },
-  "EXERCISE_WEAR_OS_DATA": {
-    "key": 1000,
-    "proto_file": "Running/exercise_wear_os_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_LIVE_DATA": {
-    "key": 1001,
-    "proto_file": "Running/running_live_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_LIVE_UNIT": {
-    "key": 1002,
-    "proto_file": "Running/running_live_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_SUMMARY_DATA": {
-    "key": 1003,
-    "proto_file": "Running/running_summary_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_SUMMARY_UNIT": {
-    "key": 1004,
-    "proto_file": "Running/running_summary_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "DIRECTION_DATA": {
-    "key": 1005,
-    "proto_file": "Running/direction_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_TYPE_POSITION_MAPPING_DATA": {
-    "key": 1006,
-    "proto_file": "Running/running_type_position_mapping_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RANDOM_ROUTES_DATA": {
-    "key": 1007,
-    "proto_file": "Running/random_routes_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "ROUTE_DATA": {
-    "key": 1008,
-    "proto_file": "Running/route_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "WAYPOINT_DATA": {
-    "key": 1009,
-    "proto_file": "Running/waypoint_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "WAYPOINTS_LIST_DATA": {
-    "key": 1010,
-    "proto_file": "Running/waypoints_list_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_TARGET_DATA": {
-    "key": 1011,
-    "proto_file": "Running/running_target_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_CAMERA_DATA": {
-    "key": 1012,
-    "proto_file": "Running/running_camera_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_LIVE_DATA": {
-    "key": 1101,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_LIVE_UNIT": {
-    "key": 1102,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_SUMMARY_DATA": {
-    "key": 1103,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_SUMMARY_UNIT": {
-    "key": 1104,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_DIRECTION_DATA": {
-    "key": 1105,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_TYPE_POSITION_MAPPING": {
-    "key": 1106,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RANDOM_ROUTES_DATA": {
-    "key": 1107,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_CHOSEN_ROUTE_DATA": {
-    "key": 1108,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_TRAINING_MODE_DATA": {
-    "key": 1109,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "REQUEST_RUNNING_TARGET_DATA": {
-    "key": 1111,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_LIVE_ALERT": {
-    "key": 1201,
-    "proto_file": "Running/running_live_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "RUNNING_PLACE_DATA": {
-    "key": 1301,
-    "proto_file": "Running/running_place_data_pb2.py",
-    "components": [
-      "service:running"
-    ]
-  },
-  "LEARNING_DATA": {
-    "key": 2001,
-    "proto_file": "Learning/learning_data_pb2.py",
-    "components": [
-      "service:learning"
-    ]
-  },
-  "REQUEST_LEARNING_DATA": {
-    "key": 2002,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:learning"
-    ]
-  },
   "FINGER_POINTING_DATA": {
-    "key": 3001,
+    "key": 10,
     "proto_file": "Common/finger_pose_data_pb2.py",
     "components": [
-      "service:learning"
+      "service:learning",
+      "service:pandalens"
     ]
   },
   "SPEECH_INPUT_DATA": {
-    "key": 4001,
+    "key": 20,
     "proto_file": "Common/speech_data_pb2.py",
     "components": [
       "service:learning",
-      "service:martial_arts"
+      "service:martial_arts",
+      "service:pandalens"
     ]
   },
   "GAZE_POINTING_DATA": {
-    "key": 5001,
+    "key": 30,
     "proto_file": "Common/gaze_point_data_pb2.py",
     "components": [
-      "service:learning"
+      "service:learning",
+      "service:pandalens"
     ]
   },
   "HIGHLIGHT_POINT_DATA": {
-    "key": 6001,
+    "key": 40,
     "proto_file": "Common/highlight_point_data_pb2.py",
     "components": [
       "service:learning"
     ]
   },
-  "MA_UPDATE_SESSION_CONFIG_COMMAND": {
-    "key": 7001,
-    "proto_file": "MartialArts/ma_session_config_data_pb2.py",
+  "EXERCISE_WEAR_OS_DATA": {
+    "key": 51,
+    "proto_file": "Common/exercise_wear_os_data_pb2.py",
     "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_BEGIN_SESSION_COMMAND": {
-    "key": 7002,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_END_SESSION_COMMAND": {
-    "key": 7003,
-    "proto_file": "MartialArts/ma_end_session_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_REQUEST_SEQUENCE_DATA": {
-    "key": 7011,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_REQUEST_LIVE_FEEDBACK_DATA": {
-    "key": 7012,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_REQUEST_TIMER_DATA": {
-    "key": 7013,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_REQUEST_CONFIG_DATA": {
-    "key": 7014,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_REQUEST_POST_SESSION_FEEDBACK_DATA": {
-    "key": 7015,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_SEQUENCE_DATA": {
-    "key": 7021,
-    "proto_file": "MartialArts/ma_sequence_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_FEEDBACK_LIVE_DATA": {
-    "key": 7022,
-    "proto_file": "Common/request_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_METRICS_DATA": {
-    "key": 7023,
-    "proto_file": "MartialArts/ma_metrics_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_CONFIG_DATA": {
-    "key": 7025,
-    "proto_file": "MartialArts/ma_session_config_data_pb2.py",
-    "components": [
-      "service:martial_arts"
-    ]
-  },
-  "MA_POST_SESSION_METRICS_DATA": {
-    "key": 7026,
-    "proto_file": "MartialArts/ma_post_session_metrics_pb2.py",
-    "components": [
-      "service:martial_arts"
+      "service:running"
     ]
   },
   "TEMPLATE_DATA": {
-    "key": 3101,
+    "key": 101,
     "proto_file": "Common/template_data_pb2.py",
     "components": [
       "service:template"
     ]
   },
   "REQUEST_TEMPLATE_DATA": {
-    "key": 3102,
+    "key": 102,
     "proto_file": "Common/request_data_pb2.py",
     "components": [
       "service:template"
+    ]
+  },
+  "RUNNING_LIVE_DATA": {
+    "key": 201,
+    "proto_file": "Running/running_live_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_LIVE_UNIT": {
+    "key": 202,
+    "proto_file": "Running/running_live_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_SUMMARY_DATA": {
+    "key": 203,
+    "proto_file": "Running/running_summary_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_SUMMARY_UNIT": {
+    "key": 204,
+    "proto_file": "Running/running_summary_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "DIRECTION_DATA": {
+    "key": 205,
+    "proto_file": "Running/direction_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_TYPE_POSITION_MAPPING_DATA": {
+    "key": 206,
+    "proto_file": "Running/running_type_position_mapping_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RANDOM_ROUTES_DATA": {
+    "key": 207,
+    "proto_file": "Running/random_routes_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "ROUTE_DATA": {
+    "key": 208,
+    "proto_file": "Running/route_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_TARGET_DATA": {
+    "key": 209,
+    "proto_file": "Running/running_target_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_CAMERA_DATA": {
+    "key": 210,
+    "proto_file": "Running/running_camera_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_LIVE_ALERT": {
+    "key": 211,
+    "proto_file": "Running/running_live_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "RUNNING_PLACE_DATA": {
+    "key": 212,
+    "proto_file": "Running/running_place_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "WAYPOINT_DATA": {
+    "key": 220,
+    "proto_file": "Running/waypoint_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "WAYPOINTS_LIST_DATA": {
+    "key": 221,
+    "proto_file": "Running/waypoints_list_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_LIVE_DATA": {
+    "key": 251,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_LIVE_UNIT": {
+    "key": 252,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_SUMMARY_DATA": {
+    "key": 253,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_SUMMARY_UNIT": {
+    "key": 254,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_DIRECTION_DATA": {
+    "key": 255,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_TYPE_POSITION_MAPPING": {
+    "key": 256,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RANDOM_ROUTES_DATA": {
+    "key": 257,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_CHOSEN_ROUTE_DATA": {
+    "key": 258,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_TRAINING_MODE_DATA": {
+    "key": 259,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "REQUEST_RUNNING_TARGET_DATA": {
+    "key": 260,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:running"
+    ]
+  },
+  "LEARNING_DATA": {
+    "key": 301,
+    "proto_file": "Learning/learning_data_pb2.py",
+    "components": [
+      "service:learning"
+    ]
+  },
+  "REQUEST_LEARNING_DATA": {
+    "key": 302,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:learning"
+    ]
+  },
+  "MA_UPDATE_SESSION_CONFIG_COMMAND": {
+    "key": 401,
+    "proto_file": "MartialArts/ma_session_config_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_BEGIN_SESSION_COMMAND": {
+    "key": 402,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_END_SESSION_COMMAND": {
+    "key": 403,
+    "proto_file": "MartialArts/ma_end_session_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_REQUEST_SEQUENCE_DATA": {
+    "key": 411,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_REQUEST_CONFIG_DATA": {
+    "key": 412,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_REQUEST_LIVE_FEEDBACK_DATA": {
+    "key": 413,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_REQUEST_TIMER_DATA": {
+    "key": 414,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_REQUEST_POST_SESSION_FEEDBACK_DATA": {
+    "key": 415,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_SEQUENCE_DATA": {
+    "key": 421,
+    "proto_file": "MartialArts/ma_sequence_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_FEEDBACK_LIVE_DATA": {
+    "key": 422,
+    "proto_file": "Common/request_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_METRICS_DATA": {
+    "key": 423,
+    "proto_file": "MartialArts/ma_metrics_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_CONFIG_DATA": {
+    "key": 424,
+    "proto_file": "MartialArts/ma_session_config_data_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "MA_POST_SESSION_METRICS_DATA": {
+    "key": 425,
+    "proto_file": "MartialArts/ma_post_session_metrics_pb2.py",
+    "components": [
+      "service:martial_arts"
+    ]
+  },
+  "PANDALENS_EVENT_DATA": {
+    "key": 501,
+    "proto_file": "PandaLens/pandalens_input_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "PANDALENS_QUESTION": {
+    "key": 502,
+    "proto_file": "PandaLens/pandalens_question_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "PANDALENS_RESPONSE": {
+    "key": 503,
+    "proto_file": "PandaLens/pandalens_response_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "PANDALENS_MOMENTS": {
+    "key": 504,
+    "proto_file": "PandaLens/pandalens_moments_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "PANDALENS_ERROR": {
+    "key": 505,
+    "proto_file": "PandaLens/pandalens_error_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "PANDALENS_RESET": {
+    "key": 506,
+    "proto_file": "PandaLens/pandalens_reset_pb2.py",
+    "components": [
+      "service:pandalens"
+    ]
+  },
+  "DASHBOARD_LIVE_RUNNING_DATA": {
+    "key": 601,
+    "proto_file": "Dashboard/dashboard_live_running_data_pb2.py",
+    "components": [
+      "service:dashboard"
+    ]
+  },
+  "DASHBOARD_REQUEST_LIVE_DATA": {
+    "key": 602,
+    "proto_file": "Dashboard/dashboard_request_live_data_pb2.py",
+    "components": [
+      "service:dashboard"
     ]
   }
 }

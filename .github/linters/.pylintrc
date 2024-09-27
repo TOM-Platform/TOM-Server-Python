@@ -6,7 +6,7 @@
 
 # Files or directories to be skipped. They should be base names, not
 # paths.
-ignore=CVS
+ignore=CVS,site-packages,Tests
 
 # Add files or directories matching the regex patterns to the ignore-list. The
 # regex matches against paths and can be in Posix or Windows format.
@@ -14,7 +14,10 @@ ignore-paths=
 
 # Files or directories matching the regex patterns are skipped. The regex
 # matches against base names, not paths.
-ignore-patterns=__init__.py
+ignore-patterns=__init__.py,.*_pb2,.*\.yml,.*\.yaml,.*\.md,LICENSE,log
+
+# ignore line length check for url, comments, and pure string""" but f"""
+ignore-long-lines = ^\s*#.*$|^\s*(<?https?://\S+>?$)|^\s*(\w*\s*=\s*)?(\"|\').*(\"|\'),?\s*$|^\s*(\"\"\"|''').*$
 
 # Pickle collected data for later comparisons.
 persistent=yes
@@ -47,8 +50,6 @@ clear-cache-post-run=no
 # multiple time (only on the command line, not in the configuration file where
 # it should appear only once). See also the "--disable" option for examples.
 enable=
-    use-symbolic-message-instead,
-    useless-suppression,
 
 # Disable the message, report, category or checker with the given id(s). You
 # can either give multiple identifiers separated by comma (,) or put this
@@ -62,7 +63,6 @@ enable=
 
 disable=
     invalid-name,
-    empty-docstring,
     unidiomatic-feedback,
     consider-using-enumerate,
     consider-iterating-dictionary,
@@ -79,6 +79,14 @@ disable=
     missing-module-docstring,
     missing-function-docstring,
     broad-except,
+    missing-timeout,
+    too-many-locals,
+    global-statement,
+    global-variable-not-assigned,
+    broad-exception-raised,
+    duplicate-code,
+    pointless-string-statement,
+
 
 [REPORTS]
 
@@ -119,7 +127,7 @@ logging-format-style=old
 [MISCELLANEOUS]
 
 # List of note tags to take in consideration, separated by a comma.
-notes=TODO
+notes=
 
 # Regular expression of note tags to take in consideration.
 #notes-rgx=
@@ -171,6 +179,7 @@ redefining-builtins-modules=six.moves,past.builtins,future.builtins,builtins,io
 
 # Maximum number of characters on a single line.
 max-line-length=120
+
 
 # Allow the body of an if to be on the same line as the test if there is no
 # else.
@@ -308,7 +317,7 @@ mixin-class-rgx=.*MixIn
 # (useful for modules/projects where namespaces are manipulated during runtime
 # and thus existing member attributes cannot be deduced by static analysis). It
 # supports qualified module names, as well as Unix pattern matching.
-ignored-modules=
+ignored-modules=*_pb2,cv2,googlemaps,google.cloud,websockets,torchaudio
 
 # List of class names for which member attributes should not be checked (useful
 # for classes with dynamically set attributes). This supports the use of
@@ -375,7 +384,7 @@ max-spelling-suggestions=2
 [DESIGN]
 
 # Maximum number of arguments for function / method
-max-args = 9
+max-args = 10
 
 # Maximum number of locals for function / method body
 max-locals = 19
@@ -393,7 +402,7 @@ max-statements = 50
 max-attributes=11
 
 # Maximum number of statements in a try-block
-max-try-statements = 7
+; max-try-statements = 7
 
 [CLASSES]
 
@@ -464,13 +473,13 @@ preferred-modules=
 # For libraries, evaluate if some users what to access the type hints at
 # runtime first, e.g., through ``typing.get_type_hints``. Applies to Python
 # versions 3.7 - 3.9
-runtime-typing = no
+; runtime-typing = no
 
 
 [DEPRECATED_BUILTINS]
 
 # List of builtins function names that should not be used, separated by a comma
-bad-functions=map,input
+; bad-functions=map,input
 
 
 [REFACTORING]

@@ -4,6 +4,9 @@ from typing import List, Tuple
 
 @dataclass
 class DirectionData:
+    """
+    Direction Data
+    """
     # Refers to the system time of the watch when an exercise has started. Stored in ms.
     start_time: int = 0
     # Refers to the system time of the server when the data is updated. Stored in ms.

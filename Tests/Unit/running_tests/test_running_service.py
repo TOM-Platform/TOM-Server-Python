@@ -1,6 +1,3 @@
-import pytest
-
-from Memory import Memory
 from Tests.Integration.test_db_util import set_test_db_environ
 from base_keys import COMPONENT_NOT_STARTED_STATUS
 

@@ -1,11 +1,12 @@
 CONFIG_TABLE_NAME = "MaSessionConfigTable"
 CONFIG_ROW_ID = 0
 
-PAD_DIAMETER = 0.13 # diameter of entire pad on Client-Side
-ON_TARGET_RELATIVE_SIZE = 0.56 # relative size of on-target portion compared to the entire pad
-DISTANCE_TO_TARGET_FEEDBACK_THRESHOLD = PAD_DIAMETER * ON_TARGET_RELATIVE_SIZE / 2 # radius of on-target portion, to be on target, distance from center of target should be less than radius of the on-target portion
-ANGLE_FEEDBACK_THRESHOLD_LOWER = 15 # angle in degrees, lower limit for straight punch
-ANGLE_FEEDBACK_THRESHOLD_HIGHER = 40 # angle in degrees, upper limit for straight punch
+PAD_DIAMETER = 0.13  # diameter of entire pad on Client-Side
+ON_TARGET_RELATIVE_SIZE = 0.56  # relative size of on-target portion compared to the entire pad
+DISTANCE_TO_TARGET_FEEDBACK_THRESHOLD = PAD_DIAMETER * ON_TARGET_RELATIVE_SIZE / 2
+# radius of on-target portion, to be on target, distance from center of target should be less than radius of the on-target portion
+ANGLE_FEEDBACK_THRESHOLD_LOWER = 15  # angle in degrees, lower limit for straight punch
+ANGLE_FEEDBACK_THRESHOLD_HIGHER = 40  # angle in degrees, upper limit for straight punch
 
 METRICS_TABLE_NAME = "MaMetricsTable"
 SESSION_TIMESTAMP_KEY = "session_timestamp"

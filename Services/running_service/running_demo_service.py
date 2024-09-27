@@ -1,20 +1,24 @@
 import threading
-from Services.running_service.running_keys import EXERCISE_WEAR_OS_DATA
-from Utilities import environment_utility, logging_utility
-
 from base_keys import FPV_OPTION, WEBSOCKET_DATATYPE, WEBSOCKET_MESSAGE
+from Services.running_service.running_keys import EXERCISE_WEAR_OS_DATA
 from Services.running_service.running_current_data import RunningCurrentData
 from Services.running_service.running_service_params import BaseParams
 from Tests.RunningFpv.running_fpv_service import RunningFpvService
-from Tests.RunningFpv.running_demo_route import demo_route, demo_waypoints, demo_distance, \
-    demo_bearing
+from Tests.RunningFpv.running_demo_route import demo_route, demo_waypoints, demo_distance, demo_bearing
+from Utilities import environment_utility, logging_utility
 from Utilities.format_utility import convert_m_s_to_min_km
 from base_component import BaseComponent
 
 _FPV_OPTION = environment_utility.get_env_int(FPV_OPTION)
 _logger = logging_utility.setup_logger(__name__)
 
+
 class RunningDemoService(BaseComponent):
+    """
+    RunningDemoService is responsible for simulating a demo running session.
+    It handles the playback of demo routes, updates mock messages, and interacts with the FPV service.
+    """
+
     def __init__(self, name):
         super().__init__(name)
         self.running_fpv_service = None
@@ -38,8 +42,7 @@ class RunningDemoService(BaseComponent):
             else:
                 self.demo_saving_data()
 
-        super().send_to_component(websocket_message=self.mock_message,
-                                  websocket_datatype=websocket_data_type)
+        super().send_to_component(websocket_message=self.mock_message, websocket_datatype=websocket_data_type)
 
     def save_demo_waypoints(self):
         RunningCurrentData.curr_lat = demo_route[0][0]
@@ -66,8 +69,9 @@ class RunningDemoService(BaseComponent):
                 curr_time_elapsed += 590
             # 2nd cut, fpv_short jumps from 1:50 to 9:40 in normal fpv, therefore need to add 380 + 90 = 470 seconds
             elif curr_time_elapsed >= 110:
-                # this is to add the skipped coords for summary map, so that the user doesn't just teleport for the route line
-                if self.add_mock_coords_for_summary == False:
+                # this is to add the skipped coords for summary map, \
+                # so that the user doesn't just teleport for the route line
+                if not self.add_mock_coords_for_summary:
                     for i in range(40, 116):
                         RunningCurrentData.coords.append(demo_route[i])
                     self.add_mock_coords_for_summary = True
@@ -82,7 +86,7 @@ class RunningDemoService(BaseComponent):
                 _logger.warning("Demo finished")
                 return
             if self.prev_time_elapsed != curr_time_elapsed:
-                _logger.info("LatLng count: {count}", count = int(curr_time_elapsed / 5) - 1)
+                _logger.info("LatLng count: {count}", count=int(curr_time_elapsed / 5) - 1)
                 self.save_demo_direction_params(int(curr_time_elapsed / 5) - 1)
             self.prev_time_elapsed = curr_time_elapsed
 
@@ -103,7 +107,8 @@ class RunningDemoService(BaseComponent):
             self.mock_message['curr_lat'] = demo_route[latlng_count][0]
             self.mock_message['curr_lng'] = demo_route[latlng_count][1]
             self.mock_message['bearing'] = demo_bearing[latlng_count]
-            _logger.info(
-                f"lat: {self.mock_message['curr_lat']}, lng: {self.mock_message['curr_lng']}, bearing: {self.mock_message['bearing']}")
+            _logger.info("lat: {lat}, lng: {lng}, bearing: {bearing}", lat=self.mock_message['curr_lat'],
+                         lng=self.mock_message['curr_lng'], bearing=self.mock_message['bearing'], )
+
         except KeyError as e:
             _logger.error("Key not found: {exc}", exc=str(e))

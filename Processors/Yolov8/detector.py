@@ -3,14 +3,15 @@ from base_component import BaseComponent
 from Processors.Yolov8.video_detection import VideoDetection as video_detector
 
 
-"""
-Sends 4 different key-value data pairs to the next component:
-1. last_detection
-2. yolo_frame : The annotated frame after yolov8 model has run on the raw camera frame
-3. class_labels : The class labels of detected objects in the raw camera frame
-4. base_data : The data sent through by the previous component (camera_widget) to this component, includes the raw camera frame as well as frame details
-"""
 class Yolov8Detector(BaseComponent):
+    """
+    Sends 4 different key-value data pairs to the next component:
+    1. last_detection
+    2. yolo_frame : The annotated frame after yolov8 model has run on the raw camera frame
+    3. class_labels : The class labels of detected objects in the raw camera frame
+    4. base_data : The data sent through by the previous component (camera_widget) to this component, includes the raw
+        camera frame as well as frame details
+    """
     writer = None
 
     def __init__(self, name):

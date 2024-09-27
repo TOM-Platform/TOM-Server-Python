@@ -1,4 +1,5 @@
 import pytest
+import shutil
 import os
 
 from Utilities import file_utility
@@ -104,3 +105,77 @@ def test_write_data():
         f.close()
 
     os.remove(file_name)
+
+
+# Sample directory and file names to use in tests
+TEST_ROOT = os.path.join(file_utility.get_project_root(), "tmp", "test_root")
+TEST_FOLDERS = ["folder1", "folder2"]
+TEST_FILES = ["file1.txt", "file2.txt"]
+
+
+@pytest.fixture(scope="function")
+def setup_test_environment():
+    # Create a test root directory and subfolders
+    os.makedirs(os.path.join(TEST_ROOT, *TEST_FOLDERS))
+
+    # Create test files
+    for file_name in TEST_FILES:
+        with open(os.path.join(TEST_ROOT, *TEST_FOLDERS, file_name), 'w') as f:
+            f.write("test")
+
+    yield  # This is where the testing happen
+
+    # Teardown: remove the test root directory after each test
+    try:
+        shutil.rmtree(TEST_ROOT)
+    except OSError as e:
+        print(f"Error removing test root directory {TEST_ROOT}: {e}")
+
+
+def test_get_path_from_project_root(setup_test_environment):
+    # Arrange
+    folders = TEST_FOLDERS
+    expected_path = os.path.join(TEST_ROOT, *folders)
+
+    # Act
+    result = file_utility.get_path_from_project_root(["tmp", "test_root", *folders])
+
+    # Assert
+    assert result == expected_path
+    assert os.path.exists(result)
+
+
+def test_get_path_with_filename(setup_test_environment):
+    # Arrange
+    directory = os.path.join(TEST_ROOT, *TEST_FOLDERS)
+    filename = "file3.txt"
+    expected_path = os.path.join(directory, filename)
+
+    # Act
+    result = file_utility.get_path_with_filename(directory, filename)
+
+    # Assert
+    assert result == expected_path
+
+
+def test_delete_all_files_in_dir(setup_test_environment):
+    # Arrange
+    dir_path = os.path.join(TEST_ROOT, *TEST_FOLDERS)
+
+    # Act
+    result = file_utility.delete_all_files_in_dir(dir_path)
+
+    # Assert
+    assert result == True
+    assert len(os.listdir(dir_path)) == 0  # Ensure directory is empty
+
+
+def test_delete_all_files_in_dir_exception(setup_test_environment):
+    # Arrange
+    dir_path = os.path.join(TEST_ROOT, "non_existing_folder")
+
+    # Act
+    result = file_utility.delete_all_files_in_dir(dir_path)
+
+    # Assert
+    assert result == False

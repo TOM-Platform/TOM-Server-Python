@@ -1,15 +1,18 @@
 import base_keys
 from DataFormat import datatypes_helper
+from DataFormat.ProtoFiles.Common import request_data_pb2
 from base_component import BaseComponent
 from Utilities import time_utility
-from DataFormat.ProtoFiles.Common import request_data_pb2
 
 _KEY_LAST_DETECTION_TIME = "LAST_DETECTION_TIME"
 
 
 class TestingService(BaseComponent):
-    def __init__(self, name):
-        super().__init__(name)
+    """
+    This service processes data from different sources (YOLOv8 and WebSocket) and manages memory data related to
+    detections. It handles both camera detection  data and WebSocket messages, performing actions based on the
+    source of the data.
+    """
 
     def run(self, raw_data):
         super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)

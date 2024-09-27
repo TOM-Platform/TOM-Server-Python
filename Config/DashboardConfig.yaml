@@ -1,0 +1,19 @@
+input:
+  - name: "dashboard_server"
+    entrypoint: "dashboard_widget.dashboard_widget.DashboardWidget.start"
+    exitpoint: ""
+  - name: "websocket"
+    entrypoint: "websocket_widget.WebsocketWidget.start"
+    exitpoint: ""
+    next:
+      - "service:dashboard_service"
+service:
+  - name: "dashboard_service"
+    entrypoint: "dashboard_service.dashboard_service.DashboardService.run"
+    exitpoint: ""
+    next:
+      - "output:websocket"
+output:
+  - name: "websocket"
+    entrypoint: "websocket_output.WebsocketOutput.send"
+    exitpoint: ""

@@ -59,8 +59,7 @@ class AnthropicClient:
             i.e. What is the translation of {user_input} in French.
         user_input: Any
             Gives the context to the AI by providing a context
-            i.e. user_input = "Apple" will format the prompt to become
-            'What is the translation of Apple in French.'
+            i.e. user_input = "Apple" will format the prompt to become 'What is the translation of Apple in French.'
         Returns
         ________
         str
@@ -68,13 +67,9 @@ class AnthropicClient:
         '''
         return self.generate(prompt.format(input=user_input))
 
-    def generate(
-            self,
-            user_prompt: str,
-            image_png_bytes: bytes = bytes(),
-            system_context: str = "You are an advanced helping assistant in \
-            answering questions based on given image or text information."
-    ) -> str:
+    def generate(self, user_prompt: str, image_png_bytes: bytes = bytes(),
+                 system_context: str = "You are an advanced helping assistant in answering questions based on given "
+                                       "image or text information.") -> str:
         '''
         This function generates a string response based on image_png_bytes
         and prompt

@@ -38,7 +38,13 @@ from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 class RunningUiService(BaseComponent):
+    """
+    RunningUiService handles UI-related data for the running service.
+    It processes requests for live unit, summary unit, target data, and type position mappings.
+    """
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(COMPONENT_NOT_STARTED_STATUS)
@@ -58,6 +64,7 @@ class RunningUiService(BaseComponent):
     def run(self, running_service, socket_data_type):
         if super().get_component_status() != COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(COMPONENT_IS_RUNNING_STATUS)
+
         self.running_service = running_service
         result, result_type = self.get_ui_config(socket_data_type)
         if result is not None:
@@ -73,7 +80,7 @@ class RunningUiService(BaseComponent):
         :return: result, result_type
         """
 
-        _logger.debug("get_ui_config: {type}", type = request_datatype)
+        _logger.debug("get_ui_config: {type}", type=request_datatype)
 
         if request_datatype is None:
             _logger.debug(DEBUG_NONE_DATATYPE)
@@ -94,7 +101,7 @@ class RunningUiService(BaseComponent):
                 RUNNING_LIVE_UNIT,
             )
 
-        elif request_datatype == REQUEST_RUNNING_SUMMARY_UNIT:
+        if request_datatype == REQUEST_RUNNING_SUMMARY_UNIT:
             return (
                 build_running_summary_unit(
                     distance=SummaryUnitParams.distance,
@@ -104,13 +111,13 @@ class RunningUiService(BaseComponent):
                 RUNNING_SUMMARY_UNIT,
             )
 
-        elif request_datatype == REQUEST_RUNNING_TYPE_POSITION_MAPPING:
+        if request_datatype == REQUEST_RUNNING_TYPE_POSITION_MAPPING:
             return (
                 build_running_type_position_mapping(),
                 RUNNING_TYPE_POSITION_MAPPING_DATA,
             )
 
-        elif request_datatype == REQUEST_RUNNING_TARGET_DATA:
+        if request_datatype == REQUEST_RUNNING_TARGET_DATA:
             return (
                 build_running_target_data(
                     distance=DistanceTrainingParams.target_distance,
@@ -118,8 +125,6 @@ class RunningUiService(BaseComponent):
                 ),
                 RUNNING_TARGET_DATA,
             )
-        else:
-            _logger.error(
-                "--- Unknown datatype: {type}", type = err_get_socket_data_name(request_datatype)
-            )
-            return None, None
+
+        _logger.error("--- Unknown datatype: {type}", type=err_get_socket_data_name(request_datatype))
+        return None, None

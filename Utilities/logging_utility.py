@@ -1,16 +1,14 @@
-import logbook
-import os
 import shutil
-from logbook import Logger, RotatingFileHandler, StreamHandler
-
+import os
 import sys
+import logbook
+from logbook import Logger, RotatingFileHandler, StreamHandler
 
 _MAX_LOG_SIZE = 50 * 1024 * 1024  # 50 MB
 _MAX_BACKUP_COUNT = 2
 _DEFAULT_LOG_LEVEL = logbook.DEBUG
 _DEFAULT_LOG_FILE = 'logs/logbook.log'
 _DEFAULT_LOGGER_NAME = 'DefaultLogger'
-
 _DEFAULT_LOG_FORMAT = '{record.time:%Y-%m-%d %H:%M:%S}|{record.level_name}|{record.channel}|{record.module}|{record.message}'
 """
 Logging format string
@@ -28,6 +26,10 @@ Logging format string
 
 
 class SafeRotatingFileHandler(RotatingFileHandler):
+    """
+    A custom RotatingFileHandler that overrides the default log rollover behavior.
+    """
+
     def perform_rollover(self):
         """
         Override perform_rollover to handle errors more gracefully.
@@ -105,4 +107,4 @@ def handle_oversize_log_file(log_file):
             shutil.copy2(log_file, f"{log_file}.1")
             os.remove(log_file)
     except Exception as e:
-        print(f"Failed to handle oversized log file: {e}")
+        print(f"Failed to handle over-sized log file: {e}")

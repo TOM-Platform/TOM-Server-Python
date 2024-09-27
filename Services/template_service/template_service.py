@@ -8,13 +8,20 @@ from Utilities import logging_utility
 from base_component import BaseComponent
 from .template_data_handler import build_template_data
 
+DATATYPE_REQUEST_TEMPLATE_DATA = datatypes_helper.get_key_by_name("REQUEST_TEMPLATE_DATA")
+
 _logger = logging_utility.setup_logger(__name__)
 
 
 class TemplateService(BaseComponent):
+    """
+    This service handles data processing, including object detection using YOLOv8 and generating data for a template
+    scene. It processes data from both WebSocket and camera sources.
+    """
+
     def __init__(self, name: str) -> None:
         super().__init__(name)
-        self.image_detector: YoloDetector = YoloDetector
+        self.image_detector = YoloDetector
 
     def run(self, raw_data: dict) -> None:
         super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
@@ -34,19 +41,18 @@ class TemplateService(BaseComponent):
             self._handle_camera_data(raw_data)
 
     def _handle_websocket_data(self, socket_data_type, decoded_data):
-        if socket_data_type == datatypes_helper.get_key_by_name("REQUEST_TEMPLATE_DATA"):
-            return self._handle_template_request(decoded_data)
+        if socket_data_type == DATATYPE_REQUEST_TEMPLATE_DATA:
+            self._handle_template_request(decoded_data)
 
-    def _handle_template_request(self, decoded_data):
+    def _handle_template_request(self, request_data):
+        _logger.info("Template Request Data: {decoded_data}, {detail}",
+                     decoded_data=request_data, detail=request_data.detail)
         try:
             label, image = self._get_detected_label_and_image()
             self._send_websocket_template_data(text=label, image=image, audio_path="two_beep_audio")
-        except Exception as e:
+        except Exception:
             # No object is detected
-            _logger.error("Error getting detected label and image: {e}", e=e)
-            return
-
-    # Build the template data in protobuf format and send it to the template scene
+            _logger.error("Error getting detected label and image")
 
     def _send_websocket_template_data(self, text: str = "", image: bytes = None, audio_path: str = "") -> None:
         '''
@@ -62,7 +68,7 @@ class TemplateService(BaseComponent):
 
         super().send_to_component(websocket_message=websocket_template_data)
 
-        _logger.info("Template Data (Text: {text}, Image, Audio: {audio_path}) sent to Template Scene",
+        _logger.info("Sending Template Data (Text: {text}, Image, Audio: {audio_path}) sent to Template Scene",
                      text=text, image=image, audio_path=audio_path)
 
     # Set the camera frame, frame width, frame height, last detection and class labels in the "shared" memory
@@ -92,17 +98,18 @@ class TemplateService(BaseComponent):
 
         if detections is None or len(detections.class_id) == 0:
             return None, None
-        else:
-            # take the first detection
-            class_id: int = detections.class_id[0]
-            xy_bounds: list = detections.xyxy[0]
-            label: str = class_labels[class_id]
 
-            # Crop the frame to the bounding box of the detected object and convert it to bytes before sending it to the template scene
-            image_frame: numpy.ndarray = image_utility.get_cropped_frame(frame, math.floor(xy_bounds[0]),
-                                                                         math.floor(xy_bounds[1]),
-                                                                         math.floor(xy_bounds[2]),
-                                                                         math.floor(xy_bounds[3]))
-            image: bytes = image_utility.get_png_image_bytes(image_frame)
+        # take the first detection
+        class_id: int = detections.class_id[0]
+        xy_bounds: list = detections.xyxy[0]
+        label: str = class_labels[class_id]
 
-            return label, image
+        # Crop the frame to the bounding box of the detected object and /
+        # convert it to bytes before sending it to the template scene
+        image_frame: numpy.ndarray = image_utility.get_cropped_frame(frame, math.floor(xy_bounds[0]),
+                                                                     math.floor(xy_bounds[1]),
+                                                                     math.floor(xy_bounds[2]),
+                                                                     math.floor(xy_bounds[3]))
+        image: bytes = image_utility.get_png_image_bytes(image_frame)
+
+        return label, image

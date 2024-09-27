@@ -1,5 +1,3 @@
-import pytest
-
 from APIs.maps.direction_data import DirectionData
 from Services.running_service.running_current_data import RunningCurrentData
 from Utilities import time_utility

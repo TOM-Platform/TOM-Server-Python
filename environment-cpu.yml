@@ -61,4 +61,4 @@ dependencies:
       - transformers~= 4.40.1
       - uvicorn~=0.29.0
       - Logbook~=1.7.0
-
+      - python-docx~=1.1.2

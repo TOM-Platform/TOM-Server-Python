@@ -1,11 +1,10 @@
 import os
-import pytest
 
 from APIs.langchain_llm.langchain_nlp_openai import LangChainNlpOpenAI
-from Utilities.file_utility import get_project_root, read_prompt
 from Services.running_service.langchain_running_command_model import RunningCommand
+from Utilities.file_utility import get_project_root, read_prompt_file
 
-initial_prompt = read_prompt(os.path.join(get_project_root(), 'Services', 'running_service', 'running_prompt.txt'))
+initial_prompt = read_prompt_file(os.path.join(get_project_root(), 'Services', 'running_service', 'running_prompt.txt'))
 langchainNlpOpenAI = LangChainNlpOpenAI(prompt=initial_prompt, tools=[RunningCommand])
 
 

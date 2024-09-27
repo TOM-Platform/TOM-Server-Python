@@ -1,8 +1,9 @@
 import io
-import speech_recognition as sr
 from datetime import datetime, timedelta
 from multiprocessing import Queue
 from sys import platform
+
+import speech_recognition as sr
 
 import base_keys
 from Utilities import environment_utility, logging_utility, time_utility
@@ -37,6 +38,7 @@ class AudioWidget(BaseComponent):
         self.phrase_time = None  # timestamp of last retrieved from queue
         self.last_sample = bytes()  # current raw sample
         self.phrase_complete = _WHISPER_PHRASE_COMPLETE
+        self.now = None
 
         # in sec
         self.window = _WHISPER_WINDOW
@@ -53,7 +55,7 @@ class AudioWidget(BaseComponent):
         self.listen_delay = 0.05
 
     def start(self):
-        if (super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS):
+        if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
         self.__check_source()
 
@@ -121,10 +123,9 @@ class AudioWidget(BaseComponent):
                     for _, name in enumerate(sr.Microphone.list_microphone_names()):
                         _logger.info("{name} found", name=name)
                     return
-                else:
-                    if mic in sr.Microphone.list_microphone_names():
-                        self.src = sr.Microphone(sample_rate=self.sample_rate,
-                                                 device_index=sr.Microphone.list_microphone_names().index(
-                                                     mic))
+
+                if mic in sr.Microphone.list_microphone_names():
+                    self.src = sr.Microphone(sample_rate=self.sample_rate,
+                                             device_index=sr.Microphone.list_microphone_names().index(mic))
             else:
                 self.src = sr.Microphone(sample_rate=self.sample_rate)

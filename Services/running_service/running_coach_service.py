@@ -62,7 +62,20 @@ from base_keys import COMPONENT_NOT_STARTED_STATUS, UNITY_CLIENT, COMPONENT_IS_R
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 class RunningCoachService(BaseComponent):
+    """
+    RunningCoachService is responsible for managing the running coach functionalities,
+    including processing live running data, providing real-time directions, sending
+    training alerts, and interacting with the Unity client.
+
+    This class handles:
+    - Processing and storing running data from external sources like Wear OS or cameras.
+    - Sending real-time updates about speed, distance, and direction to the user.
+    - Managing user deviations from the running route and recalculating directions.
+    - Providing training updates based on user goals (speed, distance, etc.).
+    """
+
     def __init__(self, name):
 
         super().__init__(name)
@@ -77,11 +90,11 @@ class RunningCoachService(BaseComponent):
             REQUEST_RUNNING_SUMMARY_UNIT,
         ]
 
-        # NOTE: To modify the frequency of running/direction requests, please modify the following variables in RunningController.cs
-        # in TOM-Client-Unity project.
-        #     private const int RUNNING_DATA_REQUEST_DELAY_SECONDS = 1;
-        #     private const int DIRECTION_DATA_REQUEST_DELAY_SECONDS = 5;
-        #     https://github.com/NUS-SSI/TOM-Client-Unity/blob/main/Assets/Scripts/Controller/RunningController.cs#L19-L20
+        # NOTE: To modify the frequency of running/direction requests, please modify the following variables in
+        # RunningController.cs in TOM-Client-Unity project.
+        #   private const int RUNNING_DATA_REQUEST_DELAY_SECONDS = 1;
+        #   private const int DIRECTION_DATA_REQUEST_DELAY_SECONDS = 5;
+        #   https://github.com/NUS-SSI/TOM-Client-Unity/blob/main/Assets/Scripts/Controller/RunningController.cs#L19-L20
 
         # time of latest known exercise start time
         self.latest_start_time = 0.0  # ms
@@ -101,7 +114,8 @@ class RunningCoachService(BaseComponent):
         # e.g. assuming dist_interval = 0.4, running_ui_display_duration = 10
         # 0-10s: distance not reached, full running UI not displayed
         # 10-20s: distance interval reached (>0.4km for example), running data is displayed on Unity client
-        # 20-30s: prev distance recorded, distance interval not reached with respect to prev distance, full running UI not displayed
+        # 20-30s: prev distance recorded, distance interval not reached with respect to prev distance, /
+        # full running UI not displayed
         self.running_ui_display_duration = 10  # sec
         # similar to prev_running_request_time, but for direction request
         self.prev_direction_request_time = -1  # ms
@@ -141,10 +155,7 @@ class RunningCoachService(BaseComponent):
 
         result = self.get_exercise_data(socket_data_type, decoded_data)
         if result is not None:
-            self.running_service.send_to_component(
-                websocket_message=result, websocket_client_type=UNITY_CLIENT
-            )
-
+            self.running_service.send_to_component(websocket_message=result, websocket_client_type=UNITY_CLIENT)
         if super().get_component_status() != COMPONENT_IS_RUNNING_STATUS:
             threading.Thread(
                 target=self.get_training_update,
@@ -157,11 +168,9 @@ class RunningCoachService(BaseComponent):
             super().set_component_status(COMPONENT_IS_RUNNING_STATUS)
 
     def get_exercise_data(self, socket_data_type, decoded_data):
-        BaseParams.total_sec = (
-            time_utility.get_current_millis() - self.running_coach_start_time
-        ) / 1000
+        BaseParams.total_sec = (time_utility.get_current_millis() - self.running_coach_start_time) / 1000
         if socket_data_type is None:
-            return
+            return None
 
         output_data = None
 
@@ -185,16 +194,9 @@ class RunningCoachService(BaseComponent):
 
         elif socket_data_type == REQUEST_RUNNING_SUMMARY_DATA:
             # get the last known coordinates if not already in the list
-            if (
-                RunningCurrentData.curr_lat,
-                RunningCurrentData.curr_lng,
-            ) not in RunningCurrentData.coords:
-                RunningCurrentData.coords.append(
-                    (RunningCurrentData.curr_lat, RunningCurrentData.curr_lng)
-                )
-            image = get_static_maps_image(
-                RunningCurrentData.coords, RunningServiceConfig.summary_map_size
-            )
+            if (RunningCurrentData.curr_lat, RunningCurrentData.curr_lng,) not in RunningCurrentData.coords:
+                RunningCurrentData.coords.append((RunningCurrentData.curr_lat, RunningCurrentData.curr_lng))
+            image = get_static_maps_image(RunningCurrentData.coords, RunningServiceConfig.summary_map_size)
             # TODO: get start_place from current location using places api
             output_data = build_running_summary_data(
                 RunningCurrentData.exercise_type,
@@ -213,12 +215,11 @@ class RunningCoachService(BaseComponent):
             )
 
         elif socket_data_type in self.ignored_data_types:
-            return
-
+            return output_data
         else:
-            _logger.error(
-                running_exceptions.UnsupportedDataTypeException(socket_data_type)
-            )
+            _logger.error(running_exceptions.UnsupportedDataTypeException(socket_data_type))
+
+        return output_data
 
     def get_training_update(self, training_speed, training_distance):
         while True:
@@ -234,9 +235,8 @@ class RunningCoachService(BaseComponent):
             time_diff = time_utility.get_current_millis() - self.prev_running_request_time
             if time_diff >= self.running_ui_display_duration * 1000:
                 self.prev_running_request_time = time_utility.get_current_millis()
-                self.dist_interval_check = (
-                    RunningCurrentData.curr_distance - RunningCurrentData.prev_distance
-                ) > self.dist_interval
+                self.dist_interval_check = ((RunningCurrentData.curr_distance - RunningCurrentData.prev_distance)
+                                            > self.dist_interval)
                 if self.dist_interval_check:
                     RunningCurrentData.prev_distance = RunningCurrentData.curr_distance
 
@@ -258,9 +258,7 @@ class RunningCoachService(BaseComponent):
         self.prev_direction_request_time = time_utility.get_current_millis()
         error_time_diff = time_utility.get_current_millis() - self.latest_direction_error_time
         if self.latest_direction_error_time != -1 and error_time_diff < self.direction_error_interval:
-            time_to_retry = round(
-                (self.direction_error_interval - error_time_diff) / 1000, 1
-            )
+            time_to_retry = round((self.direction_error_interval - error_time_diff) / 1000, 1)
             _logger.warning(warning_retry_direction_time(time_to_retry))
         else:
             self.process_direction_request()
@@ -296,12 +294,12 @@ class RunningCoachService(BaseComponent):
                 BaseParams.total_sec,
                 True,
             )
-        elif (
-            BaseParams.training_mode == RunningTrainingMode.DistanceTraining
-            and not DistanceTrainingParams.halfway_point
-        ):
-            # dont show anything if halfway point not reached yet
-            output_data = build_running_live_data(include_time=True)
+        elif (BaseParams.training_mode == RunningTrainingMode.DistanceTraining and
+              not DistanceTrainingParams.halfway_point):
+            # don't show anything if halfway point not reached yet
+            output_data = build_running_live_data(
+                include_time=True
+            )
         else:
             show_distance = half_distance_notif
             show_speed = not self.is_correct_speed
@@ -339,10 +337,7 @@ class RunningCoachService(BaseComponent):
         if half_distance_notif:
             instruction = MESSAGE_HALFWAY_NOTIF
 
-        self.is_correct_speed = (
-            abs(RunningCurrentData.avg_speed - training_speed)
-            <= self.training_speed_tolerance
-        )
+        self.is_correct_speed = abs(RunningCurrentData.avg_speed - training_speed) <= self.training_speed_tolerance
         if self.is_correct_speed and RunningCurrentData.avg_speed != -1.0:
             output_data = build_running_alert(
                 distance=half_distance_notif_str,
@@ -351,10 +346,7 @@ class RunningCoachService(BaseComponent):
                 audio_instr=audio_instr,
             )
         else:
-            if (
-                RunningCurrentData.avg_speed > training_speed
-                or RunningCurrentData.avg_speed == -1.0
-            ):
+            if RunningCurrentData.avg_speed > training_speed or RunningCurrentData.avg_speed == -1.0:
                 instruction += MESSAGE_SPEED_UP
             else:
                 instruction += MESSAGE_SLOW_DOWN
@@ -376,9 +368,7 @@ class RunningCoachService(BaseComponent):
         _logger.info(INFO_PROCESSING_DIRECTION_DATA)
         # replace first coordinate with current coordinate
         RunningCurrentData.waypoints.pop(0)
-        RunningCurrentData.waypoints.insert(
-            0, [RunningCurrentData.curr_lat, RunningCurrentData.curr_lng]
-        )
+        RunningCurrentData.waypoints.insert(0, [RunningCurrentData.curr_lat, RunningCurrentData.curr_lng])
 
         direction_data = get_directions(
             RunningCurrentData.start_time,
@@ -400,18 +390,18 @@ class RunningCoachService(BaseComponent):
         dest_dist_str = direction_data.dest_dist_str
         dest_dist = direction_data.dest_dist
         dest_duration_str = direction_data.dest_duration_str
-        dest_duration = direction_data.dest_duration
+        # dest_duration = direction_data.dest_duration
         curr_dist_str = direction_data.curr_dist_str
         curr_dist = direction_data.curr_dist
         curr_duration_str = direction_data.curr_duration_str
-        curr_duration = direction_data.curr_duration
+        # curr_duration = direction_data.curr_duration
         curr_instr = direction_data.curr_instr
         curr_direction = direction_data.curr_direction
         num_steps = direction_data.num_steps
         waypoint_dist = direction_data.waypoint_dist
-        waypoint_dist_str = direction_data.waypoint_dist_str
-        waypoint_duration = direction_data.waypoint_duration
-        waypoint_duration_str = direction_data.waypoint_duration_str
+        # waypoint_dist_str = direction_data.waypoint_dist_str
+        # waypoint_duration = direction_data.waypoint_duration
+        # waypoint_duration_str = direction_data.waypoint_duration_str
         polyline = direction_data.polyline
 
         # truncate instruction if too long
@@ -424,26 +414,20 @@ class RunningCoachService(BaseComponent):
             RunningCurrentData.total_steps = int(num_steps)
             RunningCurrentData.polyline = polyline
 
-        # if the user walks the wrong way, the total steps will be less than the current steps
-        # so we need to update the total steps to the current steps
+        # if the user walks the wrong way, the total steps will be less than the current steps so we need to update the total steps to the current steps
         if RunningCurrentData.curr_steps > RunningCurrentData.total_steps:
             RunningCurrentData.total_steps = int(num_steps)
-
         # Update number of current steps
         RunningCurrentData.curr_steps = int(num_steps)
 
         # if user is near waypoint, waypoint is considered to have been reached and remove waypoint from route
-        if (
-            waypoint_dist <= self.waypoint_threshold
-            and len(RunningCurrentData.waypoints) > 2
-        ):
+        if waypoint_dist <= self.waypoint_threshold and len(RunningCurrentData.waypoints) > 2:
             _logger.info(INFO_WAYPOINT_REACHED)
             RunningCurrentData.waypoints.pop(1)
         deviation_warning = self.check_deviation(polyline)
 
         if deviation_warning:
             curr_instr = MESSAGE_OFF_ROUTE + curr_instr
-            
         self.send_directions(
             dest_dist,
             dest_dist_str,
@@ -461,18 +445,12 @@ class RunningCoachService(BaseComponent):
         curr_location = Point(RunningCurrentData.curr_lat, RunningCurrentData.curr_lng)
         polyline_line_string = LineString(RunningCurrentData.polyline)
         nearest_point = nearest_points(polyline_line_string, curr_location)[0]
-        distance_from_route = calculate_distance(
-            curr_location.x, curr_location.y, nearest_point.x, nearest_point.y
-        )
+        distance_from_route = calculate_distance(curr_location.x, curr_location.y, nearest_point.x, nearest_point.y)
 
         if distance_from_route > self.deviation_threshold:
             self.deviation_update_count += 1
             deviation_warning = True
-            _logger.warning(
-                warning_deviating_count(
-                    self.deviation_update_count, self.deviation_update_threshold
-                )
-            )
+            _logger.warning(warning_deviating_count(self.deviation_update_count, self.deviation_update_threshold))
             if self.deviation_update_count % self.deviation_update_threshold == 0:
                 # recalculate route
                 RunningCurrentData.polyline = polyline
@@ -482,16 +460,16 @@ class RunningCoachService(BaseComponent):
         return deviation_warning
 
     def send_directions(
-        self,
-        dest_dist,
-        dest_dist_str,
-        dest_duration_str,
-        curr_dist,
-        curr_dist_str,
-        curr_duration_str,
-        curr_instr,
-        curr_direction,
-        deviation_warning,
+            self,
+            dest_dist,
+            dest_dist_str,
+            dest_duration_str,
+            curr_dist,
+            curr_dist_str,
+            curr_duration_str,
+            curr_instr,
+            curr_direction,
+            deviation_warning,
     ):
 
         audio_instr = BaseParams.direction_count % self.audio_direction_freq == 0
@@ -499,9 +477,7 @@ class RunningCoachService(BaseComponent):
         # we set a dest_radius for the user to be considered to have reached destination
         if RunningCurrentData.curr_steps == 1 and dest_dist <= self.dest_threshold:
             _logger.info(info_destination_dist(dest_dist_str))
-            output_data = build_direction_data(
-                curr_instr=MESSAGE_DEST_REACHED, audio_instr=True
-            )
+            output_data = build_direction_data(curr_instr=MESSAGE_DEST_REACHED, audio_instr=True)
 
         elif deviation_warning:
             output_data = build_direction_data(
@@ -515,15 +491,8 @@ class RunningCoachService(BaseComponent):
             )
 
         # check for first and last, always show direction data
-        elif (
-            RunningCurrentData.curr_steps == 1
-            or RunningCurrentData.curr_steps == RunningCurrentData.total_steps
-        ):
-            _logger.info(
-                info_steps_message(
-                    RunningCurrentData.curr_steps, RunningCurrentData.total_steps
-                )
-            )
+        elif RunningCurrentData.curr_steps in (1, RunningCurrentData.total_steps):
+            _logger.info(info_steps_message(RunningCurrentData.curr_steps, RunningCurrentData.total_steps))
             output_data = build_direction_data(
                 dest_dist_str,
                 dest_duration_str,

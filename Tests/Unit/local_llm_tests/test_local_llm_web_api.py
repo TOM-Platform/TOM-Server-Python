@@ -24,12 +24,13 @@ def test_local_llm_web_api_generate_answer(mock_post: MagicMock):
         }
     )
 
+
 @patch('APIs.local_llm.local_llm_web_api.requests.post')
 def test_local_llm_web_api_generate_answer_with_history(mock_post: MagicMock):
     # Set up the mock responses from the llm api
     mock_responses = [
-        MagicMock(json=lambda: "The capital of France is Paris."), # First response
-        MagicMock(json=lambda: 'Your previous question was: "What is the capital of France?"') # Second response
+        MagicMock(json=lambda: "The capital of France is Paris."),  # First response
+        MagicMock(json=lambda: 'Your previous question was: "What is the capital of France?"')  # Second response
     ]
     mock_post.side_effect = mock_responses
 

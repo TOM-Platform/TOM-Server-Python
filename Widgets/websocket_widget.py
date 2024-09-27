@@ -10,18 +10,15 @@ _NO_DATA_SLEEP_SECONDS = 0.05
 
 _logger = logging_utility.setup_logger(__name__)
 
-"""
-Sends a message in the following format (only to components which have been indicated in DataFormat/datatypes.json):
-{
-    "websocket_message": "<protobuf message sent through websocket server, in dictionary format>",
-    "websocket_datatype": "<protobuf datatype key of the websocket_message>"
-}
-"""
-
 
 class WebsocketWidget(BaseComponent):
-    def __init__(self, name) -> None:
-        super().__init__(name)
+    """
+    Sends a message in the following format (only to components which have been indicated in DataFormat/datatypes.json):
+    {
+        "websocket_message": "<protobuf message sent through websocket server, in dictionary format>",
+        "websocket_datatype": "<protobuf datatype key of the websocket_message>"
+    }
+    """
 
     def start(self):
         socket_server.start_server_threaded()

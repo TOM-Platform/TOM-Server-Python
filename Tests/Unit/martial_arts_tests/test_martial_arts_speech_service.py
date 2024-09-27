@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 from Services.martial_arts_service.martial_arts_speech_service import MartialArtsSpeechService
 from Services.martial_arts_service.martial_arts_keys import SPEECH_INPUT_DATA
-from Services.martial_arts_service.voice_commands import SET_DURATION_CMD, SET_INTERVAL_CMD
+from Services.martial_arts_service.martial_arts_voice_commands import SET_DURATION_CMD, SET_INTERVAL_CMD
 from DataFormat.ProtoFiles.Common import speech_data_pb2
 
 
@@ -25,8 +25,7 @@ def test_handle_speech_input_duration(speech_service, mock_martial_arts_service)
 
     # Assert that send_to_component method was called with the correct arguments
     mock_martial_arts_service.send_to_component.assert_called_once_with(
-        websocket_message=speech_data_pb2.SpeechData(
-            voice=SET_DURATION_CMD + ";10"),
+        websocket_message=speech_data_pb2.SpeechData(voice=SET_DURATION_CMD + ";10"),
         websocket_datatype=SPEECH_INPUT_DATA
     )
 
@@ -40,8 +39,7 @@ def test_handle_speech_input_interval(speech_service, mock_martial_arts_service)
 
     # Assert that send_to_component method was called with the correct arguments
     mock_martial_arts_service.send_to_component.assert_called_once_with(
-        websocket_message=speech_data_pb2.SpeechData(
-            voice=SET_INTERVAL_CMD + ";30"),
+        websocket_message=speech_data_pb2.SpeechData(voice=SET_INTERVAL_CMD + ";30"),
         websocket_datatype=SPEECH_INPUT_DATA
     )
 

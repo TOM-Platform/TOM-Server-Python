@@ -40,6 +40,7 @@ TODAY = str(datetime.datetime.now().strftime("%Y-%m-%d"))  # 'yyyy-MM-dd'
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 # return {'client_id': XX, 'client_secret': XX}
 def read_fitbit_credential():
     _logger.info('Reading Fitbit credentials')
@@ -63,13 +64,17 @@ def save_fitbit_token(token):
         with open(FITBIT_TOKEN_FILE, 'w') as outfile:
             json.dump(token, outfile)
     except Exception as e:
-        _logger.error('Failed to save order data: {fitbit_file}, {e_class}', e_class=e.__class__, fitbit_file=FITBIT_TOKEN_FILE)
+        _logger.error('Failed to save order data: {fitbit_file}, {e_class}',
+                      e_class=e.__class__, fitbit_file=FITBIT_TOKEN_FILE)
 
 
-# return {'access_token': XX, 'refresh_token': XX}
 def get_authorize_token(credential):
-    server = Oauth2.OAuth2Server(
-        credential[KEY_CLIENT_ID], credential[KEY_CLIENT_SECRET])
+    '''
+
+    :param credential:
+    :return: {'access_token': XX, 'refresh_token': XX}
+    '''
+    server = Oauth2.OAuth2Server(credential[KEY_CLIENT_ID], credential[KEY_CLIENT_SECRET])
     server.browser_authorize()
     return {KEY_ACCESS_TOKEN: str(server.fitbit.client.session.token['access_token']),
             KEY_REFRESH_TOKEN: str(server.fitbit.client.session.token['refresh_token'])}
@@ -83,8 +88,8 @@ def get_auth_client(credential, token):
 
 # see https://dev.fitbit.com/build/reference/web-api/intraday/get-activity-intraday-by-interval/ for data format
 # date = <yyyy-MM-dd>, type = <DATA_TYPE_...>, detail_level = <DETAIL_LEVEL_...>, time = <HH:mm>,
-def get_json_data(auth_client, date, type, detail_level, start_time=None, end_time=None):
-    return auth_client.intraday_time_series(type, base_date=date, detail_level=detail_level,
+def get_json_data(auth_client, date, data_type, detail_level, start_time=None, end_time=None):
+    return auth_client.intraday_time_series(data_type, base_date=date, detail_level=detail_level,
                                             start_time=start_time, end_time=end_time)
 
 
@@ -95,8 +100,8 @@ def get_json_data(auth_client, date, type, detail_level, start_time=None, end_ti
 #     }
 # ],
 # return 'date' (YYYY-MM-DD), 'count'
-def get_date_and_count(json_data, type):
-    type_key = type.replace("/", "-")
+def get_date_and_count(json_data, data_type):
+    type_key = data_type.replace("/", "-")
     data = json_data[type_key]
     return data['dateTime'], data['value']
 
@@ -116,6 +121,6 @@ def get_date_and_count(json_data, type):
 #             "value": 0
 #         },
 # return data_frame with 'time' and 'value'
-def get_data_frame(json_data, type):
-    type_key = type.replace("/", "-") + "-intraday"
+def get_data_frame(json_data, data_type):
+    type_key = data_type.replace("/", "-") + "-intraday"
     return pd.DataFrame(json_data[type_key]['dataset'])

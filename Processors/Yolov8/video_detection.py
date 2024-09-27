@@ -3,7 +3,7 @@ from ultralytics import YOLO
 import numpy as np
 
 from Utilities import environment_utility
-from .object_detection_counter import ObjectDetectionCounter as ObjectDetectionCounter
+from .object_detection_counter import ObjectDetectionCounter
 
 _YOLO_MODEL = environment_utility.get_env_string("YOLO_MODEL")
 _YOLO_CONFIDENCE_LEVEL = environment_utility.get_env_float("YOLO_CONFIDENCE_LEVEL")
@@ -15,16 +15,19 @@ _YOLO_OBJECT_DETECTION_COUNTER_DURATION = 0
 
 
 class VideoDetection:
+    """
+    This class performs object detection on video frames using YOLO models,  with optional object counting and
+    region-specific detection.
+    """
+
     def __init__(
             self,
             model=_YOLO_MODEL,
             confidence_level=_YOLO_CONFIDENCE_LEVEL,
-            inference=_YOLO_INFERENCE,  # set to False to hide object detection boxes
-            detection_region=_YOLO_DETECTION_REGION,
-            # set to None to detect objects in the whole frame
+            inference=_YOLO_INFERENCE,  # set False, to hide object detection boxes
+            detection_region=_YOLO_DETECTION_REGION,  # set to None to detect objects in the whole frame
             verbose=_YOLO_VERBOSE,  # set to True to show verbose output
-            object_counter_duration=_YOLO_OBJECT_DETECTION_COUNTER_DURATION,
-            # set object detection counter duration 0 to disable
+            object_counter_duration=_YOLO_OBJECT_DETECTION_COUNTER_DURATION,  # set 0 to disable
     ):
 
         self.model = model
@@ -34,8 +37,7 @@ class VideoDetection:
         self.verbose = verbose
 
         if object_counter_duration > 0:
-            self.object_detection_counter = ObjectDetectionCounter(
-                object_counter_duration)
+            self.object_detection_counter = ObjectDetectionCounter(object_counter_duration)
         else:
             self.object_detection_counter = None
 
@@ -60,8 +62,7 @@ class VideoDetection:
         )
 
         #  iou=0.45, max_det=50, verbose=False
-        result = model(frame, agnostic_nms=True,
-                       conf=self.confidenceLevel, verbose=self.verbose)[0]
+        result = model(frame, agnostic_nms=True, conf=self.confidenceLevel, verbose=self.verbose)[0]
 
         # [[bounding_boxes, mask, confidence, class_id, tracker_id]
         detections = sv.Detections.from_yolov8(result)
@@ -69,22 +70,16 @@ class VideoDetection:
         self.class_labels = model.model.names
 
         if self.detection_region is not None:
-            detections = self.get_detection_in_region(
-                detections, self.detection_region)
+            detections = self.get_detection_in_region(detections, self.detection_region)
 
         if self.inference:
-            labels = [f'{self.class_labels[class_id]} {confidence:0.2f}' for _,
-            _, confidence, class_id, _ in detections]
+            labels = [f'{self.class_labels[class_id]} {confidence:0.2f}' for _, _, confidence, class_id, _ in
+                      detections]
 
-            frame = box_annotator.annotate(
-                scene=frame,
-                detections=detections,
-                labels=labels
-            )
+            frame = box_annotator.annotate(scene=frame, detections=detections, labels=labels)
 
         if self.object_detection_counter:
-            self.object_detection_counter.infer_counting(
-                detections, self.class_labels)
+            self.object_detection_counter.infer_counting(detections, self.class_labels)
 
         self.last_detection = detections
 
@@ -107,12 +102,13 @@ class VideoDetection:
         return last_detection
 
     @staticmethod
-    def get_detection_in_region(detections, detection_region, exclude_class_ids=[]):
+    def get_detection_in_region(detections, detection_region, exclude_class_ids=None):
+        if exclude_class_ids is None:
+            exclude_class_ids = []
 
-        # initialize a instance of Detection class with empty values
+        # initialize an instance of Detection class with empty values
         detections_in_specified_region = sv.Detections(xyxy=np.empty((0, 4)), mask=None,
-                                                       confidence=np.empty(
-                                                           (0,)),
+                                                       confidence=np.empty((0,)),
                                                        class_id=np.empty((0,)),
                                                        tracker_id=None)
         # create temporary lists to store the values of xyxy, class_id and confidence of the objects in given region
@@ -128,8 +124,7 @@ class VideoDetection:
             confidence = detections['confidence'][i]
 
             # add to detection_results only if the object is in the specified region and not in exclude_class_ids
-            if class_id not in exclude_class_ids and VideoDetection.intersects(bounding_boxes,
-                                                                               detection_region):
+            if class_id not in exclude_class_ids and VideoDetection.intersects(bounding_boxes, detection_region):
                 tmp_xyxy.append(bounding_boxes)
                 tmp_class_id.append(class_id)
                 tmp_confidence.append(confidence)
@@ -142,8 +137,8 @@ class VideoDetection:
 
     @staticmethod
     def intersects(xyxy, xyxy_bounds):
-        return not (xyxy[2] < xyxy_bounds[0] or xyxy[0] > xyxy_bounds[2] or xyxy[3] < xyxy_bounds[
-            1] or xyxy[1] > xyxy_bounds[3])
+        return not (xyxy[2] < xyxy_bounds[0] or xyxy[0] > xyxy_bounds[2] or xyxy[3] < xyxy_bounds[1]
+                    or xyxy[1] > xyxy_bounds[3])
 
     @staticmethod
     def is_inside(xy, xyxy):

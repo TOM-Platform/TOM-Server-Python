@@ -4,7 +4,8 @@ import base_keys
 from Memory import Memory
 from Utilities import config_utility, endpoint_utility, environment_utility, time_utility, logging_utility, file_utility
 
-from APIs.hololens import hololens_portal
+
+# from APIs.hololens import hololens_portal
 
 
 def _load_environment(env):
@@ -13,7 +14,7 @@ def _load_environment(env):
     env_file = f".env.{env}"
 
     if not file_utility.is_file_exists(env_file):
-        raise Exception(f"The environment file '{env_file}' was not found.")
+        raise FileNotFoundError(f"The environment file '{env_file}' was not found.")
 
     # load ENVIRONMENT variables
     load_dotenv(f".env.{env}")
@@ -50,12 +51,12 @@ def start_processing():
             entry_func = endpoint_utility.get_entry_func_of(component)
             entry_func = getattr(instance, entry_func)
 
-            if (component == base_keys.CAMERA_WIDGET):
+            if component == base_keys.CAMERA_WIDGET:
                 camera_required = entry_func
             else:
                 multiprocessing.Process(target=entry_func).start()
 
-    # camera needs to run in the main thread (due to OpenCV pickle limitations), so it will be started after all others have started
+    # camera needs to run in the main thread (due to OpenCV pickle limitations), so it will be started after all others have started.
     if camera_required is not None:
         camera_required()
 

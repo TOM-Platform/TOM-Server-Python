@@ -1,19 +1,14 @@
-from base_keys import ORIGIN_KEY, WEBSOCKET_WIDGET, WEBSOCKET_MESSAGE, WEBSOCKET_DATATYPE
-from google.protobuf.json_format import MessageToJson
-import pytest
 from unittest.mock import Mock
-from Services.martial_arts_service.martial_arts_service import MartialArtsService
+
+import pytest
+
+from DataFormat.ProtoFiles.MartialArts import ma_end_session_data_pb2
 from Services.martial_arts_service.martial_arts_keys import (
     MA_REQUEST_SEQUENCE_DATA,
-    MA_METRICS_DATA,
-    MA_UPDATE_SESSION_CONFIG_COMMAND,
-    MA_BEGIN_SESSION_COMMAND,
-    MA_END_SESSION_COMMAND,
-    MA_REQUEST_CONFIG_DATA,
-    SPEECH_INPUT_DATA
+    MA_END_SESSION_COMMAND
 )
-
-from DataFormat.ProtoFiles.MartialArts import ma_end_session_data_pb2, ma_metrics_data_pb2
+from Services.martial_arts_service.martial_arts_service import MartialArtsService
+from base_keys import ORIGIN_KEY, WEBSOCKET_WIDGET, WEBSOCKET_MESSAGE, WEBSOCKET_DATATYPE
 
 
 @pytest.fixture

@@ -36,6 +36,7 @@ from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 def test_running_ui_init():
     assert mock_running_ui_service.running_service is None
     assert mock_running_ui_service.name == "RunningUiService"

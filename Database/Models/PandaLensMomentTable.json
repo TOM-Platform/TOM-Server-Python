@@ -1,0 +1,24 @@
+{
+  "table_name": "PandaLensMomentTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "image_filename",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "summary",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "id"
+}

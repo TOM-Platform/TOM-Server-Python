@@ -1,10 +1,15 @@
-from .martial_arts_keys import MA_FEEDBACK_LIVE_DATA
 from DataFormat.ProtoFiles.Common import request_data_pb2
-from . import const
+from .martial_arts_keys import MA_FEEDBACK_LIVE_DATA
+from . import martial_arts_const
 
 
 # Generates feedback for user
 class MartialArtsCoachService:
+    """
+    The MartialArtsCoachService class is responsible for analyzing live data from martial arts sessions and generating
+    real-time feedback for the user.
+    """
+
     def __init__(self, martial_arts_service) -> None:
         self.martial_arts_service = martial_arts_service
         self.feedback_set = set()
@@ -15,7 +20,7 @@ class MartialArtsCoachService:
         self.martial_arts_service.send_to_component(websocket_message=self.request_data,
                                                     websocket_datatype=MA_FEEDBACK_LIVE_DATA)
         self.feedback_set.add(live_feedback)
-        return
+        # return
 
     def analyse_live_data(self, decoded_data) -> str:
         if not decoded_data or not decoded_data.collision_data:
@@ -32,32 +37,35 @@ class MartialArtsCoachService:
         pad_y = pad_position.y
 
         distance_to_target = collision_data.distance_to_target
-        if distance_to_target and distance_to_target > const.DISTANCE_TO_TARGET_FEEDBACK_THRESHOLD:
+        if distance_to_target and distance_to_target > martial_arts_const.DISTANCE_TO_TARGET_FEEDBACK_THRESHOLD:
             horizontal_distance = abs(collision_x - pad_x)
             vertical_distance = abs(collision_y - pad_y)
 
             if horizontal_distance > vertical_distance:
                 if collision_x > pad_x:
-                    return const.PUNCH_LEFT
-                elif collision_x < pad_x:
-                    return const.PUNCH_RIGHT
+                    return martial_arts_const.PUNCH_LEFT
+                if collision_x < pad_x:
+                    return martial_arts_const.PUNCH_RIGHT
             else:
                 if collision_y > pad_y:
-                    return const.PUNCH_LOWER
-                elif collision_y < pad_y:
-                    return const.PUNCH_HIGHER
+                    return martial_arts_const.PUNCH_LOWER
+                if collision_y < pad_y:
+                    return martial_arts_const.PUNCH_HIGHER
 
         angle = collision_data.angle
-        if angle and angle < const.ANGLE_FEEDBACK_THRESHOLD_LOWER or angle > const.ANGLE_FEEDBACK_THRESHOLD_HIGHER:
-            return const.PUNCH_NOT_STRAIGHT
+        if angle and (
+                angle < martial_arts_const.ANGLE_FEEDBACK_THRESHOLD_LOWER or
+                angle > martial_arts_const.ANGLE_FEEDBACK_THRESHOLD_HIGHER
+        ):
+            return martial_arts_const.PUNCH_NOT_STRAIGHT
 
-        return const.GOOD
+        return martial_arts_const.GOOD
 
     def categorize_feedback(self, live_feedback) -> str:
-        if live_feedback == const.GOOD:
-            return const.GOOD_PUNCH
+        if live_feedback == martial_arts_const.GOOD:
+            return martial_arts_const.GOOD_PUNCH
 
-        if live_feedback in const.OFF_TARGET_FEEDBACK:
-            return const.OFF_TARGET
+        if live_feedback in martial_arts_const.OFF_TARGET_FEEDBACK:
+            return martial_arts_const.OFF_TARGET
 
-        return const.BAD_ANGLE
+        return martial_arts_const.BAD_ANGLE

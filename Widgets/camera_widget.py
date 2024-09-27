@@ -5,19 +5,19 @@ from base_component import BaseComponent
 from Utilities.video_stream import VideoStream
 from Utilities import environment_utility, time_utility, file_utility, logging_utility
 
-"""
-Sends the camera frames to the next component
-
-camera_frame: Camera Frame in Numpy Array Format
-camera_frame_width: Width of each frame of the camera_frame
-camera_frame_height: Height of each frame of the camera_frame
-camera_fps: Frames per Seconds (FPS) of each frame of the camera_frame
-"""
-
 _logger = logging_utility.setup_logger(__name__)
 
 
 class CameraWidget(BaseComponent):
+    """
+    Sends the camera frames to the next component
+
+    camera_frame: Camera Frame in Numpy Array Format
+    camera_frame_width: Width of each frame of the camera_frame
+    camera_frame_height: Height of each frame of the camera_frame
+    camera_fps: Frames per Seconds (FPS) of each frame of the camera_frame
+    """
+
     def __init__(self, name) -> None:
         super().__init__(name)
 
@@ -37,12 +37,6 @@ class CameraWidget(BaseComponent):
         _logger.info("Initialising CameraWidget with the following parameters: ")
 
         self.__set_video_source(self.video_path)
-
-    """
-    Note that you cannot directly save camera frames in the database since it is a NumPy Array, which is not supported in SQLAlchemy
-    An alternative would be to serialise it into Json which is accepted
-    Refer to this: https://stackoverflow.com/questions/61370118/storing-arrays-in-database-using-sqlalchemy
-    """
 
     def start(self):
         while self.setup_error:
@@ -73,6 +67,11 @@ class CameraWidget(BaseComponent):
                                       camera_frame_width=frame_width,
                                       camera_frame_height=frame_height,
                                       camera_fps=camera_fps)
+            """
+            Note that you cannot directly save camera frames in the database since it is a NumPy Array, 
+            which is not supported in SQLAlchemy.  An alternative would be to serialise it into Json which is accepted.
+            Refer to this: https://stackoverflow.com/questions/61370118/storing-arrays-in-database-using-sqlalchemy
+            """
 
     def __set_video_source(self, new_video_path):
         _logger.info("Video Path: {path}", path=new_video_path)
@@ -132,7 +131,8 @@ class CameraWidget(BaseComponent):
         try:
             video_path_lower = video_path.lower()
             # Check for RTSP and other streaming protocols or paths
-            if 'rtsp:' in video_path_lower or '/api/holographic/stream' in video_path_lower or 'http:' in video_path_lower or 'https:' in video_path_lower:
+            if ('rtsp:' in video_path_lower or '/api/holographic/stream' in video_path_lower or
+                    'http:' in video_path_lower or 'https:' in video_path_lower):
                 return True
         except (ValueError, AttributeError):
             # In case videoPath.lower() raises an error, indicating that videoPath is not a string
@@ -148,8 +148,7 @@ class CameraWidget(BaseComponent):
         if self.useStream:
             camera_fps = int(self.stream.stream.get(cv2.CAP_PROP_FPS))
             frame_width = int(self.stream.stream.get(cv2.CAP_PROP_FRAME_WIDTH))
-            frame_height = int(self.stream.stream.get(
-                cv2.CAP_PROP_FRAME_HEIGHT))
+            frame_height = int(self.stream.stream.get(cv2.CAP_PROP_FRAME_HEIGHT))
         elif self.useWebcam:
             camera_fps = int(self.capture.get(cv2.CAP_PROP_FPS))
             frame_width = int(self.capture.get(cv2.CAP_PROP_FRAME_WIDTH))

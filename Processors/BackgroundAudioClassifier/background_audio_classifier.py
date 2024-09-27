@@ -1,17 +1,17 @@
 import csv
-from Utilities.audio_utility import to_wav
-from base_component import BaseComponent
-import base_keys
-from Utilities import environment_utility
 import numpy as np
-
 import scipy
-
 import tensorflow as tf
 import tensorflow_hub as hub
 
+from Utilities.audio_utility import to_wav
+from Utilities import environment_utility
+from base_component import BaseComponent
+import base_keys
+
 _YAMNET_MODEL = environment_utility.get_env_string("WHISPER_YAMNET")
 _DEFAULT_SAMPLE_RATE = environment_utility.get_env_int("WHISPER_SAMPLE_RATE")
+
 
 class BackgroundAudioClassifier(BaseComponent):
     """
@@ -20,7 +20,7 @@ class BackgroundAudioClassifier(BaseComponent):
     audio_data: Audio Data in BytesIO format
     audio_context: Audio Context labels in numpy array (e.g. ["Speech", "Music", "Silence", "Small Room"])
     """
-    
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(base_keys.COMPONENT_NOT_STARTED_STATUS)
@@ -67,17 +67,15 @@ class BackgroundAudioClassifier(BaseComponent):
     def get_context(self, raw_data):
         '''
         get context of audio
-        '''
         # read wav
-        '''
-        sr, wav_data = wavfile.read(f, 'rb')
-        sr, wav_data = self.check_rate(sr, wav_data)
+        # sr, wav_data = wavfile.read(f, 'rb')
+        # sr, wav_data = self.check_rate(sr, wav_data)
         '''
         if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
-        
-        # seek(0) is needed because transcribe.py writes the BytesIO audio data to temp file which sets the internal file pointer to the end of the file
-        # this helps to reset the file pointer back to the beginning
+
+        # seek(0) is needed because transcribe.py writes the BytesIO audio data to temp file which sets the internal file pointer to the end of the file.
+        # This helps to reset the file pointer back to the beginning
         raw_data[base_keys.AUDIO_DATA].seek(0)
         wav_data = to_wav(raw_data[base_keys.AUDIO_DATA], _DEFAULT_SAMPLE_RATE)
 
@@ -87,7 +85,6 @@ class BackgroundAudioClassifier(BaseComponent):
         scores, _, _ = self.clf(waveform)
 
         # get top k classes
-        result = np.array(self.labels)[np.argsort(
-            scores.numpy().mean(axis=0))[:: -1][: self.max_results]]
+        result = np.array(self.labels)[np.argsort(scores.numpy().mean(axis=0))[:: -1][: self.max_results]]
 
         super().send_to_component(audio_context=result)

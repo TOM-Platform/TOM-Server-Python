@@ -10,8 +10,8 @@ def generate_answer(user_prompt, system_prompt="You are a friendly chatbot.", te
         "system_prompt": system_prompt,
         "temperature": temperature
     }
-    response = requests.post(url, json=data)
-    return response.json()
+    answer_response = requests.post(url, json=data)
+    return answer_response.json()
 
 
 def generate_answer_with_history(user_prompt, system_prompt="You are a friendly chatbot.", session_id=None,
@@ -23,12 +23,12 @@ def generate_answer_with_history(user_prompt, system_prompt="You are a friendly 
         "session_id": session_id,
         "temperature": temperature
     }
-    response = requests.post(url, json=data)
-    return response.json()
+    answer_with_history_response = requests.post(url, json=data)
+    return answer_with_history_response.json()
 
 
 if __name__ == "__main__":
     _user_prompt = "What is the capital of France?"
     _system_prompt = "You are a friendly chatbot."
-    response = generate_answer_with_history(_user_prompt, _system_prompt)
-    print(response)
+    result = generate_answer_with_history(_user_prompt, _system_prompt)
+    print(result)

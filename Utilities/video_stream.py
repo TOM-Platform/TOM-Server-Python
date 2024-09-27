@@ -2,20 +2,22 @@
 
 # source: https://github.com/Interactions-HSG/21-MT-JanickSpirig-HoloLens-ObjectDetection/blob/master/modules/YoloModule/app/VideoStream.py
 
-from __future__ import absolute_import
 
+from __future__ import absolute_import
 from threading import Thread
-import cv2
 from queue import Queue
+import cv2
 from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
 
 
-# This class reads all the video frames in a separate thread and always has the keeps only the latest frame in its queue to be grabbed by another thread
-
-
 class VideoStream:
+    """
+    This class reads all the video frames in a separate thread and always has the keeps only the latest frame in its
+    queue to be grabbed by another thread
+    """
+
     def __init__(self, path, queueSize=3):
         _logger.info("=======================\r\nVideoStream::__init__()")
         self.stream = cv2.VideoCapture(path)

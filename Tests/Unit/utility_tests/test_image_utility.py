@@ -19,28 +19,34 @@ from Utilities.image_utility import (
     get_base64_image
 )
 
+
 @pytest.fixture
 def sample_image_red_100() -> Image:
     return Image.new('RGB', (100, 100), color=(255, 0, 0))
+
 
 @pytest.fixture
 def sample_image_red_200() -> Image:
     return Image.new('RGB', (200, 200), color=(255, 0, 0))
 
+
 @pytest.fixture
 def sample_image_blue_100() -> Image:
     return Image.new('RGB', (100, 100), color=(0, 0, 255))
+
 
 @pytest.fixture
 def sample_image_blue_200() -> Image:
     return Image.new('RGB', (200, 200), color=(0, 0, 255))
 
+
 @pytest.fixture
 def sample_opencv_frame() -> np.ndarray:
     return np.zeros((100, 100, 3), dtype=np.uint8)
 
-def test_get_similarity_images(sample_image_red_100: Image, sample_image_blue_100: Image, sample_image_red_200:Image, sample_image_blue_200: Image):
-    
+
+def test_get_similarity_images(sample_image_red_100: Image, sample_image_blue_100: Image, sample_image_red_200: Image,
+                               sample_image_blue_200: Image):
     # For the same image (same colour and size), similarity should be 1
     similarity: float = get_similarity_images(sample_image_red_100, sample_image_red_100, 0)
     assert similarity == 1
@@ -57,11 +63,13 @@ def test_get_similarity_images(sample_image_red_100: Image, sample_image_blue_10
     similarity: float = get_similarity_images(sample_image_red_100, sample_image_blue_200, 0)
     assert similarity == 0
 
+
 def test_get_pixel_diff():
     pixel1: tuple = (255, 0, 0)
     pixel2: tuple = (0, 0, 255)
     euclid_dist: float = np.sqrt(np.sum((np.array(pixel1) - np.array(pixel2)) ** 2))
     assert get_pixel_diff(pixel1, pixel2) == euclid_dist
+
 
 def test_get_cropped_frame(sample_opencv_frame: np.ndarray):
     # Get a valid 10 x 10 frame from the sample frame
@@ -72,6 +80,7 @@ def test_get_cropped_frame(sample_opencv_frame: np.ndarray):
     cropped_frame: np.ndarray = get_cropped_frame(sample_opencv_frame, 300, 300, 200, 200)
     assert cropped_frame.shape == (0, 0, 3)
 
+
 # Create a mock file object to read from
 @patch('builtins.open', new_callable=mock_open, read_data=b'image data')
 def test_read_image_file_bytes(mock_file: mock_open):
@@ -81,9 +90,9 @@ def test_read_image_file_bytes(mock_file: mock_open):
     assert result == b'image data'
     mock_file.assert_called_once_with('test.jpg', 'rb')
 
+
 @patch('requests.get')
 def test_read_image_url_bytes(mock_get: requests.get):
-
     # Create a mock response object to read from
     mock_response = requests.Response()
     mock_response.status_code = 200
@@ -96,12 +105,14 @@ def test_read_image_url_bytes(mock_get: requests.get):
     assert result == b'image data'
     mock_get.assert_called_once_with('http://example.com/image.jpg')
 
+
 def test_get_png_image_bytes(sample_opencv_frame: np.ndarray):
     result: bytes = get_png_image_bytes(sample_opencv_frame)
 
     # Check if the result is bytes of a PNG image
     assert isinstance(result, bytes)
     assert result.startswith(b'\x89PNG')
+
 
 # Create a mock image file object to write to
 @patch('cv2.imwrite')
@@ -111,6 +122,7 @@ def test_save_image(mock_imwrite: cv2.imwrite, sample_opencv_frame: np.ndarray):
 
     # Check if the image was saved correctly
     mock_imwrite.assert_called_once_with('test.png', sample_opencv_frame)
+
 
 # Create a mock file object to write to
 @patch('builtins.open', new_callable=mock_open)
@@ -122,8 +134,8 @@ def test_save_image_bytes(mock_file: mock_open):
     mock_file.assert_called_once_with('test.png', 'wb')
     mock_file().write.assert_called_once_with(b'image data')
 
-def test_get_base64_image(sample_image_red_100: Image):
 
+def test_get_base64_image(sample_image_red_100: Image):
     mock_image: Image = sample_image_red_100
 
     # Convert image to bytes

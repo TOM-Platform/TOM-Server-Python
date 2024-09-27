@@ -58,13 +58,12 @@ def save_real_running_data(running_coach_service, decoded_data):
     RunningCurrentData.avg_speed = -1.0
     if RunningCurrentData.curr_distance != 0:
         RunningCurrentData.avg_speed = (
-            BaseParams.total_sec / 60
-        ) / RunningCurrentData.curr_distance
+                                               BaseParams.total_sec / 60
+                                       ) / RunningCurrentData.curr_distance
     RunningCurrentData.bearing = decoded_data["bearing"]
     if not (decoded_data["curr_lat"] == 0.0 and decoded_data["curr_lng"] == 0.0):
         RunningCurrentData.curr_lat = decoded_data["curr_lat"]
         RunningCurrentData.curr_lng = decoded_data["curr_lng"]
-    
     json_data = {
         "start_time": RunningCurrentData.start_time,
         "calories": RunningCurrentData.curr_calories,
@@ -105,9 +104,9 @@ def save_real_coords(threshold_distance=RunningServiceConfig.threshold_coords_di
 def save_training_mode_data(decoded_data):
     try:
         BaseParams.training_mode = RunningTrainingMode[decoded_data["detail"]]
-    except KeyError:
-        raise UnsupportedTrainingModeException(decoded_data["detail"])
-    
+    except KeyError as exc:
+        raise UnsupportedTrainingModeException(decoded_data["detail"]) from exc
+
 
 def save_direction_data(running_coach_service, direction_data):
     json_data = {
@@ -142,12 +141,12 @@ def save_running_camera_data(running_coach_service, decoded_data):
 
 
 def build_running_live_data(
-    distance=None,
-    heart_rate=None,
-    speed=None,
-    calories=None,
-    duration=None,
-    include_time=None,
+        distance=None,
+        heart_rate=None,
+        speed=None,
+        calories=None,
+        duration=None,
+        include_time=None,
 ):
     running_live_data_proto = running_live_data_pb2.RunningLiveData()
 
@@ -192,20 +191,23 @@ def build_running_live_unit(distance="", heart_rate="", speed="", duration="", t
 
 def build_running_alert(speed=None, distance=None, instruction=None, audio_instr=None):
     running_live_alert_proto = running_live_data_pb2.RunningLiveData(
-        speed=speed, distance=distance, instruction=instruction, audio_instr=audio_instr
+        speed=speed,
+        distance=distance,
+        instruction=instruction,
+        audio_instr=audio_instr
     )
 
     return running_live_alert_proto
 
 
 def build_direction_data(
-    dest_dist_str=None,
-    dest_duration_str=None,
-    curr_dist_str=None,
-    curr_duration_str=None,
-    curr_instr=None,
-    curr_direction=None,
-    audio_instr=None,
+        dest_dist_str=None,
+        dest_duration_str=None,
+        curr_dist_str=None,
+        curr_duration_str=None,
+        curr_instr=None,
+        curr_direction=None,
+        audio_instr=None,
 ):
     direction_data_proto = direction_data_pb2.DirectionData()
 
@@ -234,14 +236,14 @@ def build_direction_data(
 
 
 def build_running_summary_data(
-    exercise_type,
-    start_place,
-    start_time_string,
-    distance,
-    speed,
-    duration,
-    image,
-    include_time=None,
+        exercise_type,
+        start_place,
+        start_time_string,
+        distance,
+        speed,
+        duration,
+        image,
+        include_time=None,
 ):
     speed_value = "N/A"
     # default value of speed in protobuf is -1, if speed has not been recorded by server
@@ -335,15 +337,16 @@ def build_running_target_data(distance=None, speed=None, training_mode=None):
 
 
 def build_running_place_data(
-    place_id=None,
-    facility=None,
-    location=None,
-    level=None,
-    distance=None,
-    position=None,
+        place_id=None,
+        facility=None,
+        location=None,
+        level=None,
+        distance=None,
+        position=None,
 ):
     if distance is not None:
         distance = f"{distance}M"
+
     running_place_data_proto = running_place_data_pb2.RunningPlaceData(
         place_id=place_id,
         facility=facility,
@@ -368,11 +371,11 @@ def get_chosen_route_id(decoded_data):
                 f"Route id {decoded_data['detail']} out of range.",
             )
         return int(decoded_data["detail"])
-    except ValueError:
+    except ValueError as exc:
         raise InvalidRouteIdException(
             decoded_data["detail"],
             f"Cannot parse route id {decoded_data['detail']} as int.",
-        )
+        ) from exc
 
 
 def get_directions(start_time, training_route, bearing, option, ors_option=0):

@@ -15,7 +15,7 @@ processing:
   - name: "emotionClassifier"
     entrypoint: "EmotionClassifier.emotion_classifier.EmotionClassifier.analyse_emotion"
     exitpoint: ""
-    next: 
+    next:
       - "service:audioTesting"
   - name: "backgroundAudioClassifier"
     entrypoint: "BackgroundAudioClassifier.background_audio_classifier.BackgroundAudioClassifier.get_context"

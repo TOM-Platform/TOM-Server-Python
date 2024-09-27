@@ -23,7 +23,8 @@ def test_generate_next_sequence_not_empty_pool(sequence_service, mock_martial_ar
 
     # Assert that send_to_component method was called with the correct arguments
     mock_martial_arts_service.send_to_component.assert_called_once_with(
-        websocket_message="sequence1", websocket_data_type=MA_SEQUENCE_DATA
+        websocket_message="sequence1",
+        websocket_data_type=MA_SEQUENCE_DATA
     )
 
 
@@ -50,10 +51,7 @@ def test_generate_next_sequence_multiple_calls(sequence_service, mock_martial_ar
 
     # Assert that send_to_component method was called three times with different sequences
     mock_martial_arts_service.send_to_component.assert_has_calls([
-        call(websocket_message="sequence1",
-             websocket_data_type=MA_SEQUENCE_DATA),
-        call(websocket_message="sequence1",
-             websocket_data_type=MA_SEQUENCE_DATA),
-        call(websocket_message="sequence1",
-             websocket_data_type=MA_SEQUENCE_DATA),
+        call(websocket_message="sequence1", websocket_data_type=MA_SEQUENCE_DATA),
+        call(websocket_message="sequence1", websocket_data_type=MA_SEQUENCE_DATA),
+        call(websocket_message="sequence1", websocket_data_type=MA_SEQUENCE_DATA),
     ], any_order=True)

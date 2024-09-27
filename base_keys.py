@@ -5,8 +5,6 @@ The format for each constant is as follows:
 <Name>_<Type> = "<keyname>"
 '''
 
-
-
 ############# DO NOT CHANGE the values, but feel free to add new ones #############
 
 
@@ -17,20 +15,22 @@ The format for each constant is as follows:
 WEBSOCKET_WIDGET = "input:websocket"
 AUDIO_WIDGET = "input:audio"
 CAMERA_WIDGET = "input:camera"
+
 YOLOV8_PROCESSOR = "processing:yolov8"
 AUDIO_CONTEXT_PROCESSOR = "processing:audioContext"
 WHISPER_PROCESSOR = "processing:whisper"
+
 LEARNING_SERVICE = "service:learning"
 RUNNING_SERVICE = "service:running"
 MARTIAL_ARTS_SERVICE = "service:martial_arts"
 RUNNING_DEMO_SERVICE = "service:runningDemo"
 CONTEXT_SERVICE = "service:context"
+DASHBOARD_SERVICE = "service:dashboardService"
+
 WEBSOCKET_OUTPUT = "output:websocket"
 
-
-
 ##############################################################################################################
-# Component Statuses, to indicate the current status for each component 
+# Component Statuses, to indicate the current status for each component
 ##############################################################################################################
 
 # NOTE: Component Status
@@ -38,8 +38,6 @@ MEMORY_COMPONENT_STATUS_KEY = "component_status"
 COMPONENT_IS_RUNNING_STATUS = "COMPONENT_IS_RUNNING_STATUS"
 COMPONENT_IS_STOPPED_STATUS = "COMPONENT_IS_STOPPED_STATUS"
 COMPONENT_NOT_STARTED_STATUS = "COMPONENT_NOT_STARTED_STATUS"
-
-
 
 ##############################################################################################################
 # keys to parse data between components, which are the parameters of the `send_to_component` function
@@ -65,6 +63,7 @@ WEBSOCKET_MESSAGE = "websocket_message"
 WEBSOCKET_CLIENT_TYPE = "websocket_client_type"
 UNITY_CLIENT = "unity"
 WEAROS_CLIENT = "wearOS"
+DASHBOARD_CLIENT = "dashboard"
 
 # NOTE: Camera
 CAMERA_FRAME = "camera_frame"
@@ -76,8 +75,6 @@ CAMERA_FPS = "camera_fps"
 YOLOV8_LAST_DETECTION = "last_detection"
 YOLOV8_CLASS_LABELS = "class_labels"
 YOLOV8_FRAME = "yolo_frame"
-
-
 
 ##############################################################################################################
 # keys identify values defined at environment variables
@@ -111,4 +108,3 @@ GEMINI_CREDENTIAL_FILE_KEY_NAME = "GEMINI_CREDENTIAL_FILE"
 ANTHROPIC_CREDENTIAL_FILE_KEY_NAME = "ANTHROPIC_CREDENTIAL_FILE"
 ORS_CREDENTIAL_FILE_KEY_NAME = "ORS_CREDENTIAL_FILE"
 GEOAPIFY_CREDENTIAL_FILE_KEY_NAME = "GEOAPIFY_CREDENTIAL_FILE"
-

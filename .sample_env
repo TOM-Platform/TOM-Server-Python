@@ -22,6 +22,11 @@ DATABASE_URL = "sqlite:///Database"
 MODELS_FILE_PATH = "./Database/Models"
 MODELS_FILE_EXT = ".json"
 
+#NOTE: Web Dashboard
+WEB_DASHBOARD_SERVER_URL = "0.0.0.0"
+WEB_DASHBOARD_SERVER_PORT = 8095
+WEB_DASHBOARD_API_ROUTERS = APIs.web_dashboard.modules.martial_arts.router.martial_arts_router,APIs.web_dashboard.modules.running_coach.router.running_coach_router
+
 #NOTE: Credentials
 HOLOLENS_CREDENTIAL_FILE = "hololens_credential.json"
 FITBIT_CREDENTIAL_FILE = "fitbit_credential.json"

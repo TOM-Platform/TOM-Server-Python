@@ -1,12 +1,10 @@
 import os
 from os import remove
-
 import pytest
-
+from Database import database, tables
 from Tests.Integration.test_db_util import set_test_db_environ, get_integration_path
 
 set_test_db_environ()
-from Database import database, tables
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -28,9 +26,7 @@ def test_insert_data_if_not_exists():
     tables.insert_rows_to_table("TestTable", test_insert_data)
     result = tables.get_rows_from_table("TestTable", {}).all()
 
-    expected = [
-        (1, 10, "Something")
-    ]
+    expected = [(1, 10, "Something")]
     assert result == expected
 
 
@@ -45,4 +41,18 @@ def test_insert_data_if_exists_and_unique_constraint():
 
 def test_get_data_if_not_exists():
     result = tables.get_rows_from_table("OtherTable", {"string_value": "Something"}).all()
+    assert result == []
+
+
+def test_delete_all_rows_from_table():
+    rows_deleted = tables.delete_all_rows_from_table("TestTable")
+    assert rows_deleted == 1  # update this if more rows are added to TestTable in prev test cases
+    result = tables.get_rows_from_table("TestTable", {}).all()
+    assert result == []
+
+
+def test_delete_all_rows_from_empty_table():
+    rows_deleted = tables.delete_all_rows_from_table("TestTable")
+    assert rows_deleted == 0
+    result = tables.get_rows_from_table("TestTable", {}).all()
     assert result == []

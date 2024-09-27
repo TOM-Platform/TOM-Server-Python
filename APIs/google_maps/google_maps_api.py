@@ -6,11 +6,11 @@ import json
 import math
 import re
 import time
-
+from io import BytesIO
 import googlemaps
 import requests
 from googlemaps.maps import StaticMapPath, StaticMapMarker
-
+from PIL import Image
 import base_keys
 from APIs.maps.direction_data import DirectionData
 from APIs.maps.location_data import LocationData
@@ -18,8 +18,6 @@ from APIs.maps.map_style import google_map_style
 from APIs.maps.maps_util import calculate_bearing_after, calculate_turn_angle
 from Utilities import file_utility, logging_utility
 from Utilities.file_utility import get_credentials_file_path
-from io import BytesIO
-from PIL import Image
 
 GOOGLE_MAPS_CREDENTIAL_FILE = get_credentials_file_path(base_keys.GOOGLE_MAPS_CREDENTIAL_FILE_KEY_NAME)
 KEY_MAP_API = 'map_api_key'
@@ -28,26 +26,26 @@ GOOGLE_MAP_BASE_STATIC_MAP_URL = "https://maps.googleapis.com/maps/api/staticmap
 _logger = logging_utility.setup_logger(__name__)
 
 
-# return {"map_api_key": "YYY"}
-
-
 def read_google_maps_credential():
+    '''
+
+    :return: {"map_api_key": "YYY"}
+    '''
     _logger.info('Reading Google Maps credentials')
     return file_utility.read_json_file(GOOGLE_MAPS_CREDENTIAL_FILE)
 
 
 _credential = None
-client = None
+_client = None
 
 
 def get_google_maps_credential(key, credential=None):
     global _credential
 
-    if credential is not None:
-        __credential = credential
-
-    if _credential is None:
+    if credential is None:
         _credential = read_google_maps_credential()
+    else:
+        _credential = credential
 
     return _credential[key]
 
@@ -58,13 +56,15 @@ def get_google_client():
 
 # example of search_text can be like "The Deck, Singapore"
 async def find_locations_google(search_text, location=None):
-    global client
-    if client is None:
-        client = get_google_client()
+    global _client
+    if _client is None:
+        _client = get_google_client()
+
     params = {"query": search_text}
     if location is not None:
         params["location"] = location
-    response = client.places(**params)
+
+    response = _client.places(**params)
     ''' example of successful response:
     {
       'html_attributions': [],
@@ -134,15 +134,15 @@ async def find_locations_google(search_text, location=None):
 
 
 async def find_directions_google(start_time, coordinates, bearing):
-    global client
-    if client is None:
-        client = get_google_client()
+    global _client
+    if _client is None:
+        _client = get_google_client()
 
     src = coordinates[0]
     dest = coordinates[-1]
     waypoints = coordinates[1:-1]
 
-    response = client.directions(
+    response = _client.directions(
         origin=src,
         destination=dest,
         waypoints=waypoints,
@@ -187,7 +187,7 @@ async def find_directions_google(start_time, coordinates, bearing):
                             "text": "2 mins",
                             "value": 97 // in seconds
                         },
-                        "end_address": "Computing Dr, Singapore", "end_address": "21 Heng Mui Keng Terrace, Singapore 119613",
+                        "end_address": "21 Heng Mui Keng Terrace, Singapore 119613",
                         "end_location": {
                             "lat": 1.2924741,
                             "lng": 103.7759714
@@ -212,7 +212,8 @@ async def find_directions_google(start_time, coordinates, bearing):
                                     "lat": 1.292,
                                     "lng": 103.7761646
                                 },
-                                "html_instructions": "Head <b>east</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
+                                "html_instructions": /
+                                "Head <b>east</b><div style=\"font-size:0.9em\">Restricted usage road</div>",
                                 // encoded route line on map
                                 "polyline": {
                                     "points": "qj{FgvkxRDSJc@"
@@ -292,22 +293,18 @@ async def find_directions_google(start_time, coordinates, bearing):
 
 
 async def find_static_maps_google_default(coordinates, size):
-    global client
-    if client is None:
-        client = get_google_client()
+    global _client
+    if _client is None:
+        _client = get_google_client()
 
-    path = StaticMapPath(
-        points=coordinates,
-        weight=3,
-        color="red"
-    )
+    path = StaticMapPath(points=coordinates, weight=3, color="red")
 
     markers = [StaticMapMarker(locations=coordinates[0], color="blue")]
     if len(coordinates) > 1:
         markers.append(StaticMapMarker(locations=coordinates[-1], color="red"))
 
     # successful response just returns the image of origin to destination encoded as bytes
-    response = client.static_map(size=size, path=path, format="jpg", markers=markers)
+    response = _client.static_map(size=size, path=path, format="jpg", markers=markers)
     static_map_bytes = b"".join(response)
 
     # Uncomment to save image in a jpg file
@@ -323,8 +320,7 @@ async def find_static_maps_google(coordinates, size):
     api_key = get_google_maps_credential(KEY_MAP_API)
     size_str = f"&size={size[0]}x{size[1]}"
 
-    path = "&path=color:0xff0000ff|weight:3|" + \
-           "|".join([f"{lat},{lng}" for lat, lng in coordinates])
+    path = "&path=color:0xff0000ff|weight:3|" + "|".join([f"{lat},{lng}" for lat, lng in coordinates])
     # arrow_icon = "https://maps.google.com/mapfiles/dir_0.png"  # Replace with your custom arrow icon URL
     # # Add arrows every 15 coordinates
     # for i, (lat, lng) in enumerate(coordinates):
@@ -351,9 +347,8 @@ async def find_static_maps_google(coordinates, size):
         image = Image.open(BytesIO(static_map_bytes))
         image.show()
         # image.save("static_map_1.jpeg", format="JPEG", quality=100)
-
         return static_map_bytes
-    else:
-        error_data = json.loads(response.content)
-        error_message = error_data.get("message", "Unknown error")
-        raise Exception(error_message)
+
+    error_data = json.loads(response.content)
+    error_message = error_data.get("message", "Unknown error")
+    raise Exception(error_message)

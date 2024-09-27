@@ -27,6 +27,10 @@ credential
 **/valid/images/*
 **/test/images/*
 
+# Pandalens personal files
+Services/pandalens_service/Images
+Services/pandalens_service/Blogs
+
 # System Files
 .DS_Store
 **.DS_Store

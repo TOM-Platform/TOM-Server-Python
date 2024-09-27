@@ -1,7 +1,6 @@
 from os import listdir, getcwd
 from Utilities import file_utility, logging_utility
 
-
 configuration = {}
 
 CFG_TYPES = ["input", "processing", "service", "output"]
@@ -18,6 +17,7 @@ BASE_CONFIGURATION_COMPONENT_NAME_KEY = "name"
 BASE_CONFIGURATION_COMPONENT_SUBSCRIBER_KEY = "next"
 
 _logger = logging_utility.setup_logger(__name__)
+
 
 def parse_all_config():
     config_files = [f for f in listdir(
@@ -49,8 +49,8 @@ def parse_config(cfg, cfg_type, filename):
             add_entrypoint_to_configuration(component, cfg_key)
             add_exitpoint_to_configuration(component, cfg_key)
             add_pipe_to_configuration(component, cfg_key)
-    except:
-        raise Exception(f"Error parsing Configuration File : {filename}")
+    except Exception as exc:
+        raise Exception(f"Error parsing Configuration File: {filename}") from exc
 
 
 def add_channel_to_configuration(channel_name):
@@ -60,8 +60,8 @@ def add_channel_to_configuration(channel_name):
 
 def add_entrypoint_to_configuration(component, cfg_key):
     if BASE_CONFIGURATION_ENTRYPOINT_KEY not in component:
-        error_msg = f"{BASE_CONFIGURATION_ENTRYPOINT_KEY} not in {component}, unable to save {BASE_CONFIGURATION_ENTRYPOINT_KEY}"
-
+        error_msg = (f"{BASE_CONFIGURATION_ENTRYPOINT_KEY} not in {component}, "
+                     f"unable to save {BASE_CONFIGURATION_ENTRYPOINT_KEY}")
         _logger.error(error_msg)
         raise Exception(error_msg)
 
@@ -71,7 +71,8 @@ def add_entrypoint_to_configuration(component, cfg_key):
 
 def add_exitpoint_to_configuration(component, cfg_key):
     if BASE_CONFIGURATION_EXITPOINT_KEY not in component:
-        _logger.warning("{cfg_key} not in {component}, unable to save {cfg_key}", cfg_key=BASE_CONFIGURATION_EXITPOINT_KEY, component=component)
+        _logger.warning("{cfg_key} not in {component}, unable to save {cfg_key}",
+                        cfg_key=BASE_CONFIGURATION_EXITPOINT_KEY, component=component)
         return
 
     if cfg_key not in configuration[CONFIGURATION_CHANNELS_EXITPOINTS_KEY]:

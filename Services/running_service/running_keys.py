@@ -1,9 +1,9 @@
+from DataFormat import datatypes_helper
 from Services.running_service.running_current_data import RunningCurrentData
 from Services.running_service.running_service_params import (
     BaseParams,
     DistanceTrainingParams,
 )
-from DataFormat import datatypes_helper
 from Services.running_service.running_training_mode import RunningTrainingMode
 
 # Table names
@@ -94,7 +94,6 @@ MESSAGE_SLOW_DOWN = "Slow down!"
 MESSAGE_OFF_ROUTE = "You are off route!\n"
 MESSAGE_DEST_REACHED = "Destination Reached!"
 DIRECTION_STRAIGHT = "straight"
-
 
 # generate_random_routes in maps.py
 RUNNING_DIFFICULTY_LEVELS = ["Easy", "Medium", "Hard"]

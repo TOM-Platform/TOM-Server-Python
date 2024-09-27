@@ -1,15 +1,18 @@
+import re
 from DataFormat.ProtoFiles.Common import speech_data_pb2
-from .voice_commands import (
+from .martial_arts_voice_commands import (
     SET_DURATION_INPUT,
     SET_INTERVAL_INPUT,
     SET_DURATION_CMD,
     SET_INTERVAL_CMD,
 )
 from .martial_arts_keys import SPEECH_INPUT_DATA
-import re
 
 
 class MartialArtsSpeechService:
+    """
+    Handles speech input parsing and sends processed data to the martial arts service.
+    """
     digit_pattern = r'(\d+(\.\d)?)'
 
     def __init__(self, martial_arts_service) -> None:
@@ -30,19 +33,17 @@ class MartialArtsSpeechService:
     def parse_speech_input(self, speech_input_data) -> list:
         if SET_DURATION_INPUT in speech_input_data:
             idx = speech_input_data.find(SET_DURATION_INPUT)
-            duration = self.parse_number(
-                speech_input_data[idx + len(SET_DURATION_INPUT):])
+            duration = self.parse_number(speech_input_data[idx + len(SET_DURATION_INPUT):])
             return [SET_DURATION_CMD, str(duration)]
 
         if SET_INTERVAL_INPUT in speech_input_data:
             idx = speech_input_data.find(SET_INTERVAL_INPUT)
-            interval = self.parse_number(
-                speech_input_data[idx + len(SET_INTERVAL_INPUT):])
+            interval = self.parse_number(speech_input_data[idx + len(SET_INTERVAL_INPUT):])
             return [SET_INTERVAL_CMD, str(interval)]
         return []
 
     def parse_number(self, string) -> str:
         matches = re.findall(self.digit_pattern, string)
         if not matches or len(matches) == 0:
-            return None
+            return ""
         return matches[0][0]

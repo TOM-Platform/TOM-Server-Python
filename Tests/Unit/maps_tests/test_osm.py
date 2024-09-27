@@ -3,7 +3,6 @@ import pytest
 from APIs.maps.location_data import LocationData
 from APIs.maps.maps import get_locations
 from APIs.osm_api import osm_api
-from APIs.osm_api.osm_api import find_locations_osm
 from base_keys import PLACES_OPTION_OSM
 
 locations_sample_response_osm = [LocationData(address='Marina Bay Sands, 10, Bayfront Avenue, Bayfront, '

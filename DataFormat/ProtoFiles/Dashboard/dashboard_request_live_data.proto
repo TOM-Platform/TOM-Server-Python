@@ -1,0 +1,6 @@
+syntax = "proto2";
+
+message DashboardRequestLiveData {
+  required int32 request_id = 1;
+  required string request_status = 2;
+}

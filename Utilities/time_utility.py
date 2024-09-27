@@ -32,12 +32,12 @@ def sleep_milliseconds(milliseconds=1):
     time.sleep(milliseconds / 1000)
 
 
-def get_date_string(format="%Y%m%d"):
-    return time.strftime(format)
+def get_date_string(fmt="%Y%m%d"):
+    return time.strftime(fmt)
 
 
-def get_time_string(format="%H:%M:%S"):
-    return time.strftime(format)
+def get_time_string(fmt="%H:%M:%S"):
+    return time.strftime(fmt)
 
 
 # return date_time object
@@ -45,11 +45,11 @@ def get_date_time_now():
     return datetime.now()
 
 
-def get_date_time_diff_string(date_time1, date_time2, format="%H:%M:%S"):
+def get_date_time_diff_string(date_time1, date_time2, fmt="%H:%M:%S"):
     delta = date_time1 - date_time2
     hours, remainder = divmod(delta.seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
-    return format.replace("%H", f"{hours:02d}").replace("%M", f"{minutes:02d}").replace("%S", f"{seconds:02d}")
+    return fmt.replace("%H", f"{hours:02d}").replace("%M", f"{minutes:02d}").replace("%S", f"{seconds:02d}")
 
 
 def get_iso_date_time_str():

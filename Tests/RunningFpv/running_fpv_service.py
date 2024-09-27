@@ -8,7 +8,13 @@ from base_keys import FPV_OPTION
 _FPV_OPTION = environment_utility.get_env_int(FPV_OPTION)
 _logger = logging_utility.setup_logger(__name__)
 
+
 class RunningFpvService:
+    """
+    RunningFpvService is responsible for managing the video playback 
+    during the running FPV simulation. It adjusts the video speed based on the treadmill speed.
+    """
+
     def __init__(self):
         self.video_path = self.get_video_path()
         self.media_player = vlc.MediaPlayer()
@@ -17,18 +23,17 @@ class RunningFpvService:
         self.treadmill_speed = 0
         # current video playback speed
         self.playback_speed = 0
-        
+
     def get_video_path(self):
         if _FPV_OPTION == 1:
             return os.path.join("Tests", "RunningFpv", "fpv_short.mp4")
         return os.path.join("Tests", "RunningFpv", "fpv.mp4")
 
-
     def get_current_time(self):
         try:
             return self.media_player.get_time()
         except Exception as e:
-            _logger.error("Error occurred while getting current time: {exc}", exc = str(e))
+            _logger.error("Error occurred while getting current time: {exc}", exc=str(e))
             sys.exit(1)
 
     def set_treadmill_speed(self, new_speed):
@@ -42,7 +47,7 @@ class RunningFpvService:
                 self.media_player.play()
         except ZeroDivisionError:
             _logger.info("Treadmill speed is currently set to 0.")
-            if (self.media_player.is_playing() == 1):
+            if self.media_player.is_playing() == 1:
                 self.playback_speed = 0
                 self.media_player.pause()
 

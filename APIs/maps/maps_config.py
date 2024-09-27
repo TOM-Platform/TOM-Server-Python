@@ -2,9 +2,11 @@ import random
 
 
 class MapsConfig:
+    """
     # generate_random_routes()
     # starting from 0 degrees, incrementally increase angle by 45 degrees until 360 degrees
     # only consider points within {angle_increment} degrees of bearing
+    """
     angle_increment = 45
     # further divide into sectors, pick one point from each sector
     sectors = 3

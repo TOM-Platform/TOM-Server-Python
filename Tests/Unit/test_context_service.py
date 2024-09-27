@@ -1,7 +1,6 @@
-import pytest
-
-from os import environ
 from unittest import mock
+
+import pytest
 
 from Tests.Integration.test_db_util import set_test_db_environ
 
@@ -19,6 +18,7 @@ class MockClass:
 
     def mock_func(self):
         pass
+
 
 component_instance = MockClass
 
@@ -41,7 +41,7 @@ def setup():
     }
 
     Memory.init()
-    Memory.update_shared_memory_item(base_keys.MEMORY_COMPONENT_STATUS_KEY, {}) # Initialise with an empty dictionary
+    Memory.update_shared_memory_item(base_keys.MEMORY_COMPONENT_STATUS_KEY, {})  # Initialise with an empty dictionary
 
 
 @pytest.fixture(autouse=True)
@@ -49,13 +49,14 @@ def teardown():
     # Reset Memory data
     Memory._memory = None
     Memory.init()
-    Memory.update_shared_memory_item(base_keys.MEMORY_COMPONENT_STATUS_KEY, {}) # Initialise with an empty dictionary
+    Memory.update_shared_memory_item(base_keys.MEMORY_COMPONENT_STATUS_KEY, {})  # Initialise with an empty dictionary
 
 
 def test_run_with_no_errors():
     context_service = ContextService("name")
 
-    with mock.patch("Utilities.endpoint_utility.get_component_instance", mock.MagicMock(return_value=component_instance)):
+    with mock.patch("Utilities.endpoint_utility.get_component_instance",
+                    mock.MagicMock(return_value=component_instance)):
         with mock.patch("Utilities.endpoint_utility.get_entry_func_of", mock.MagicMock(return_value="mock_func")):
             data = {
                 "websocket_message": {
@@ -67,4 +68,3 @@ def test_run_with_no_errors():
                 context_service.run(data)
             except Exception:
                 pytest.fail("Unexpected Error Occurred")
-

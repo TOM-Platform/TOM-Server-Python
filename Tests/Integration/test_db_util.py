@@ -7,7 +7,6 @@ from Utilities.file_utility import get_project_root
 def get_integration_path():
     # Get the current working directory
     current_dir = os.getcwd()
-    
     if current_dir == get_project_root():
         return os.path.relpath(os.path.join(current_dir, 'Tests', 'Integration'), start=os.getcwd())
 
@@ -16,7 +15,6 @@ def get_integration_path():
         current_dir = os.path.dirname(current_dir)
         if current_dir == os.path.dirname(current_dir):
             break
-    
     # Construct the relative path to the 'Integration' folder
     relative_path = os.path.relpath(os.path.join(current_dir, 'Integration'), start=os.getcwd())
 

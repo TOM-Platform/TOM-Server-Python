@@ -1,14 +1,19 @@
-from DataFormat.ProtoFiles.MartialArts import ma_post_session_metrics_pb2, ma_punch_type_pb2
-from google.protobuf.json_format import MessageToDict
-import time
 from collections import defaultdict
-from . import const
+
+from google.protobuf.json_format import MessageToDict
+
+from DataFormat.ProtoFiles.MartialArts import ma_post_session_metrics_pb2
 from Database import tables
+from . import martial_arts_const
 from .martial_arts_keys import MA_POST_SESSION_METRICS_DATA
 
 
-# Generates feedback for user
 class MartialArtsMetricsService:
+    """
+    MartialArtsMetricsService handles recording, processing, and saving the metrics data generated during a martial
+    arts session. It provides real-time feedback and generates post-session reports for the user.
+    """
+
     def __init__(self, martial_arts_service) -> None:
         self.martial_arts_service = martial_arts_service
 
@@ -38,18 +43,20 @@ class MartialArtsMetricsService:
                                                     websocket_datatype=MA_POST_SESSION_METRICS_DATA)
         # # save to DB
         tables.insert_rows_to_table(
-            const.METRICS_TABLE_NAME, processed_metrics)
-    
-    def get_post_session_metrics(self, processed_metrics, end_session_data) -> ma_post_session_metrics_pb2.MaPostSessionMetrics:
-        post_session_metrics_data = ma_post_session_metrics_pb2.MaPostSessionMetrics()
-        post_session_metrics_data.total_punches = processed_metrics[const.TOTAL_PUNCHES_KEY]
-        post_session_metrics_data.correct_punches = processed_metrics[const.GOOD_PUNCH]
-        post_session_metrics_data.off_target_punches = processed_metrics[const.OFF_TARGET]
-        post_session_metrics_data.bad_angle_punches = processed_metrics[const.BAD_ANGLE]
+            martial_arts_const.METRICS_TABLE_NAME, processed_metrics)
 
-        if processed_metrics[const.TOTAL_PUNCHES_KEY] > 0:
+    def get_post_session_metrics(self, processed_metrics, end_session_data) \
+            -> ma_post_session_metrics_pb2.MaPostSessionMetrics:
+        post_session_metrics_data = ma_post_session_metrics_pb2.MaPostSessionMetrics()
+        post_session_metrics_data.total_punches = processed_metrics[martial_arts_const.TOTAL_PUNCHES_KEY]
+        post_session_metrics_data.correct_punches = processed_metrics[martial_arts_const.GOOD_PUNCH]
+        post_session_metrics_data.off_target_punches = processed_metrics[martial_arts_const.OFF_TARGET]
+        post_session_metrics_data.bad_angle_punches = processed_metrics[martial_arts_const.BAD_ANGLE]
+
+        if processed_metrics[martial_arts_const.TOTAL_PUNCHES_KEY] > 0:
             post_session_metrics_data.avg_reaction_time = processed_metrics[
-                const.TOTAL_REACTION_TIME_KEY] / processed_metrics[const.TOTAL_PUNCHES_KEY]
+                                                              martial_arts_const.TOTAL_REACTION_TIME_KEY] / \
+                                                          processed_metrics[martial_arts_const.TOTAL_PUNCHES_KEY]
         else:
             post_session_metrics_data.avg_reaction_time = 0
 
@@ -58,37 +65,37 @@ class MartialArtsMetricsService:
 
     def process_metrics(self, end_session_data) -> dict:
         processed_metrics = {
-            const.TOTAL_REACTION_TIME_KEY: 0,
-            const.RAW_DATA_KEY: self.metrics_data_list,
-            const.PUNCH_DICT_KEY: defaultdict(int),
-            const.GOOD_PUNCH: 0,
-            const.OFF_TARGET: 0,
-            const.BAD_ANGLE: 0,
-            const.TOTAL_PUNCHES_KEY: 0,
-            const.UNCATEGORIZED_PUNCHES_KEY: 0,
-            const.DATETIME: end_session_data.datetime,
-            const.SESSION_DURATION: end_session_data.session_duration,
-            const.INTERVAL_DURATION: end_session_data.interval_duration,
+            martial_arts_const.TOTAL_REACTION_TIME_KEY: 0,
+            martial_arts_const.RAW_DATA_KEY: self.metrics_data_list,
+            martial_arts_const.PUNCH_DICT_KEY: defaultdict(int),
+            martial_arts_const.GOOD_PUNCH: 0,
+            martial_arts_const.OFF_TARGET: 0,
+            martial_arts_const.BAD_ANGLE: 0,
+            martial_arts_const.TOTAL_PUNCHES_KEY: 0,
+            martial_arts_const.UNCATEGORIZED_PUNCHES_KEY: 0,
+            martial_arts_const.DATETIME: end_session_data.datetime,
+            martial_arts_const.SESSION_DURATION: end_session_data.session_duration,
+            martial_arts_const.INTERVAL_DURATION: end_session_data.interval_duration,
         }
         total_punches = 0
 
         for metrics_data in self.metrics_data_list:
             total_punches += 1
 
-            processed_metrics[const.TOTAL_REACTION_TIME_KEY] += metrics_data['reactionTime']
+            processed_metrics[martial_arts_const.TOTAL_REACTION_TIME_KEY] += metrics_data['reactionTime']
 
             if metrics_data["punchData"]:
                 punch_type = metrics_data["punchData"]["punchType"]
-                if punch_type in processed_metrics[const.PUNCH_DICT_KEY]:
-                    processed_metrics[const.PUNCH_DICT_KEY][punch_type] += 1
+                if punch_type in processed_metrics[martial_arts_const.PUNCH_DICT_KEY]:
+                    processed_metrics[martial_arts_const.PUNCH_DICT_KEY][punch_type] += 1
                 else:
-                    processed_metrics[const.PUNCH_DICT_KEY][punch_type] = 1
+                    processed_metrics[martial_arts_const.PUNCH_DICT_KEY][punch_type] = 1
             if metrics_data["feedback_category"]:
                 category = metrics_data["feedback_category"]
                 processed_metrics[category] += 1
             else:
-                processed_metrics[const.UNCATEGORIZED_PUNCHES_KEY] += 1
+                processed_metrics[martial_arts_const.UNCATEGORIZED_PUNCHES_KEY] += 1
 
-        processed_metrics[const.TOTAL_PUNCHES_KEY] = total_punches
+        processed_metrics[martial_arts_const.TOTAL_PUNCHES_KEY] = total_punches
 
         return processed_metrics

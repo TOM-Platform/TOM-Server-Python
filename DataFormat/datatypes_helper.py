@@ -18,6 +18,7 @@ DATA_TYPE_JSON_VAL_COMPONENTS = "components"
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 ##########################################################
 ################# Internal Functions #####################
 ##########################################################
@@ -29,7 +30,7 @@ def _get_data_type_json():
 
     Example:
     {"EXERCISE_WEAR_OS_DATA": {
-        "key": 1000,
+        "key": 51,
         "proto_file": "exercise_wear_os_data_pb2.py",
         "components": [
             "service:running"
@@ -41,7 +42,7 @@ def _get_data_type_json():
 
 def _get_data_type_to_key_mapping():
     """
-    :return: the map with { "EXERCISE_WEAR_OS_DATA": 1000, ... }
+    :return: the map with { "EXERCISE_WEAR_OS_DATA": 51, ... }
     """
     data_type_key_map = {}
 
@@ -53,7 +54,7 @@ def _get_data_type_to_key_mapping():
 
 def _get_key_to_data_type_mapping():
     """
-    :return: the map with { 1000: "EXERCISE_WEAR_OS_DATA" , ... }
+    :return: the map with { 51: "EXERCISE_WEAR_OS_DATA" , ... }
     """
     key_data_type_map = {}
 
@@ -65,7 +66,7 @@ def _get_key_to_data_type_mapping():
 
 def _get_data_type_to_proto_file_mapping():
     """
-    :return: the map with { "EXERCISE_WEAR_OS_DATA": "Running/exercise_wear_os_data_pb2.py", ... }
+    :return: the map with { "EXERCISE_WEAR_OS_DATA": "Common/exercise_wear_os_data_pb2.py", ... }
     """
     proto_file_type_map = {}
 
@@ -84,7 +85,7 @@ def _get_proto_file_to_data_type_mapping():
     for key, val in DATATYPE_JSON.items():
         proto_file = val[DATA_TYPE_JSON_VAL_PROTO_FILE]
 
-        # remove any directory path (e.g., "Running/exercise_wear_os_data_pb2.py" to "exercise_wear_os_data_pb2.py")
+        # remove any directory path (e.g., "Common/exercise_wear_os_data_pb2.py" to "exercise_wear_os_data_pb2.py")
         proto_file = proto_file.split("/")[-1]
 
         if proto_file not in proto_file_data_type_map:
@@ -131,7 +132,8 @@ SERVICE_TO_DATATYPE_MAP = _get_service_to_data_type_mapping()
 def get_key_by_instance(proto):
     """
     :param proto:
-    :return: the first key number of the proto instance (DO NOT USE THIS if there are multiple proto files with the same key number)
+    :return: the first key number of the proto instance
+        (DO NOT USE THIS if there are multiple proto files with the same key number)
 
     Example Usage:
         running_live_data_proto = running_live_data.pb2.RunningLiveData()
@@ -203,8 +205,7 @@ def decode_websocket_data(raw_data):
         proto_func = get_proto_func_by_key(socket_data_type)
 
         if not proto_func:
-            _logger.error(
-                "Unknown {socket_data_type} protobuf message received", socket_data_type=socket_data_type)
+            _logger.error("Unknown {socket_data_type} protobuf message received", socket_data_type=socket_data_type)
             return None, None
 
         data = proto_func()
@@ -212,8 +213,8 @@ def decode_websocket_data(raw_data):
 
         return socket_data_type, data
     except DecodeError as e:
-        _logger.error(
-            "Error decoding protobuf type {socket_data_type} : {e}", socket_data_type=socket_data_type, e=str(e))
+        _logger.error("Error decoding protobuf type {socket_data_type} : {e}",
+                      socket_data_type=socket_data_type, e=str(e))
         return None, None
 
 

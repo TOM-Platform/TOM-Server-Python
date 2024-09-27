@@ -1,0 +1,14 @@
+syntax = "proto2";
+
+message DashboardLiveRunningData {
+    required int64 timestamp = 1;
+    required int64 start_time = 2;
+    required int32 calories = 3;
+    required int32 heart_rate = 4;
+    required float distance = 5;
+    required float speed = 6;
+    required float avg_speed = 7;
+    required int32 bearing = 8;
+    required double curr_lat = 9;
+    required double curr_lng = 10;
+}

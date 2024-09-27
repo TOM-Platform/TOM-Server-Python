@@ -17,7 +17,8 @@ async def test_find_static_maps_geoapify():
     assert actual_image.size == size
     assert actual_image.format == 'JPEG'
 
-    file_path = os.path.join(get_project_root(), "Tests", "Unit", "maps_tests", "map_images", "geoapify", "static_map_1.jpeg")
+    file_path = os.path.join(get_project_root(), "Tests", "Unit", "maps_tests", "map_images", "geoapify",
+                             "static_map_1.jpeg")
     expected_image = Image.open(file_path)
     similarity = get_similarity_images(actual_image, expected_image, 5)
     assert similarity > 0.9

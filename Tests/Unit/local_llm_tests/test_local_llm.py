@@ -15,7 +15,7 @@ def test_local_llm_generate_text_with_history():
     user_prompt: str = "What was my previous question?"
     system_prompt: str = "You are a friendly chatbot."
     response: str = generate_text_with_history(user_prompt,
-                               [{"role": "user", "content": "What is the capital of France?"}],
-                               system_prompt).replace("\n", "")
-    
+                                               [{"role": "user", "content": "What is the capital of France?"}],
+                                               system_prompt).replace("\n", "")
+
     assert response == 'Your previous question was: "What is the capital of France?"'

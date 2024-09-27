@@ -49,7 +49,7 @@ class OpenAIClient:
         temperature: float
             Takes in a value between 0 and 1 inclusive
         model: str
-            Takes in a string model. By default it uses gpt-4o
+            Takes in a string model. By default, it uses gpt-4o
         '''
         _set_api_key()
         _logger.info('Starting OpenAIClient ({model})...', model=model)
@@ -63,11 +63,10 @@ class OpenAIClient:
         ________
         prompt: str
             Takes in user template in the form of string.
-            i.e. What is the translation of {user_input} in french.
+            i.e. What is the translation of {user_input} in French.
         user_input: Any
             Gives the context to the AI by providing a context
-            i.e. user_input = "Apple" will fromat the prompt to become
-            'What is the translation of Apple in french.'
+            i.e. user_input = "Apple" will format the prompt to become 'What is the translation of Apple in French.'
         Returns
         ________
         str
@@ -75,13 +74,9 @@ class OpenAIClient:
         '''
         return self.generate(prompt.format(input=user_input))
 
-    def generate(
-            self,
-            user_prompt: str,
-            image_png_bytes: bytes = bytes(),
-            system_context: str = "You are an advanced helping assistant in \
-            answering questions based on given image or text information."
-    ) -> str:
+    def generate(self, user_prompt: str, image_png_bytes: bytes = bytes(),
+                 system_context: str = "You are an advanced helping assistant in answering questions based on given "
+                                       "image or text information.") -> str:
         '''
         This function generates a string response based on image_png_bytes
         and user_prompt

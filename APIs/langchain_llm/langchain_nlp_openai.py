@@ -6,8 +6,6 @@ import base_keys
 from Utilities import file_utility, logging_utility
 from Utilities.file_utility import get_credentials_file_path
 
-_logger = logging_utility.setup_logger(__name__)
-
 KEY_OPENAI_API = 'openai_api_key'
 OPENAI_CREDENTIAL_FILE = get_credentials_file_path(base_keys.OPENAI_CREDENTIAL_FILE_KEY_NAME)
 
@@ -23,6 +21,12 @@ def _set_api_key():
 
 
 class LangChainNlpOpenAI:
+    """
+    This class provides an interface to interact with the OpenAI language model using LangChain.
+    It sets up the OpenAI API key, initializes a prompt template, and processes natural language
+    input to extract structured data or entities.
+    """
+
     def __init__(self, prompt: str, tools: list, temperature: float = 0.3) -> None:
         # load openai credentials
         _set_api_key()
@@ -34,10 +38,7 @@ class LangChainNlpOpenAI:
         self.parser = JsonOutputToolsParser()
 
         # Define the prompt template
-        prompt_template = PromptTemplate(
-            template="{input}",
-            input_variables=["input"],
-        )
+        prompt_template = PromptTemplate(template="{input}", input_variables=["input"])
 
         self.llm = ChatOpenAI(temperature=temperature).bind_tools(tools)
         self.llm_chain = prompt_template | self.llm | self.parser

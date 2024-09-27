@@ -8,6 +8,13 @@ _STATIC_MAPS_OPTION = environment_utility.get_env_int(STATIC_MAPS_OPTION)
 
 
 class RunningServiceConfig:
+    """
+    Configuration class for running service parameters.
+
+    This class holds configuration options related to the running service,
+    such as directions, maps, and various size and distance settings.
+    These configurations are used to customize the behavior of the service.
+    """
     directions_option = _DIRECTION_OPTION
     ors_option = _OSR_OPTION
     static_map_option = _STATIC_MAPS_OPTION
@@ -16,4 +23,4 @@ class RunningServiceConfig:
     threshold_coords_distance = 30  # m
     route_selection_map_size = (400, 560)  # width, height
     summary_map_size = (600, 400)  # width, height
-    max_instruction_length = 30 # max number of characters in an instruction
+    max_instruction_length = 30  # max number of characters in an instruction

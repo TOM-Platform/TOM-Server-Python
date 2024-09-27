@@ -2,6 +2,15 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 
 
 class RunningCommand(BaseModel):
+    """
+    RunningCommand defines a model for extracting key information about a user's running exercise.
+    
+    This class includes fields for:
+    - The type of exercise (e.g., running, jogging, hiking).
+    - The starting point and destination for the exercise.
+    - The type of training (speed or distance).
+    - Optional information like speed and distance for the exercise.
+    """
     exercise_type: str = Field(
         description="Extract the type of running exercises, such as running, jogging, hiking etc. (Optional) ")
     source: str = Field(

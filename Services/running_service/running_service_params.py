@@ -2,6 +2,7 @@ from queue import Queue
 
 
 class BaseParams:
+    """Stores general running session parameters and provides reset methods."""
     total_sec = 0.0
     chosen_route_id = -1
     exercise_wear_os_count = 0
@@ -26,6 +27,7 @@ class BaseParams:
 
 
 class RunningUnitParams:
+    """Defines units for running metrics like distance, heart rate, and speed."""
     distance = "km"
     heart_rate = "bpm"
     speed = "min/km"
@@ -40,6 +42,7 @@ class RunningUnitParams:
 
 
 class SummaryUnitParams:
+    """Defines units for summarizing running session data."""
     distance = "km"
     speed = "min/km"
     duration = "min"
@@ -52,12 +55,12 @@ class SummaryUnitParams:
 
 
 class SpeedTrainingParams:
-    # TODO: get this from user input on unity client?
+    """Stores target speed for speed training sessions."""
     target_speed = 10.0  # min/km
 
 
 class DistanceTrainingParams:
-    # TODO: get this from user input on unity client?
+    """Stores target distance and training parameters for distance-based sessions."""
     target_distance = 3  # km
     half_dist_notif_timeout = 5  # number of running updates
     halfway_point = False

@@ -8,7 +8,7 @@ from DataFormat.ProtoFiles.Common import highlight_point_data_pb2
 # Build Data (Protobuf)
 
 
-def build_highlight_point_data(x, y, z, details):
+def build_highlight_point_data(x: float, y: float, z: float, details: str):
     highlight_point_data_proto = highlight_point_data_pb2.HighlightPointData(
         world_x=x,
         world_y=y,
@@ -19,7 +19,7 @@ def build_highlight_point_data(x, y, z, details):
     return highlight_point_data_proto
 
 
-def build_learning_data(instruction, detail, speech):
+def build_learning_data(instruction: str, detail: str, speech: str):
     learning_data_proto = learning_data_pb2.LearningData(
         instruction=instruction,
         detail=detail,

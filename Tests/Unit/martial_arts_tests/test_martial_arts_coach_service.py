@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import Mock
 from Services.martial_arts_service.martial_arts_coach_service import MartialArtsCoachService
 from Services.martial_arts_service.martial_arts_keys import MA_FEEDBACK_LIVE_DATA
-import Services.martial_arts_service.const as const
+import Services.martial_arts_service.martial_arts_const as const
 from DataFormat.ProtoFiles.Common import request_data_pb2
 
 
@@ -60,8 +60,7 @@ def test_analyse_live_data(coach_service):
     decoded_data_off_target.collision_data.angle = const.ANGLE_FEEDBACK_THRESHOLD_LOWER - 1
 
     # Call the method for off-target feedback
-    result_off_target = coach_service.analyse_live_data(
-        decoded_data_off_target)
+    result_off_target = coach_service.analyse_live_data(decoded_data_off_target)
 
     # Assert the result is as expected for off-target feedback
     assert result_off_target == const.PUNCH_NOT_STRAIGHT
@@ -76,8 +75,7 @@ def test_analyse_live_data(coach_service):
     decoded_data_off_target_2.collision_data.angle = const.ANGLE_FEEDBACK_THRESHOLD_HIGHER - 1
 
     # Call the method for another off-target feedback scenario
-    result_off_target_2 = coach_service.analyse_live_data(
-        decoded_data_off_target_2)
+    result_off_target_2 = coach_service.analyse_live_data(decoded_data_off_target_2)
 
     # Assert the result is as expected for the second off-target feedback scenario
     assert result_off_target_2 == const.PUNCH_LEFT
@@ -92,5 +90,4 @@ def test_categorize_feedback(coach_service):
         assert coach_service.categorize_feedback(feedback) == const.OFF_TARGET
 
     # Test for BAD_ANGLE feedback
-    assert coach_service.categorize_feedback(
-        "some_bad_angle_feedback") == const.BAD_ANGLE
+    assert coach_service.categorize_feedback("some_bad_angle_feedback") == const.BAD_ANGLE

@@ -1,5 +1,3 @@
-import pytest
-
 from Utilities import format_utility
 
 

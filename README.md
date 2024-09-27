@@ -14,9 +14,14 @@ A Python implementation of the server that handles the client data and applicati
 ## Installation
 
 - Install `conda` ([Miniconda](https://docs.conda.io/en/latest/miniconda.html)). Note that some packages may not work with Anaconda.
-- Create new conda environment `tom` using `conda env create -f environment-cpu.yml` (If you have a previous environment, then update it, `conda env update --file environment-cpu.yml --prune`. To completely remove previous env use, `conda remove -n tom --all`)
-  - For ARM Mac (M1-Mn chip), if the installation fails due to `pyaudio`, please follow [this](https://stackoverflow.com/questions/33513522/when-installing-pyaudio-pip-cannot-find-portaudio-h-in-usr-local-include)
-  - In addition, locally, you may need to install googlemaps using ` pip install --use-pep517 googlemaps` to avoid OSError
+  - Upgrade pip, using `pip install --upgrade pip setuptools wheel`
+- Create new conda environment `tom` using `conda env create -f environment-cpu.yml`
+  - If you have a previous environment, then update it, `conda env update --file environment-cpu.yml --prune`. 
+  - To completely remove previous env run, `conda remove -n tom --all`, then recreate the environment.
+  - For ARM Mac (M1-Mn chip), 
+    - If the installation fails due to `pyaudio`, please follow [this](https://stackoverflow.com/questions/33513522/when-installing-pyaudio-pip-cannot-find-portaudio-h-in-usr-local-include)
+    - If the installation fails due to `egg_info`, change the dependency `psycopg2` to `psycopg2-binary` in `environment-cpu.yml`
+    - If the installation fails due to `googlemaps`, either remove it from `environment-cpu.yml` or install it separately using `pip install --use-pep517 googlemaps` after activating the `tom` environment.
 - Activate `tom` environment, `conda activate tom`
 - Download the pretrained weights for YOLOv8 from [ultralytics](https://github.com/ultralytics/ultralytics) (e.g., [yolov8n.pt](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt)) and copy it to `Processors/Yolov8/weights` and rename it as `model.pt` (i.e., `Processors/Yolov8/weights/model.pt`)
 - Create the environment files
@@ -38,7 +43,7 @@ A Python implementation of the server that handles the client data and applicati
   - Create a file `credential/ors_credential.json` with [Openrouteservice](https://openrouteservice.org/) credentials such as `{"map_api_key": "KEY"}`
   - Create a file `credential/geoapify_credential.json` with [Geoapify](https://www.geoapify.com/) credentials such as `{"map_api_key": "KEY"}`
   - Create a file `credential/fitbit_credential.json` with Fitbit credentials such as `{"client_id": "ID","client_secret": "SECRET"}`
-- [Optional] Download the first person video [here](https://e.pcloud.link/publink/show?code=XZkqaBZ5epwEkqARuyqFgy5xs3EAHLegagk) if you want to simulate running on a treadmill. It should be located in `Tests/RunningFpv/fpv.mp4`
+- [Optional] If you want to simulate running assistance on a treadmill, follow the steps in [Running Demo Service](#configuring-first-person-video-for-running-service)
 
 
 ## Setup the clients
@@ -48,6 +53,7 @@ A Python implementation of the server that handles the client data and applicati
     ![image](https://github.com/NUS-SSI/TOM-Server-Python/assets/95197450/e26ee547-c132-4a14-af59-f85ec4210a5e)
 - Set up [TOM-Client-Unity](https://github.com/TOM-Platform/TOM-Client-Unity) on the HoloLens/Xreal and make sure to update the IP address in `Videos/TOM/tom_config.json`.
 - [Optional] Set up [TOM-Client-WearOS](https://github.com/TOM-Platform/TOM-Client-WearOS) on the Android smartwatch and make sure to update the IP address in `app/src/main/java/com/hci/tom/android/network/Credentials.kt`.
+- [Optional] Set up [TOM-Client-Web](https://github.com/TOM-Platform/TOM-Client-Web) on a computer and make sure to update the IP address in `src/constant/config.ts`.
 - [Troubleshooting] If clients cannot connect to the server via websocket, try the following steps:
   - Ensure that all clients are on the same network as the server. For devices running Windows OS, such as PCs or HoloLens, set the network connection to **private**.
   - Check the firewall settings on the server machine and allow the server application to communicate through the firewall.
@@ -68,19 +74,27 @@ A Python implementation of the server that handles the client data and applicati
 
 ### Demos
 
-- [Demo details](https://drive.google.com/drive/folders/1Kfzxs6iYMk0pH0TsPFfOm41jElKVgWop?usp=sharing)
+- See the implemented [services](Services)
+- Examples
+    - [Running Service](https://docs.google.com/document/d/1BQ3E__t1UrvDw2LkB2W7rEe1mjQY0k54Jqc03cd2o94/edit?usp=sharing)
+    - [Martial Arts Service](https://docs.google.com/presentation/d/1aqiftWgnduz5ie8XZ-aKVJ_jFcnK_77X_ZSRo22rBWw/edit?usp=sharing)
+    - [PandaLens Service](https://docs.google.com/presentation/d/1FVehX40EAYrX6l39N0dlkxh9tcJR3IWYLJEXiHfLFmg/edit?usp=sharing)
 
-#### Configuring First Person Video (FPV) for Running Service
+#### Configuring First-Person Video for Running Service
 
-- Download the first person video [here](https://e.pcloud.link/publink/show?code=kZ1tMTZjijd27TBHO50kxwJQ4zpOV0vs2Gk) (you can download `fpv_short.mp4` or `fpv.mp4`). The videos which one is used (short/full) can be configured in the `.env` file (`FPV_OPTION`).
-  <br/>Copy the videos to `Tests/RunningFpv/`.
-- Setup the Unity and WearOS clients as mentioned in the [Setup the Clients](#Setup-the-Clients) section.
+- Download the first person video [here](https://e.pcloud.link/publink/show?code=kZ1tMTZjijd27TBHO50kxwJQ4zpOV0vs2Gk) (you can download `fpv_short.mp4` or `fpv.mp4`).
+  - Copy the video/s to `Tests/RunningFpv/`.
+  - Configure which video to be used (short/full) in the `.env` file (`FPV_OPTION`). 
+- Set up the Unity and WearOS clients as mentioned in the [Setup the Clients](#Setup-the-Clients) section.
 - Ensure that `DemoRunningCoach.yaml` is set in `/Config`, and `RunningCoach.yaml` is in `/Config/Ignore` on the python server.
 
 
+## Development
+
+- See [DeveloperGuide.md](DeveloperGuide.md) for more details on development guidelines and adding new services/components.
+
 
 ## References
-
 - [Structuring Your Project](https://docs.python-guide.org/writing/structure/)
 - [Modules](https://docs.python.org/3/tutorial/modules.html#packages)
 - [python-testing](https://realpython.com/python-testing/)

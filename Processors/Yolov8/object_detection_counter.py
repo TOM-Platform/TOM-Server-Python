@@ -4,7 +4,13 @@ from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 class ObjectDetectionCounter:
+    """
+    This class keeps track of detected objects over a time window and calculates the occurrence and percentage of each
+    detected object class.
+    """
+
     def __init__(
             self,
             counter_window_duration=1,  # window duration to keep track of objects in seconds
@@ -13,8 +19,13 @@ class ObjectDetectionCounter:
         self.detected_objects = []
         self.detected_times = []
 
-    # detection = [[bounding_boxes, mask, confidence, class_id, tracker_id], ...], class_labels = [name1, name2, ...]
     def infer_counting(self, detections, class_labels):
+        '''
+
+        :param detections: [[bounding_boxes, mask, confidence, class_id, tracker_id], ...]
+        :param class_labels:  [name1, name2, ...]
+        :return:
+        '''
         current_time = time.time()
         self.detected_times.append(current_time)
 

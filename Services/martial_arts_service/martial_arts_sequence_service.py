@@ -1,10 +1,14 @@
-from .common_sequences import SEQUENCE_1, SEQUENCE_2
 import random
+from .common_sequences import SEQUENCE_1, SEQUENCE_2
 from .martial_arts_keys import MA_SEQUENCE_DATA
 
 
-# Generates a random sequence for the user to do during training session.
 class MartialArtsSequenceService:
+    """
+    The MartialArtsSequenceService is responsible for generating and sending random sequences of martial arts moves to
+    the user during a training session.
+    """
+
     def __init__(self, martial_arts_service) -> None:
         self.martial_arts_service = martial_arts_service
         self.sequence_pool = [SEQUENCE_1, SEQUENCE_2]
@@ -20,4 +24,4 @@ class MartialArtsSequenceService:
         # Get the sequence at the randomly chosen index
         next_sequence = self.sequence_pool[random_index]
         self.martial_arts_service.send_to_component(websocket_message=next_sequence,
-                                                           websocket_data_type=MA_SEQUENCE_DATA)
+                                                    websocket_data_type=MA_SEQUENCE_DATA)

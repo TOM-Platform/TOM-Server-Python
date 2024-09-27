@@ -1,10 +1,15 @@
 # Change log (version history)
 
 ## main
-- latest stable version
+- Latest stable version
+
+## v0.2
+- Enable new services and capabilities
+- Uniform the protobuf keys
+- Enforce linting and formatting
 
 ## v0.1
-- initial version
+- Initial version
 
 
 ## TODO

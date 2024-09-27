@@ -1,9 +1,9 @@
+import os
 import base_keys
 from Database import database, tables
 from DataFormat import datatypes_helper
 from Utilities import time_utility, endpoint_utility, config_utility, logging_utility
 from Memory.Memory import update_shared_memory_item, get_shared_memory_item
-import os
 
 CONFIG_CHANNEL_PIPES = "channel-pipes"
 VALID_COMPONENT_STATUS = [base_keys.COMPONENT_NOT_STARTED_STATUS, base_keys.COMPONENT_IS_RUNNING_STATUS,
@@ -13,11 +13,23 @@ _logger = logging_utility.setup_logger(__name__)
 
 
 class BaseComponent:
+    """
+    BaseComponent serves as a foundational class for managing the status, data, 
+    and communication between various components in the TOM server.
+
+    Key functionalities include:
+    - **Component Status Management**: Initialize, set, and get the status of a component.
+    - **Shared Memory Operations**: Provides interfaces for reading and writing data to shared memory.
+    - **Database Operations**: Simplifies inserting and querying data from the database.
+    - **Message Sending**: Implements communication and data transfer between components.
+    - **Logging**: Provides detailed logs for debugging and monitoring component behavior.
+    """
+
     def __init__(self, name) -> None:
         self.name = name
 
         _logger.info("Initialising:: {name}, PID: {pid}", name=self.name, pid=os.getpid())
-        # NOTE: Initialising 1 Database per BaseComponent Instance since we refer to a local .db file / a hosted DB. 
+        # NOTE: Initialising 1 Database per BaseComponent Instance since we refer to a local .db file / a hosted DB.
         # The Database is only for interfacing with the .db file / hosted db
         database.init()
 
@@ -37,8 +49,7 @@ class BaseComponent:
         all_subscribers = config_utility.get_config()[
             CONFIG_CHANNEL_PIPES][self.name]
         for subscriber in all_subscribers:
-            entry_func = self.__get_subscriber_func(
-                subscriber, message)
+            entry_func = self.__get_subscriber_func(subscriber, message)
 
             if entry_func:
                 entry_func(message)
@@ -68,8 +79,7 @@ class BaseComponent:
 
             self.set_memory_data(base_keys.MEMORY_COMPONENT_STATUS_KEY, all_component_status_keys)
         else:
-            _logger.error("Invalid Component Status Detected in BaseComponent.set_component_status(): {new_status}",
-                          new_status=new_status)
+            _logger.error("Invalid Component Status 'set_component_status()': {new_status}", new_status=new_status)
 
     def __build_message(self, args):
         message = {}

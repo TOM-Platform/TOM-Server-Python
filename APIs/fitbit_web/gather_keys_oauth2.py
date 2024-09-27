@@ -1,30 +1,30 @@
 #!/usr/bin/env python
 
 # source: https://github.com/orcasgit/python-fitbit/blob/master/gather_keys_oauth2.py
-
-import cherrypy
 import sys
 import threading
 import traceback
 import webbrowser
-from Utilities import logging_utility
-
 from urllib.parse import urlparse
 from fitbit.api import Fitbit
+import cherrypy
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
-
+from Utilities import logging_utility
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 class OAuth2Server:
+    """
+    Handle OAuth2 authentication with Fitbit API.
+    """
+
     def __init__(self, client_id, client_secret,
                  redirect_uri='http://127.0.0.1:8080/'):
         """ Initialize the FitbitOauth2Client """
-        self.success_html = """
-            <h1>You are now authorized to access the Fitbit API!</h1>
+        self.success_html = """ <h1>You are now authorized to access the Fitbit API!</h1>
             <br/><h3>You can close this window</h3>"""
-        self.failure_html = """
-            <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
+        self.failure_html = """          <h1>ERROR: %s</h1><br/><h3>You can close this window</h3>%s"""
 
         self.fitbit = Fitbit(
             client_id,
@@ -52,7 +52,7 @@ class OAuth2Server:
         cherrypy.quickstart(self)
 
     @cherrypy.expose
-    def index(self, state, code=None, error=None):
+    def index(self, code=None, error=None):
         """
         Receive a Fitbit response containing a verification code. Use the code
         to fetch the access_token.
@@ -63,8 +63,7 @@ class OAuth2Server:
                 self.fitbit.client.fetch_access_token(code)
             except MissingTokenError:
                 error = self._fmt_failure(
-                    'Missing access token parameter.</br>Please check that '
-                    'you are using the correct client_secret')
+                    'Missing access token parameter.</br>Please check that you are using the correct client_secret')
             except MismatchingStateError:
                 error = self._fmt_failure('CSRF Warning! Mismatching state')
         else:
@@ -86,7 +85,7 @@ class OAuth2Server:
 
 if __name__ == '__main__':
 
-    if not (len(sys.argv) == 3):
+    if not len(sys.argv) == 3:
         _logger.error("Arguments: client_id and client_secret")
         sys.exit(1)
 
@@ -94,8 +93,8 @@ if __name__ == '__main__':
     server.browser_authorize()
 
     profile = server.fitbit.user_profile_get()
-    _logger.info('You are authorized to access data for the user: {username}', username = profile['user']['fullName'])
+    _logger.info('You are authorized to access data for the user: {username}', username=profile['user']['fullName'])
 
     _logger.debug('TOKEN\n=====\n')
     for key, value in server.fitbit.client.session.token.items():
-        _logger.debug('{key} = {value}', key = key, value = value)
+        _logger.debug('{key} = {value}', key=key, value=value)

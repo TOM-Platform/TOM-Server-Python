@@ -1,17 +1,23 @@
-from fastapi import FastAPI, HTTPException, Depends
-from pydantic import BaseModel
 from typing import Optional, Dict, List
-from local_llm import generate_text, generate_text_with_history
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import uvicorn
+from .local_llm import generate_text, generate_text_with_history
 
 
 class QuestionRequest(BaseModel):
+    """
+    Model for the request to generate an answer.
+    """
     user_prompt: Optional[str] = None
     system_prompt: Optional[str] = None
     temperature: Optional[float] = 0.1
 
 
 class QuestionRequestHistory(BaseModel):
+    """
+    Model for the request to generate an answer with history.
+    """
     user_prompt: Optional[str] = None
     system_prompt: Optional[str] = None
     session_id: Optional[str] = None

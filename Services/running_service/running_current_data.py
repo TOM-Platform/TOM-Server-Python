@@ -2,11 +2,22 @@ from Utilities import time_utility
 
 
 class RunningCurrentData:
+    """
+    RunningCurrentData stores the current state of a user's running session.
+
+    This class holds information about:
+    - Current and previous running statistics such as heart rate, calories, distance, and speed.
+    - Start time, location, and exercise type of the session.
+    - Current GPS coordinates, destination coordinates, and route data (e.g., waypoints and polyline).
+    - The number of steps and direction data during the session.
+
+    The class also provides a reset method to clear the data and start a new session.
+    """
     curr_heart_rate = 0  # bpm
-    curr_calories = 0 # cal
+    curr_calories = 0  # cal
     curr_distance = 0.0  # km
     prev_distance = 0.0  # km
-    curr_speed = -1.0 # min/km
+    curr_speed = -1.0  # min/km
     avg_speed = -1.0  # min/km
 
     start_time = 0.0

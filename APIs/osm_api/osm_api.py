@@ -21,7 +21,6 @@ async def find_locations_osm(search_text):
             if response.status == 200:
                 response_data = await response.text()
                 json_response = json.loads(response_data)
-
                 ''' example of successful response:
                 {
                     "type": "FeatureCollection",
@@ -38,7 +37,8 @@ async def find_locations_osm(search_text):
                                 "osm_key": "tourism",
                                 "osm_value": "hotel",
                                 "type": "house",
-                                "label": "Marina Bay Sands, 10, Bayfront Avenue, Bayfront, Downtown Core, Singapore, Central, 018956, Singapore",
+                                "label": "Marina Bay Sands, 10, Bayfront Avenue, Bayfront, Downtown Core, 
+                                Singapore, Central, 018956, Singapore",
                                 "name": "Marina Bay Sands"
                                 }
                             },

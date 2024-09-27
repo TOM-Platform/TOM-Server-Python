@@ -3,19 +3,13 @@ input:
     entrypoint: "camera_widget.CameraWidget.start"
     exitpoint: ""
     next:
-      - "processing:yolov8"
+      - "service:learning"
+      - "output:video_output"
   - name: "websocket"
     entrypoint: "websocket_widget.WebsocketWidget.start"
     exitpoint: ""
     next:
       - "service:learning"
-processing:
-  - name: "yolov8"
-    entrypoint: "Yolov8.detector.Yolov8Detector.run"
-    exitpoint: ""
-    next:
-      - "service:learning"
-      - "output:video_output"
 service:
   - name: "learning"
     entrypoint: "learning_service.learning_service.LearningService.run"

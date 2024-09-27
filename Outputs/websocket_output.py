@@ -1,13 +1,14 @@
 from DataFormat.datatypes_helper import wrap_socket_message_with_metadata
-from base_keys import WEBSOCKET_DATATYPE, WEBSOCKET_MESSAGE
+from base_keys import WEBSOCKET_DATATYPE, WEBSOCKET_MESSAGE, WEBSOCKET_CLIENT_TYPE
 from base_component import BaseComponent
 from Websocket import socket_server
-from base_keys import WEBSOCKET_CLIENT_TYPE
 
 
 class WebsocketOutput(BaseComponent):
-    def __init__(self, name) -> None:
-        super().__init__(name)
+    """
+    WebsocketOutput is responsible for sending data over a WebSocket connection.
+    It formats the message with metadata and sends it to the specified client type.
+    """
 
     def send(self, raw_data):
         websocket_message = raw_data.get(WEBSOCKET_MESSAGE)

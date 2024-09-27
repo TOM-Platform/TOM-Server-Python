@@ -1,11 +1,12 @@
 ﻿import asyncio
 import threading
 import time
+from asyncio import Queue
+from urllib.parse import urlparse, parse_qs
 import websockets
 from Utilities import environment_utility, logging_utility
-from asyncio import Queue
-
 from base_keys import WEBSOCKET_CLIENT_TYPE
+
 
 _SERVER_IP = environment_utility.get_env_variable_or_default("SERVER_IP", "")
 _SERVER_PORT = environment_utility.get_env_int("SERVER_PORT")
@@ -15,22 +16,27 @@ _rx_queue = Queue()
 
 _logger = logging_utility.setup_logger(__name__)
 
+
 # references: https://websockets.readthedocs.io/en/stable/reference/server.html , https://pypi.org/project/websockets/
 async def receive_data_from_websocket(websocket):
     global _rx_queue, _CONNECTIONS
 
     _CONNECTIONS.add(websocket)
     _logger.debug("New websocket connection:: total: {num_connections}", num_connections=len(_CONNECTIONS))
+
     try:
+        headers = websocket.request_headers
+        websocket_client_type = headers.get(WEBSOCKET_CLIENT_TYPE)
+
+        if websocket_client_type is None:
+            query_params = parse_qs(urlparse(websocket.path).query)
+            websocket_client_type = query_params.get("websocket_client_type", [None])[0]
+
         async for rx_data in websocket:
             _rx_queue.put_nowait(rx_data)
-            # Log the current time when the data is received
-            headers = websocket.request_headers
-            websocket_client_type = headers.get(WEBSOCKET_CLIENT_TYPE)
             current_time = int(time.time() * 1000)
-            _logger.debug(
-                "{curr_time}, received, websocket_client_type: {type}", curr_time=current_time, type=websocket_client_type
-            )
+            _logger.debug("{curr_time}, received, websocket_client_type: {type}", curr_time=current_time,
+                          type=websocket_client_type)
 
     except Exception:
         _logger.exception("Error receiving data from websocket")
@@ -70,15 +76,18 @@ async def send_data_to_websockets(data, websocket_client_type=None):
         try:
             headers = _websocket.request_headers
             curr_client_type = headers.get(WEBSOCKET_CLIENT_TYPE)
-            if (websocket_client_type is not None) and (
-                curr_client_type != websocket_client_type
-            ):
+
+            if curr_client_type is None:
+                query_params = parse_qs(urlparse(_websocket.path).query)
+                curr_client_type = query_params.get("websocket_client_type", [None])[0]
+
+            if (websocket_client_type is not None) and (curr_client_type != websocket_client_type):
                 continue
+
             await _websocket.send(data)
             current_time = int(time.time() * 1000)
-            _logger.debug(
-                "{current_time}, sent, websocket_client_type: {curr_client_type}", current_time=current_time, curr_client_type=curr_client_type
-            )
+            _logger.debug("{current_time}, sent, websocket_client_type: {curr_client_type}", current_time=current_time,
+                          curr_client_type=curr_client_type)
         except Exception:
             _logger.exception("Error sending data to websocket")
             exclude_list.add(_websocket)

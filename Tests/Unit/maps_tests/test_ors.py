@@ -69,6 +69,7 @@ waypoints = [[51.5305457, -0.1243116], [51.5305794, -0.1211179], [51.531307, -0.
 test_close_coordinate = Point(51.5312668, -0.1131538)
 test_far_coordinate = Point(51.5315631, -0.1053211)
 
+
 @pytest.fixture
 async def mock_find_directions_ors(monkeypatch):
     async def mock_find_directions_ors_impl(start_time, coordinates, bearing, ors_option):
@@ -76,6 +77,7 @@ async def mock_find_directions_ors(monkeypatch):
 
     monkeypatch.setattr(ors_api, 'find_directions_ors', mock_find_directions_ors_impl)
     yield mock_find_directions_ors_impl
+
 
 @pytest.mark.asyncio
 async def test_directions_ors_api_success(monkeypatch):

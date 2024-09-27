@@ -10,7 +10,6 @@ from Utilities import network_utility, file_utility, environment_utility, loggin
 from Utilities.file_utility import get_credentials_file_path
 
 # Note: Need to disable SSL connection (System->Preference)
-
 DEVICE_STREAM_SETTINGS = "holo=true&pv=true&mic=false&loopback=true"
 
 CREDENTIALS = None
@@ -42,7 +41,9 @@ def set_api_credentials():
     Set the API credentials before calling the rest of functions
     :return:
     """
-    global CREDENTIALS, HOLOLENS_IP, DEVICE_PORTAL_USERNAME, DEVICE_PORTAL_PASSWORD, API_BASE, API_START_RECORDING, API_STOP_RECORDING, API_GET_RECORDINGS, API_GET_RECORDING_STATUS, API_TAKE_PHOTO, API_STREAM_VIDEO
+    global CREDENTIALS, HOLOLENS_IP, DEVICE_PORTAL_USERNAME, DEVICE_PORTAL_PASSWORD, \
+        API_BASE, API_START_RECORDING, API_STOP_RECORDING, API_GET_RECORDINGS, API_GET_RECORDING_STATUS, \
+        API_TAKE_PHOTO, API_STREAM_VIDEO
 
     CREDENTIALS = read_hololens_credential()
     HOLOLENS_IP = CREDENTIALS['ip']
@@ -54,13 +55,15 @@ def set_api_credentials():
     API_BASE = f'https://{HOLOLENS_IP}/api'
 
     # POST
-    API_START_RECORDING = f'{API_BASE}/holographic/mrc/video/control/start?holo=true&pv=true&mic=true&loopback=true&RenderFromCamera=true'
+    API_START_RECORDING = f'{API_BASE}/holographic/mrc/video/control/start?' \
+                          'holo=true&pv=true&mic=true&loopback=true&RenderFromCamera=true'
     API_STOP_RECORDING = f'{API_BASE}/holographic/mrc/video/control/stop'  # POST
     API_GET_RECORDINGS = f'{API_BASE}/holographic/mrc/files'  # GET
     API_GET_RECORDING_STATUS = f'{API_BASE}/holographic/mrc/status'  # GET
     API_TAKE_PHOTO = f'{API_BASE}/holographic/mrc/photo?holo=true&pv=true'  # POST
 
-    API_STREAM_VIDEO = f'https://{DEVICE_PORTAL_USERNAME}:{DEVICE_PORTAL_PASSWORD}@{HOLOLENS_IP}/api/holographic/stream/live_med.mp4?{DEVICE_STREAM_SETTINGS}'
+    API_STREAM_VIDEO = f'https://{DEVICE_PORTAL_USERNAME}:{DEVICE_PORTAL_PASSWORD}@{HOLOLENS_IP}/' \
+                       f'api/holographic/stream/live_med.mp4?{DEVICE_STREAM_SETTINGS}'
 
 
 def set_hololens_as_camera():
@@ -92,8 +95,7 @@ def get_saved_recordings():
 
 # return True if recording
 def get_recording_status():
-    res = network_utility.send_get_request(
-        API_GET_RECORDING_STATUS, CREDENTIALS)
+    res = network_utility.send_get_request(API_GET_RECORDING_STATUS, CREDENTIALS)
     if res is None:
         return False
 

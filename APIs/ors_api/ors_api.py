@@ -2,7 +2,7 @@
 import math
 import time
 
-import openrouteservice as openrouteservice
+import openrouteservice
 
 import base_keys
 from APIs.maps import maps_util
@@ -12,20 +12,27 @@ from Utilities.file_utility import get_credentials_file_path
 
 ORS_CREDENTIAL_FILE = get_credentials_file_path(base_keys.ORS_CREDENTIAL_FILE_KEY_NAME)
 KEY_MAP_API = 'map_api_key'
-client = None
+_client = None
 
 _logger = logging_utility.setup_logger(__name__)
 
-# return {"map_api_key": "YYY"}
+
 def read_ors_credential():
+    '''
+    Read ORS credentials from file
+    :return: {"map_api_key": "YYY"}
+    '''
     _logger.info('Reading ORS credentials')
     return file_utility.read_json_file(ORS_CREDENTIAL_FILE)
 
 
 def get_ors_credential(key, credential=None):
     _credential = credential
-    if _credential is None:
+
+    if credential is None:
         _credential = read_ors_credential()
+    else:
+        _credential = credential
 
     return _credential[key]
 
@@ -33,22 +40,19 @@ def get_ors_credential(key, credential=None):
 def create_ors_client(option):
     if option == 0:
         return openrouteservice.Client(key=get_ors_credential(KEY_MAP_API))
-    elif option == 1:
+    if option == 1:
         return openrouteservice.Client(base_url='http://localhost:8080/ors')
-    else:
-        raise ValueError("Invalid option.")
+    raise ValueError("Invalid option.")
 
 
 async def find_directions_ors(start_time, coordinates, bearing, option):
-    global client
+    global _client
     # lat lng is switched for ors
     switch_coordinates = [[coord[1], coord[0]] for coord in coordinates]
 
-    if client is None:
-        client = create_ors_client(option)
-    response = client.directions(
-        switch_coordinates, profile='foot-walking', format="geojson", maneuvers=True)
-
+    if _client is None:
+        _client = create_ors_client(option)
+    response = _client.directions(switch_coordinates, profile='foot-walking', format="geojson", maneuvers=True)
     ''' example of successful response:
     {
         "type": "FeatureCollection",

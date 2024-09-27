@@ -9,13 +9,13 @@ from APIs.geoapify_api import geoapify_api
 from APIs.maps import maps_util
 from APIs.maps.direction_data import DirectionData
 from APIs.maps.route_data import RouteData
+from APIs.maps.maps_config import MapsConfig
 from APIs.ors_api import ors_api
 from APIs.osm_api import osm_api
 from APIs.google_maps import google_maps_api
 from Services.running_service.running_keys import RUNNING_DIFFICULTY_LEVELS
 from base_keys import DIRECTIONS_OPTION_GOOGLE, DIRECTIONS_OPTION_ORS, PLACES_OPTION_GOOGLE, \
     PLACES_OPTION_OSM, STATIC_MAPS_OPTION_GEOAPIFY, STATIC_MAPS_OPTION_GOOGLE
-from APIs.maps.maps_config import MapsConfig
 
 _logger = logging_utility.setup_logger(__name__)
 
@@ -94,7 +94,7 @@ async def get_locations(search_text, option, location=None):
         if option == PLACES_OPTION_OSM:
             # Use Nominatim OpenStreetMap API
             return await osm_api.find_locations_osm(search_text)
-        elif option == PLACES_OPTION_GOOGLE:
+        if option == PLACES_OPTION_GOOGLE:
             # Use Google Maps Places API
             return await google_maps_api.find_locations_google(search_text, location)
     except Exception as e:
@@ -108,14 +108,14 @@ async def get_locations(search_text, option, location=None):
         elif isinstance(e, socket.error):
             error_message = "Failed to connect to the server. Please check your internet connection."
         _logger.error("get_locations: {err_msg}", err_msg=error_message)
-        return list()
+        return []
 
 
 async def get_static_maps(coordinates, size, option):
     try:
         if option == STATIC_MAPS_OPTION_GEOAPIFY:
             return await geoapify_api.find_static_maps_geoapify(coordinates, size)
-        elif option == STATIC_MAPS_OPTION_GOOGLE:
+        if option == STATIC_MAPS_OPTION_GOOGLE:
             return await google_maps_api.find_static_maps_google(coordinates, size)
     except Exception as e:
         error_message = str(e)
