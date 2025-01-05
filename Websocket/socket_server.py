@@ -7,12 +7,12 @@ import websockets
 from Utilities import environment_utility, logging_utility
 from base_keys import WEBSOCKET_CLIENT_TYPE
 
-
 _SERVER_IP = environment_utility.get_env_variable_or_default("SERVER_IP", "")
 _SERVER_PORT = environment_utility.get_env_int("SERVER_PORT")
 
 _CONNECTIONS = set()
 _rx_queue = Queue()
+loop = None
 
 _logger = logging_utility.setup_logger(__name__)
 
@@ -56,6 +56,11 @@ async def ws_main():
 
 
 async def main():
+    global loop
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError as e:
+        _logger.exception(e)
     websocket_task = asyncio.create_task(ws_main())
     await asyncio.gather(websocket_task)
 
@@ -91,7 +96,6 @@ async def send_data_to_websockets(data, websocket_client_type=None):
         except Exception:
             _logger.exception("Error sending data to websocket")
             exclude_list.add(_websocket)
-
     if isinstance(data, str):
         _logger.debug("Sent data: {data}", data=data)
     else:
@@ -100,19 +104,17 @@ async def send_data_to_websockets(data, websocket_client_type=None):
 
 
 def send_data(data, websocket_client_type=None):
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = None
+    global loop
     if loop and loop.is_running():
-        loop.create_task(send_data_to_websockets(data, websocket_client_type))
+        _logger.debug("loop is running")
+        asyncio.run_coroutine_threadsafe(send_data_to_websockets(data, websocket_client_type), loop)
     else:
         asyncio.run(send_data_to_websockets(data, websocket_client_type))
+        _logger.warning("loop is none or loop is not running")
 
 
 def receive_data():
     global _rx_queue
-
     if _rx_queue.empty():
         return None
 

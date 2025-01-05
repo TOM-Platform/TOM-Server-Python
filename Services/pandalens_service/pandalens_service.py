@@ -20,12 +20,25 @@ class PandaLensService(BaseComponent):
     Handles the main logic for the PandaLens service, which includes processing data from the camera and user input.
     """
 
+    SUPPORTED_DATATYPES = {
+        "FINGER_POINTING_DATA", 
+        "SPEECH_INPUT_DATA", 
+        "GAZE_POINTING_DATA", 
+        "PANDALENS_EVENT_DATA",
+        "PANDALENS_QUESTION", 
+        "PANDALENS_RESPONSE", 
+        "PANDALENS_MOMENTS", 
+        "PANDALENS_ERROR", 
+        "PANDALENS_RESET"
+    }
+
     def __init__(self, name):
         super().__init__(name)
         self.pandalens_ai = PandaLensAI()
         self.state = pandalens_state_manager.get_init_state()
         self.previous_llm_invoke_time = time_utility.get_current_millis()
         self.image_of_interest = None
+        self.summary = None
 
     def run(self, raw_data):
         super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
@@ -53,11 +66,6 @@ class PandaLensService(BaseComponent):
         super().send_to_component(websocket_message=websocket_pandalens_data,
                                   websocket_client_type=base_keys.UNITY_CLIENT)
 
-    def _send_websocket_pandalens_response(self, text_content="", speech_content=""):
-        websocket_pandalens_data = pandalens_data_handler.build_pandalens_response(text_content, speech_content)
-        super().send_to_component(websocket_message=websocket_pandalens_data,
-                                  websocket_client_type=base_keys.UNITY_CLIENT)
-
     def _send_websocket_pandalens_moments(self, moments=None):
         if moments is None:
             moments = []
@@ -70,8 +78,8 @@ class PandaLensService(BaseComponent):
         super().send_to_component(websocket_message=websocket_pandalens_data,
                                   websocket_client_type=base_keys.UNITY_CLIENT)
 
-    def _send_websocket_pandalens_reset(self, ui_display):
-        websocket_pandalens_data = pandalens_data_handler.build_pandalens_reset(ui_display)
+    def _send_websocket_pandalens_reset(self, message):
+        websocket_pandalens_data = pandalens_data_handler.build_pandalens_reset(message)
         super().send_to_component(websocket_message=websocket_pandalens_data,
                                   websocket_client_type=base_keys.UNITY_CLIENT)
 
@@ -104,6 +112,8 @@ class PandaLensService(BaseComponent):
         if key == pandalens_const.CAMERA_INPUT_EVENT_KEY:
             self._on_cam_key_press()
         elif key == pandalens_const.IDLE_INPUT_EVENT_KEY:
+            if self.state is PandaLensState.SERVER_QA_STATE:
+                pandalens_db.save_moment(self.summary, self.image_of_interest)
             self._reset_state()
         elif key == pandalens_const.SUMMARY_INPUT_KEY:
             self._on_summary_key_press()
@@ -122,9 +132,7 @@ class PandaLensService(BaseComponent):
         if not self._update_state(PandaLensAction.CLIENT_CAMERA_PRESS):
             return
         frame, _, _ = self._get_latest_frame_from_memory()
-        self.image_of_interest = frame
-
-        self._generate_send_question(cropped_image=self.image_of_interest,
+        self._generate_send_question(cropped_image=frame,
                                      user_action=pandalens_const.CAMERA_ACTION_FOR_LLM)
 
     def _handle_point_select(self, point_data):
@@ -146,31 +154,21 @@ class PandaLensService(BaseComponent):
 
     def _handle_speech(self, speech_data):
         speech = speech_data.voice
-        if self.state is PandaLensState.SERVER_QNA_STATE:
-            self._generate_send_response(speech)
+        if self.state is PandaLensState.SERVER_QA_STATE:
+            self._generate_send_question(cropped_image=self.image_of_interest)
         elif self.state is PandaLensState.SERVER_BLOGGING_STATE:
             self._generate_save_summary(speech)
 
-    def _generate_send_response(self, speech):
-        question, summary = self.pandalens_ai.get_subsequent_generated_response(speech)
+    def _generate_send_question(self, cropped_image, user_action=None):
+        question, summary = self.pandalens_ai.generate_question(cropped_image, user_action)
         self.previous_llm_invoke_time = time_utility.get_current_millis()
+        self.image_of_interest = cropped_image
+        self.summary = summary
 
         if question == pandalens_const.LLM_NO_QUESTIONS:
-            pandalens_db.save_moment(summary, self.image_of_interest)
+            pandalens_db.save_moment(summary, cropped_image)
             self._reset_state()
-            self._send_websocket_pandalens_reset("Moment has been saved.")
-            return
-
-        self._send_websocket_pandalens_response(question, question)
-
-    def _generate_send_question(self, cropped_image, user_action):
-        question, summary = self.pandalens_ai.get_first_generated_response(cropped_image, user_action)
-        self.previous_llm_invoke_time = time_utility.get_current_millis()
-
-        if question == pandalens_const.LLM_NO_QUESTIONS:
-            pandalens_db.save_moment(summary, self.image_of_interest)
-            self._reset_state()
-            self._send_websocket_pandalens_reset("Moment has been saved.")
+            self._send_websocket_pandalens_reset("")
             return
 
         self._send_websocket_pandalens_question(self.image_of_interest, question, question)
@@ -180,8 +178,9 @@ class PandaLensService(BaseComponent):
         if len(json_moments) == 0:
             self._send_websocket_pandalens_error(pandalens_const.MOMENT_LIST_EMPTY_MESSAGE)
             return
-        intro, conclusion = self.pandalens_ai.generate_intro_conclusion(speech_data, json.dumps(json_moments))
-        pandalens_blog.create_blog_in_word(intro, conclusion, json_moments)
+        intro, conclusion, indexes = self.pandalens_ai.generate_intro_conclusion(speech_data, json.dumps(json_moments))
+        filtered_moments = [json_moments[i] for i in indexes if 0 <= i < len(json_moments)]
+        pandalens_blog.create_blog_in_word(intro, conclusion, filtered_moments)
         pandalens_db.delete_all_moments()
         self._reset_state()
         self._send_websocket_pandalens_reset("Blog has been generated and saved in the cloud!")

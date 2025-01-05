@@ -96,22 +96,7 @@ def _get_proto_file_to_data_type_mapping():
     return proto_file_data_type_map
 
 
-# return
-def _get_service_to_data_type_mapping():
-    """
-    :return: the map with { "service:running": ["EXERCISE_WEAR_OS_DATA", ...], ... }
-    """
-    service_data_type_map = {}
-
-    for key, val in DATATYPE_JSON.items():
-        for component in val[DATA_TYPE_JSON_VAL_COMPONENTS]:
-            if component not in service_data_type_map:
-                service_data_type_map[component] = []
-
-            service_data_type_map[component].append(key)
-
-    return service_data_type_map
-
+########################################################
 
 DATATYPE_JSON = _get_data_type_json()
 
@@ -120,8 +105,6 @@ KEY_TO_DATATYPE_MAP = _get_key_to_data_type_mapping()
 
 DATATYPE_TO_PROTO_MAP = _get_data_type_to_proto_file_mapping()
 PROTO_TO_DATATYPE_MAP = _get_proto_file_to_data_type_mapping()
-
-SERVICE_TO_DATATYPE_MAP = _get_service_to_data_type_mapping()
 
 
 ########################################################

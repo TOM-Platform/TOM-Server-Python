@@ -15,6 +15,7 @@ The format for each constant is as follows:
 WEBSOCKET_WIDGET = "input:websocket"
 AUDIO_WIDGET = "input:audio"
 CAMERA_WIDGET = "input:camera"
+KEYBOARD_WIDGET = "input:keyboard"
 
 YOLOV8_PROCESSOR = "processing:yolov8"
 AUDIO_CONTEXT_PROCESSOR = "processing:audioContext"
@@ -61,6 +62,7 @@ EMOTION_SCORES = "emotion_scores"
 WEBSOCKET_DATATYPE = "websocket_datatype"
 WEBSOCKET_MESSAGE = "websocket_message"
 WEBSOCKET_CLIENT_TYPE = "websocket_client_type"
+
 UNITY_CLIENT = "unity"
 WEAROS_CLIENT = "wearOS"
 DASHBOARD_CLIENT = "dashboard"
@@ -70,6 +72,13 @@ CAMERA_FRAME = "camera_frame"
 CAMERA_FRAME_WIDTH = "camera_frame_width"
 CAMERA_FRAME_HEIGHT = "camera_frame_height"
 CAMERA_FPS = "camera_fps"
+
+# NOTE: Keyboard
+KEYBOARD_KEY_NAME = "key_name"
+KEYBOARD_KEY_CODE = "key_code"
+KEYBOARD_EVENT = "key_event"
+KEYBOARD_EVENT_PRESS = "key_event_press"
+KEYBOARD_EVENT_RELEASE = "key_event_release"
 
 # NOTE: Yolov8
 YOLOV8_LAST_DETECTION = "last_detection"

@@ -19,6 +19,11 @@ class TemplateService(BaseComponent):
     scene. It processes data from both WebSocket and camera sources.
     """
 
+    SUPPORTED_DATATYPES = {
+        "TEMPLATE_DATA",
+        "REQUEST_TEMPLATE_DATA"
+    }
+
     def __init__(self, name: str) -> None:
         super().__init__(name)
         self.image_detector = YoloDetector

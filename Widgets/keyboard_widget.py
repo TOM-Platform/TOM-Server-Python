@@ -28,21 +28,27 @@ class KeyboardWidget(BaseComponent):
 
     def on_press(self, key):
         """Handles key press events and sends them to the next component."""
+        key_event = base_keys.KEYBOARD_EVENT_PRESS
         key_name = self.get_key_name(key)
+        key_code = self.get_key_code(key)
 
         # Send the key press to the next component
-        super().send_to_component(key_name=key_name)
+        super().send_to_component(key_event=key_event, key_name=key_name, key_code=key_code)
 
-        if key == Key.esc:
-            # Stops the listener
-            _logger.info("Escape key was pressed - stopping listener")
-            return False  # Returning False stops the listener
+        # if key == Key.esc:
+        #     # Stops the listener
+        #     _logger.info("Escape key was pressed - stopping listener")
+        #     return False  # Returning False stops the listener
 
         return True
 
     def on_release(self, key):
         """Handles key release events."""
-        _logger.info("Key {key_name} released", key_name=self.get_key_name(key))
+        key_event = base_keys.KEYBOARD_EVENT_RELEASE
+        key_name = self.get_key_name(key)
+        key_code = self.get_key_code(key)
+
+        super().send_to_component(key_event=key_event, key_name=key_name, key_code=key_code)
 
     def get_key_name(self, key):
         """Extract the name or character of the key pressed."""
@@ -50,6 +56,37 @@ class KeyboardWidget(BaseComponent):
             return key.char
         except AttributeError:
             return str(key)
+
+    def get_key_code(self, key):
+        '''
+        Get the code of the key pressed.
+        :param key:
+        :return: 0 if not found, otherwise the key code.
+        '''
+
+        try:
+            # Try to retrieve vk from key or key.value
+            return key.vk
+        except AttributeError:
+            try:
+                # Fallback to key.value.vk if key.vk is unavailable
+                return key.value.vk
+            except AttributeError:
+                # Handle special cases for common non-character keys
+                special_key_map = {
+                    Key.enter: 13,
+                    Key.space: 32,
+                    Key.backspace: 8,
+                    Key.tab: 9,
+                    Key.esc: 27,
+                    Key.shift: 16,
+                    Key.ctrl: 17,
+                    Key.alt: 18,
+                    Key.page_up: 33,  # Page Up keycode
+                    Key.page_down: 34,  # Page Down keycode
+                    # Add more keys as necessary
+                }
+                return special_key_map.get(key, 0)
 
     def stop(self):
         _logger.info("Stopping KeyBoard")

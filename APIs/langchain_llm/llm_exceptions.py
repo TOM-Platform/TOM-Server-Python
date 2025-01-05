@@ -1,8 +1,8 @@
-class PandaLensException(Exception):
+class LLMExceptions(Exception):
     """ General Learning Exception Class - DO NOT instantiate directly """
 
 
-class InvalidDataOriginException(PandaLensException):
+class InvalidDataOriginException(LLMExceptions):
     """ Exception raised for invalid data origin. """
 
     def __init__(self, origin):
@@ -13,7 +13,7 @@ class InvalidDataOriginException(PandaLensException):
         return f"{self.__class__.__name__} - Data received from an invalid source: {self.origin}"
 
 
-class ErrorDetectingTextException(PandaLensException):
+class ErrorDetectingTextException(LLMExceptions):
     """ Exception raised when text detection fails. """
 
     def __init__(self, error_msg):
@@ -24,7 +24,7 @@ class ErrorDetectingTextException(PandaLensException):
         return f"{self.__class__.__name__} - Detecting Text failed with error: {self.error_msg}"
 
 
-class ErrorGenerateTextException(PandaLensException):
+class ErrorGenerateTextException(LLMExceptions):
     """ Exception raised when text generation fails. """
 
     def __init__(self, error_msg):
@@ -35,7 +35,7 @@ class ErrorGenerateTextException(PandaLensException):
         return f"{self.__class__.__name__} - Generating Text failed with error: {self.error_msg}"
 
 
-class ErrorGenerateSummaryException(PandaLensException):
+class ErrorGenerateSummaryException(LLMExceptions):
     """ Exception raised when summary generation fails. """
 
     def __init__(self, error_msg):
@@ -46,7 +46,7 @@ class ErrorGenerateSummaryException(PandaLensException):
         return f"{self.__class__.__name__} - Generating summary failed with error: {self.error_msg}"
 
 
-class ErrorClassificationException(PandaLensException):
+class ErrorClassificationException(LLMExceptions):
     """ Exception raised when image classification fails. """
 
     def __init__(self, error_msg):

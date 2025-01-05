@@ -10,7 +10,7 @@ FINGER_POINTING_BUFFER_SIZE = math.ceil(FINGER_POINTING_TRIGGER_DURATION_SECONDS
 PANDALENS_QUESTION_LIMIT = 3
 
 # Pandalens LLM Keywords
-LLM_NO_QUESTIONS = "None"
+LLM_NO_QUESTIONS = None
 LLM_JSON_AUTHORING_RESPONSE_SUMMARY_KEY = "summary of new content"
 LLM_JSON_AUTHORING_RESPONSE_QUESTION_KEY = "question to users"
 LLM_JSON_BLOGGING_RESPONSE_INTRO_KEY = "introduction of blog"
@@ -18,7 +18,7 @@ LLM_JSON_BLOGGING_RESPONSE_CONCLUSION_KEY = "conclusion of blog"
 
 # User Action Keys
 CAMERA_ACTION_FOR_LLM = "user took a camera photo"
-POINTER_INTEREST_ACTION_FOR_LLM = "user is interested in this photo"
+POINTER_INTEREST_ACTION_FOR_LLM = "user has been staring at this photo"
 IDLE_ACTION = "idle"
 
 # Client Input Event Keys

@@ -3,8 +3,8 @@
 Tests/RunningFpv/fpv*
 
 # temporary files
-temp.png
-video_output.avi
+temp*.png
+video_output*.avi
 
 # test result files
 Tests/Integration/Test.db
@@ -30,6 +30,9 @@ credential
 # Pandalens personal files
 Services/pandalens_service/Images
 Services/pandalens_service/Blogs
+
+# Milvus
+volumes/
 
 # System Files
 .DS_Store

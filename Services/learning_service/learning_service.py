@@ -1,6 +1,7 @@
 # coding: utf-8
 
 import statistics
+import re
 
 import base_keys
 from APIs.langchain_llm.langchain_openai import OpenAIClient
@@ -19,9 +20,19 @@ class LearningService(BaseComponent):
     This class is responsible for handling the learning service that extends from BaseComponent
     '''
 
+    SUPPORTED_DATATYPES = {
+        "FINGER_POINTING_DATA", 
+        "SPEECH_INPUT_DATA", 
+        "GAZE_POINTING_DATA", 
+        "HIGHLIGHT_POINT_DATA",
+        "LEARNING_DATA", 
+        "REQUEST_LEARNING_DATA", 
+        "REQUEST_RESET_LEARNING"
+    }
+
     def __init__(self, name):
         super().__init__(name)
-        self.text_generator = OpenAIClient()
+        self.text_generator = OpenAIClient(temperature=0.2, model="gpt-4o-mini")
         self.learning_map = {}
         self.text_detection_sent_time = 0
         self.learning_data_sent_time = 0
@@ -71,6 +82,8 @@ class LearningService(BaseComponent):
     def _handle_websocket_data(self, socket_data_type, decoded_data):
         if socket_data_type == learning_keys.REQUEST_LEARNING_DATA:
             self._handle_learning_request()
+        elif socket_data_type == learning_keys.REQUEST_RESET_LEARNING:
+            self._handle_reset_request()
         elif socket_data_type == learning_keys.FINGER_POINTING_DATA:
             self._handle_finger_pose(decoded_data)
         elif socket_data_type == learning_keys.GAZE_POINTING_DATA:
@@ -88,8 +101,8 @@ class LearningService(BaseComponent):
         question: str
             The user question
         '''
-        prompt = f"{question}. Provide only the answer in one sentence."
-        _logger.debug("Prompt: {prompt}", prompt=prompt)
+        user_prompt = question
+        _logger.debug("Prompt: {prompt}", prompt=user_prompt)
 
         learning_content = ""
         try:
@@ -105,11 +118,13 @@ class LearningService(BaseComponent):
                 frame = self._get_cropped_from_camera(self.last_point, frame, frame_width, frame_height)
 
             if frame is None:
-                learning_content = self.text_generator.generate(prompt)
+                learning_content = self.text_generator.generate(user_prompt,
+                                                                system_context=LearningConfig.SYSTEM_PROMPT)
             else:
                 # always take in context of frame
                 image_png_bytes = image_utility.get_png_image_bytes(frame)
-                learning_content = self.text_generator.generate(prompt, image_png_bytes)
+                learning_content = self.text_generator.generate(user_prompt, image_png_bytes,
+                                                                system_context=LearningConfig.SYSTEM_PROMPT)
                 # temporary save the image
                 image_utility.save_image_bytes('temp.png', image_png_bytes)
         except Exception:
@@ -129,7 +144,11 @@ class LearningService(BaseComponent):
     def _handle_learning_request(self):
         _logger.debug("Received learning request")
         # FIXME: ideally send data based on the request
-        self._clear_learning_data()
+        self._clear_learning_data(force_clear=False)
+
+    def _handle_reset_request(self):
+        _logger.debug("Received reset request")
+        self._clear_learning_data(force_clear=True)
 
     def _handle_finger_pose(self, finger_pose_data):
         # see whether the pose if pointing to an object for a certain duration based on history
@@ -167,7 +186,7 @@ class LearningService(BaseComponent):
         self.last_point = point_data
         self.last_frame = frame
         # send the learning data
-        question = "Briefly describe what you see. Ignore hands. If there is any text, please include them."
+        question = "Briefly describe what you see."
         self._send_learning_data(question, is_gaze_interaction=True, image_frame=frame)
 
     # voice interaction
@@ -176,7 +195,26 @@ class LearningService(BaseComponent):
         _logger.info("Received speech data: {voice}", voice=voice)
 
         if voice is not None and voice != "":
-            self._send_learning_data(voice)
+            frame = None
+            # add the image frame if the voice contains reference words
+            if self._contains_reference_words(voice):
+                frame = super().get_memory_data(base_keys.CAMERA_FRAME)
+
+            self._send_learning_data(voice, False, frame)
+
+    def _contains_reference_words(self, text):
+        # List of reference words to check for
+        demonstrative_pronouns = ["here", "there", "this", "that", "these", "those"]
+        third_person_pronouns = ["he", "she", "it", "they"]
+
+        reference_words = demonstrative_pronouns + third_person_pronouns
+
+        # Convert the text to lowercase and use regular expression to find any of the reference words
+        pattern = r'\b(?:' + '|'.join(reference_words) + r')\b'
+        match = re.search(pattern, text.lower())
+
+        # Return True if any reference words are found, otherwise False
+        return bool(match)
 
     def _send_learning_data(self, question: str, is_gaze_interaction: bool = False, image_frame=None):
         self.learning_data_has_sent = True
@@ -196,10 +234,10 @@ class LearningService(BaseComponent):
 
         self.learning_data_sent_time = time_utility.get_current_millis()
 
-    def _clear_learning_data(self):
-        if (not self.learning_data_has_sent
-                or time_utility.get_current_millis() - self.learning_data_sent_time
-                < self.learning_data_display_duration):
+    def _clear_learning_data(self, force_clear=False):
+        if (not force_clear and
+                (not self.learning_data_has_sent or time_utility.get_current_millis() - self.learning_data_sent_time
+                 < self.learning_data_display_duration)):
             return
 
         self.learning_data_sent_time = time_utility.get_current_millis()

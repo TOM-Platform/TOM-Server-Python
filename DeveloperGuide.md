@@ -53,7 +53,6 @@
 - Each entry in the [DataTypes.json](DataFormat/DataTypes.json) must have the following keys:
   - `key`
   - `proto_file`
-  - `components`
 - Example Template Entry:
 ```yaml
 NAME: {
@@ -129,6 +128,7 @@ self.running_service.send_to_component(
 ### Protobuf
 
 - Ensure you have `protoc` installed by typing `protoc --version` in your terminal. If it is not installed, you may follow the instructions [here](https://github.com/protocolbuffers/protobuf#protocol-compiler-installation).
+- Please use **protoc v25.x** for current compatibility with python protobuf 4.25.x package, due to tensorflow 2.16.x dependencies (Refer https://protobuf.dev/support/version-support/#python)
 - Create your proto file in `DataFormat/ProtoFiles`. For more information on how to structure proto data, please refer [here](https://protobuf.dev/getting-started/pythontutorial/).
 - `cd` to `DataFormat` and run this command in your terminal `protoc -I=ProtoFiles --python_out=ProtoFiles ProtoFiles/proto_name.proto` to generate the builder class. Note that you have to run the command again if you edit the proto file.
 

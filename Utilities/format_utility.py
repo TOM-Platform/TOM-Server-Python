@@ -18,6 +18,10 @@ def is_empty(string_value):
     return string_value is None or string_value == ""
 
 
+def is_binary_data(data: str | bytes) -> bool:
+    return isinstance(data, (bytes, bytearray))
+
+
 def get_text_without_parentheses_text(text):
     return re.sub(r"[\(\[].*?[\)\]]", "", text)
 

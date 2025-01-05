@@ -5,7 +5,7 @@ from APIs.langchain_llm.langchain_gemini import GeminiClient
 from Utilities import image_utility
 
 
-def test_langchain_openai_with_input():
+def test_langchain_llm_with_input():
     ''''
     Test with inputs
     '''
@@ -17,7 +17,7 @@ def test_langchain_openai_with_input():
         "Apple") == "Manzana"
 
 
-def test_langchain_openai_without_input():
+def test_langchain_llm_without_input():
     '''
     Test without inputs
     '''

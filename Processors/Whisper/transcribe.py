@@ -33,7 +33,9 @@ class Transcriber(BaseComponent):
         '''
         if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
+
         wav_data = raw_data[base_keys.AUDIO_DATA]
+        wav_data.seek(0)  # reset the pointer back to the beginning
         with open(self.temp_file, "w+b") as f:
             f.write(wav_data.read())
 

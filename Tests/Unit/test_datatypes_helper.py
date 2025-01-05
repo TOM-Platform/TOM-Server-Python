@@ -36,11 +36,6 @@ def mock_datatypes_helper(mocker):
         "PROTO_TO_DATATYPE_MAP",
         datatypes_helper._get_proto_file_to_data_type_mapping(),
     )
-    mocker.patch.object(
-        datatypes_helper,
-        "SERVICE_TO_DATATYPE_MAP",
-        datatypes_helper._get_service_to_data_type_mapping(),
-    )
 
 
 def test__get_data_type_to_key_mapping(mock_datatypes_helper):
@@ -65,12 +60,6 @@ def test__get_proto_file_to_data_type_mapping(mock_datatypes_helper):
     expected = {"file.py": ["data"]}
 
     assert datatypes_helper.PROTO_TO_DATATYPE_MAP == expected
-
-
-def test__get_service_to_data_type_mapping(mock_datatypes_helper):
-    expected = {"service:testService": ["data"]}
-
-    assert datatypes_helper.SERVICE_TO_DATATYPE_MAP == expected
 
 
 def test_get_key_by_name(mock_datatypes_helper):

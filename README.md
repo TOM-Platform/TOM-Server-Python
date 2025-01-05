@@ -23,14 +23,23 @@ A Python implementation of the server that handles the client data and applicati
     - If the installation fails due to `egg_info`, change the dependency `psycopg2` to `psycopg2-binary` in `environment-cpu.yml`
     - If the installation fails due to `googlemaps`, either remove it from `environment-cpu.yml` or install it separately using `pip install --use-pep517 googlemaps` after activating the `tom` environment.
 - Activate `tom` environment, `conda activate tom`
-- Download the pretrained weights for YOLOv8 from [ultralytics](https://github.com/ultralytics/ultralytics) (e.g., [yolov8n.pt](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt)) and copy it to `Processors/Yolov8/weights` and rename it as `model.pt` (i.e., `Processors/Yolov8/weights/model.pt`)
-- Create the environment files
-  - [For development environment] Copy `.sample_env` to `.env.dev` and update the values accordingly
-  - [For testing environment] Copy `.sample_env` to `.env.test` and update the values accordingly
-- Create the required credential files inside `credential` folder, **ONLY** for third-party libraries you use. Please refer to [Third-party libraries](##Third-party-libraries) section to obtain credentials. (Note: json format must be correct)
+- Download the pretrained weights for YOLOv8 from [Ultralytics](https://github.com/ultralytics/ultralytics) (e.g., [yolov8n.pt](https://github.com/ultralytics/assets/releases/download/v0.0.0/yolov8n.pt)).
+  - Copy the downloaded file to the `Processors/Yolov8/weights` directory and rename it as `model.pt` (i.e., `Processors/Yolov8/weights/model.pt`).
+- Create the environment files:
+  - **For development environment:** Copy `.sample_env` to `.env.dev` and [optional] update the values if needed.
+    - e.g., `CAMERA_VIDEO_SOURCE = 0` uses the default camera and can be changed to any video stream/URL/file source.
+      - [Optional] To use the HoloLens camera, uncomment the following lines in [main.py](main.py) and update the IP address in `credential/hololens_credential.json`:
+        ```python
+        # from APIs.hololens import hololens_portal
+        # hololens_portal.set_api_credentials()
+        # hololens_portal.set_hololens_as_camera()
+        ```
+  - **For testing environment:** Copy `.sample_env` to `.env.test` and [optional] update the values if needed.
+- [Optional] Create the required credential files inside the newly created `credential` folder, **ONLY** for third-party libraries you use. Please refer to the [Third-party libraries](#Third-party-libraries) section to obtain credentials. *(Note: JSON format must be correct.)*
   - Create a file `credential/hololens_credential.json` with Hololens credentials such as `{"ip": "IP","username": "USERNAME","password": "PASSWORD"}`
-    - [Configure](https://docs.microsoft.com/en-us/windows/mixed-reality/develop/platform-capabilities-and-apis/using-the-windows-device-portal) the Hololens Device Portal. Save [your credentials](https://docs.microsoft.com/en-us/windows/mixed-reality/develop/platform-capabilities-and-apis/using-the-windows-device-portal#creating-a-username-and-password) to `credential/hololens_credential.json`
-  - Create a file `credential/google_cloud_credentials.json` with [Google Cloud API](https://cloud.google.com/apis) credentials (follow [authentication](https://github.com/GoogleCloudPlatform/hackathon-toolkit/blob/master/vision/README.md#authentication) to get json key file and rename it to `google_cloud_credentials.json`)
+    - [Configure](https://learn.microsoft.com/en-us/windows/mixed-reality/develop/advanced-concepts/using-the-windows-device-portal#connecting-over-wi-fi) the Hololens Device Portal. Save [your credentials](https://docs.microsoft.com/en-us/windows/mixed-reality/develop/platform-capabilities-and-apis/using-the-windows-device-portal#creating-a-username-and-password) to `credential/hololens_credential.json`
+  - Create a file `credential/google_cloud_credentials.json` with [Google Cloud API](https://cloud.google.com/apis) credentials.
+    - Follow [authentication](https://github.com/GoogleCloudPlatform/hackathon-toolkit/blob/master/vision/README.md#authentication) to get json key file and rename it to `google_cloud_credentials.json`
   - Create a file `credential/openai_credential.json` with [OpenAI](https://platform.openai.com/docs/overview) credentials such as `{"openai_api_key": "KEY"}`
   - Create a file `credential/gemini_credential.json` with [Gemini](https://ai.google.dev/gemini-api/docs/) credentials such as `{"gemini_api_key": "KEY"}`
   - Create a file `credential/anthropic_credential.json` with [Anthropic](https://www.anthropic.com/api) credentials such as `{"anthropic_api_key": "KEY"}`
@@ -44,6 +53,8 @@ A Python implementation of the server that handles the client data and applicati
   - Create a file `credential/geoapify_credential.json` with [Geoapify](https://www.geoapify.com/) credentials such as `{"map_api_key": "KEY"}`
   - Create a file `credential/fitbit_credential.json` with Fitbit credentials such as `{"client_id": "ID","client_secret": "SECRET"}`
 - [Optional] If you want to simulate running assistance on a treadmill, follow the steps in [Running Demo Service](#configuring-first-person-video-for-running-service)
+- [Optional] To use `APIs/local_yyy` (e.g., [local_vector_db](APIs/local_vector_db/README.md)), please follow the `README.md` inside those local APIs.
+  - Note: Certain services (e.g., [memory_assistance_service](Services/memory_assistance_service)) depends on those local APIs.
 
 
 ## Setup the clients
@@ -62,10 +73,29 @@ A Python implementation of the server that handles the client data and applicati
 
 ## Application execution
 
-- Export the environment variable `set ENV=dev` (for Windows command prompt) or `$env:ENV = "dev"` (for Windows powershell) or `export ENV=dev` (for Linux/Mac)
-- Run `main.py` via `python main.py` (Don't use `py main.py`)
-- [Optional] Configure the IDE (e.g., VSCode, PyCharm) to run the server with the environment variable `ENV=dev`
-- [Optional] Run the clients after the server has started
+1. Use the `tom` environment:
+   - Activate it via the command line: `conda activate tom` (for Conda users) or through your IDE.
+2. Export the environment variable `ENV`:
+   - For Windows Command Prompt:
+     ```cmd
+     set ENV=dev
+     ```
+   - For Windows PowerShell:
+     ```powershell
+     $env:ENV = "dev"
+     ```
+   - For Linux/Mac:
+     ```bash
+     export ENV=dev
+     ```
+3. Run the application:
+   - Execute `main.py` using:
+     ```bash
+     python main.py
+     ```
+     *(Avoid using `py main.py`.)*
+4. [Optional] Configure your IDE (e.g., VSCode, PyCharm) to run the server with the environment variable `ENV=dev`.
+5. [Optional] Run the clients after the server has started.
 
 ### Running tests
 

@@ -1,0 +1,9 @@
+syntax = "proto2";
+
+import "key_event_type.proto";
+
+message KeyEventData {
+  optional int32 code = 1;
+  optional KeyEventType type = 2 [default = PRESS];
+  optional string name = 3;
+}

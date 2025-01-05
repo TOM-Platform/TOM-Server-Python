@@ -1,7 +1,9 @@
 from math import sqrt
 import base64
 import cv2
+import numpy as np
 import requests
+from PIL import Image
 
 
 def get_similarity_images(image1, image2, threshold):
@@ -67,6 +69,16 @@ def save_image(filename, opencv_frame):
     cv2.imwrite(filename, opencv_frame)
 
 
+def rgb_image(opencv_frame):
+    # convert the BGR image to RGB format as OpenCV uses BGR by default
+    return cv2.cvtColor(opencv_frame, cv2.COLOR_BGR2RGB)
+
+
+def get_pil_image(opencv_frame):
+    # PIL uses RGB format by default
+    return Image.fromarray(rgb_image(opencv_frame))
+
+
 def save_image_bytes(filename, image_bytes):
     with open(filename, 'wb') as f:
         f.write(image_bytes)
@@ -75,3 +87,15 @@ def save_image_bytes(filename, image_bytes):
 
 def get_base64_image(image_bytes):
     return base64.b64encode(image_bytes).decode("utf-8")
+
+
+def image_path_to_Image(image_path: str) -> Image:
+    return Image.open(image_path)
+
+
+def load_image_to_opencv_frame(image_path):
+    return cv2.imread(image_path)
+
+
+def load_raw_bytes_to_opencv_frame(image_bytes):
+    return cv2.imdecode(np.frombuffer(image_bytes, dtype=np.uint8), cv2.IMREAD_COLOR)

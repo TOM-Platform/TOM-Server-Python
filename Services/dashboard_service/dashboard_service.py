@@ -21,6 +21,11 @@ class DashboardService(BaseComponent):
     DashboardService is responsible for handling real-time websocket data and relaying it to the web client.
     """
 
+    SUPPORTED_DATATYPES = {
+        "DASHBOARD_LIVE_RUNNING_DATA", 
+        "DASHBOARD_REQUEST_LIVE_DATA"
+    }
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(COMPONENT_NOT_STARTED_STATUS)

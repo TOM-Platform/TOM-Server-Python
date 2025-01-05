@@ -9,6 +9,10 @@ class ContextService(BaseComponent):
     websocket message.
     """
 
+    SUPPORTED_DATATYPES = {
+        "SERVICE_SWITCH_DATA",
+    }
+
     def run(self, raw_data):
         super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
 

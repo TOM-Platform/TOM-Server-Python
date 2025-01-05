@@ -25,6 +25,11 @@ class BaseComponent:
     - **Logging**: Provides detailed logs for debugging and monitoring component behavior.
     """
 
+    """
+    Set of supported datatypes for the component. (to be overridden by subclasses)
+    """
+    SUPPORTED_DATATYPES = {}
+
     def __init__(self, name) -> None:
         self.name = name
 
@@ -46,13 +51,25 @@ class BaseComponent:
         else:
             message = self.__build_message(kwargs)
 
-        all_subscribers = config_utility.get_config()[
-            CONFIG_CHANNEL_PIPES][self.name]
+        all_subscribers = config_utility.get_config()[CONFIG_CHANNEL_PIPES][self.name]
         for subscriber in all_subscribers:
             entry_func = self.__get_subscriber_func(subscriber, message)
 
             if entry_func:
                 entry_func(message)
+
+    def is_supported_datatype(self, datatype) -> bool:
+        """
+        Check if the datatype is supported/handled by this component (by SUPPORTED_DATATYPES)
+        :return: true if handled by the component, false otherwise
+        """
+        return datatype in self.SUPPORTED_DATATYPES
+
+    def get_supported_datatypes(self) -> set[str]:
+        """
+        :return: Set of supported datatype names for the component
+        """
+        return self.SUPPORTED_DATATYPES
 
     def insert_data_to_db(self, table_name, data):
         tables.insert_rows_to_table(table_name, data)
@@ -106,15 +123,15 @@ class BaseComponent:
         return new_message
 
     def __get_subscriber_func(self, subscriber, message):
-        datatype_mapping = datatypes_helper.SERVICE_TO_DATATYPE_MAP
+        instance = endpoint_utility.get_component_instance(subscriber)
 
-        if subscriber in datatype_mapping and self.name == base_keys.WEBSOCKET_WIDGET:
+        # Send websocket data only if the subscriber is interested in the datatype
+        if self.name == base_keys.WEBSOCKET_WIDGET:
             datatype = datatypes_helper.get_name_by_key(message[base_keys.WEBSOCKET_DATATYPE])
-            if datatype not in datatype_mapping[subscriber]:
+            if not instance.is_supported_datatype(datatype):
                 # Subscriber not interested in messages of this datatype
                 return None
 
-        instance = endpoint_utility.get_component_instance(subscriber)
         entry_func = endpoint_utility.get_entry_func_of(subscriber)
         entry_func = getattr(instance, entry_func)
 

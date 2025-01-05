@@ -5,10 +5,12 @@ general output
 API docs: https://platform.openai.com/docs/api-reference
 '''
 from os import environ
-from typing import Any
-
+from typing import Any, Optional
+from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
-from langchain.schema.messages import AIMessage, HumanMessage
+from langchain.output_parsers import PydanticOutputParser
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.messages import AIMessage, HumanMessage, SystemMessage
 import base_keys
 from Utilities import file_utility, image_utility, logging_utility
 from Utilities.file_utility import get_credentials_file_path
@@ -42,7 +44,7 @@ class OpenAIClient:
         Generates a response based on image_png_bytes and user_prompt
     '''
 
-    def __init__(self, temperature: float = 0.3, model: str = "gpt-4o") -> None:
+    def __init__(self, temperature: float = 0.3, model: str = "gpt-4o-mini") -> None:
         '''
         Parameters
         ________
@@ -123,5 +125,43 @@ class OpenAIClient:
             )
         messages = [system_message, human_message]
         res = self.llm.invoke(messages).content.strip()
-        _logger.debug(res)
         return res
+
+    def generate_structured_output(self, system_prompt: str,
+                                   template_object: BaseModel,
+                                   input_text: Optional[str] = None,
+                                   image_base_64: Optional[str] = None):
+        """
+        Generate structured JSON output based on a given PromptTemplate.
+
+        Args:
+            system_prompt (str): System message for the LLM.
+            template_object (BaseModel): Model for output parsing.
+            input_text (Optional[str]): Text input to be included in the message.
+            image_base_64 (Optional[str]): Base64 encoded image string.
+
+        Returns:
+            str: JSON dictionary of the LLM output based on the given template.
+        """
+        template_parser = PydanticOutputParser(pydantic_object=template_object)
+        format_instructions = template_parser.get_format_instructions()
+
+        # Build HumanMessage content dynamically based on input_text and image
+        human_content = [{"type": "text", "text": format_instructions}]
+        if input_text:
+            human_content.append({"type": "text", "text": input_text})
+        if image_base_64:
+            image_url = f"data:image/png;base64,{image_base_64}"
+            human_content.append({"type": "image_url", "image_url": {"url": image_url}})
+
+        # Build the ChatPromptTemplate
+        prompt = ChatPromptTemplate.from_messages([
+            SystemMessage(content=system_prompt),
+            HumanMessage(content=human_content)
+        ])
+
+        # Use the chain operator to combine the prompt and LLM
+        chain = prompt | self.llm | template_parser
+        result = chain.invoke({})  # Empty input dict since content is already set in the prompt
+
+        return result

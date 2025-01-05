@@ -39,6 +39,34 @@ class RunningService(BaseComponent):
     - Maintains communication with other components using websocket messages.
     """
 
+    SUPPORTED_DATATYPES = {
+        "EXERCISE_WEAR_OS_DATA", 
+        "RUNNING_LIVE_DATA", 
+        "RUNNING_LIVE_UNIT", 
+        "RUNNING_SUMMARY_DATA",
+        "RUNNING_SUMMARY_UNIT", 
+        "DIRECTION_DATA", 
+        "RUNNING_TYPE_POSITION_MAPPING_DATA", 
+        "RANDOM_ROUTES_DATA",
+        "ROUTE_DATA", 
+        "RUNNING_TARGET_DATA", 
+        "RUNNING_CAMERA_DATA", 
+        "RUNNING_LIVE_ALERT", 
+        "RUNNING_PLACE_DATA",
+        "WAYPOINT_DATA", 
+        "WAYPOINTS_LIST_DATA", 
+        "REQUEST_RUNNING_LIVE_DATA", 
+        "REQUEST_RUNNING_LIVE_UNIT",
+        "REQUEST_RUNNING_SUMMARY_DATA", 
+        "REQUEST_RUNNING_SUMMARY_UNIT", 
+        "REQUEST_DIRECTION_DATA",
+        "REQUEST_RUNNING_TYPE_POSITION_MAPPING", 
+        "REQUEST_RANDOM_ROUTES_DATA", 
+        "REQUEST_CHOSEN_ROUTE_DATA",
+        "REQUEST_RUNNING_TRAINING_MODE_DATA", 
+        "REQUEST_RUNNING_TARGET_DATA"
+    }
+
     def __init__(self, name):
         super().__init__(name)
         super().set_component_status(COMPONENT_NOT_STARTED_STATUS)

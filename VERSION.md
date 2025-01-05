@@ -3,6 +3,9 @@
 ## main
 - Latest stable version
 
+## v0.3
+- Enable new capabilities (e.g., CLIP, VectorDB, KeyboardWidget)
+
 ## v0.2
 - Enable new services and capabilities
 - Uniform the protobuf keys

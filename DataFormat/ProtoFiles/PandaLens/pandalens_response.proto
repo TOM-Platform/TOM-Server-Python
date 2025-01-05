@@ -1,6 +1,0 @@
-syntax = "proto2";
-
-message PandaLensResponse {
-  optional string content = 1 [default = ""];
-  optional string speech = 2 [default = ""];
-}

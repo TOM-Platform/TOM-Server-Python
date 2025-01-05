@@ -16,5 +16,5 @@ class PandaLensState(Enum):
     States are Server states
     """
     SERVER_OBSERVING_STATE = 0  # Looking out for interesting moments
-    SERVER_QNA_STATE = 1  # Conversing with users to ask questions
+    SERVER_QA_STATE = 1  # Conversing with users to ask questions
     SERVER_BLOGGING_STATE = 2  # Server is awaiting the blogging orders

@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+import "key_event_data.proto";
+
+message KeyEventSequenceData {
+  repeated KeyEventData key_events = 1;
+}

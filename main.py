@@ -60,6 +60,13 @@ def start_processing():
     if camera_required is not None:
         camera_required()
 
+    # NOTE: This section only runs if the Camera Widget is not enabled since the Camera Widget has its own while loop
+    try:
+        while True:
+            time_utility.sleep_seconds(1)
+    except KeyboardInterrupt:
+        logging_utility.setup_logger().error("Keyboard Interrupt")
+
     # NOTE: close the shared memory
     Memory.close()
 
@@ -67,10 +74,3 @@ def start_processing():
 if __name__ == "__main__":
     setup_environment()
     start_processing()
-    # NOTE: This section only runs if the Camera Widget is not enabled since the Camera Widget has its own while loop
-    try:
-        while True:
-            time_utility.sleep_seconds(1)
-    except KeyboardInterrupt:
-        logging_utility.setup_logger().error("Keyboard Interrupt")
-        Memory.close()

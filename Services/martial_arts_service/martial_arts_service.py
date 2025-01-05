@@ -26,6 +26,23 @@ class MartialArtsService(BaseComponent):
     input.
     """
 
+    SUPPORTED_DATATYPES = {
+        "SPEECH_INPUT_DATA", 
+        "MA_UPDATE_SESSION_CONFIG_COMMAND", 
+        "MA_BEGIN_SESSION_COMMAND",
+        "MA_END_SESSION_COMMAND", 
+        "MA_REQUEST_SEQUENCE_DATA", 
+        "MA_REQUEST_CONFIG_DATA",
+        "MA_REQUEST_LIVE_FEEDBACK_DATA", 
+        "MA_REQUEST_TIMER_DATA", 
+        "MA_REQUEST_POST_SESSION_FEEDBACK_DATA",
+        "MA_SEQUENCE_DATA", 
+        "MA_FEEDBACK_LIVE_DATA", 
+        "MA_METRICS_DATA", 
+        "MA_CONFIG_DATA",
+        "MA_POST_SESSION_METRICS_DATA"
+    }
+
     def __init__(self, name) -> None:
         super().__init__(name)
         # Services

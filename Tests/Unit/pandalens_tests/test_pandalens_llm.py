@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import MagicMock
 from Services.pandalens_service.pandalens_llm import PandaLensAI
-from Services.pandalens_service.pandalens_exceptions import ErrorClassificationException
+from APIs.langchain_llm.llm_exceptions import ErrorClassificationException
 
 
 @pytest.fixture

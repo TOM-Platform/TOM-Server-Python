@@ -3,9 +3,11 @@ This file is to test openai langchain
 '''
 from APIs.langchain_llm.langchain_openai import OpenAIClient
 from Utilities import image_utility
+from pydantic import BaseModel
+import pytest
 
 
-def test_langchain_openai_with_input():
+def test_langchain_llm_with_input():
     ''''
     Test with inputs
     '''
@@ -17,7 +19,7 @@ def test_langchain_openai_with_input():
         "Apple") == "Manzana"
 
 
-def test_langchain_openai_without_input():
+def test_langchain_llm_without_input():
     '''
     Test without inputs
     '''
@@ -42,7 +44,6 @@ def test_langchain_llm_without_image():
                         Ensure there is only one word for \
                             this prompt.") == "Manzana"
 
-
 def test_langchain_llm_with_image():
     '''
     This function tests the OpenAIClient class with image.
@@ -58,3 +59,28 @@ def test_langchain_llm_with_image():
                             this prompt.",
         image_bytes
     ) == "Manzana"
+
+def test_generate_structured_output():
+    """
+    Test OpenAIClient's generate_structured_output method.
+    """
+
+    class TranslationOutput(BaseModel):
+        """
+        Pydantic model for structured output.
+        """
+        translation: str
+
+    system_prompt = (
+        "Provide a structured JSON output for the Spanish translation "
+        "of the word 'Apple'. Ensure it matches the template provided."
+    )
+
+    response = OpenAIClient(0).generate_structured_output(
+        system_prompt=system_prompt,
+        template_object=TranslationOutput
+    )
+    expected_response = TranslationOutput(translation="Manzana")
+
+    assert response == expected_response, f"Expected '{expected_response}', got '{response}'"
+

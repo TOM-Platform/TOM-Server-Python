@@ -13,3 +13,4 @@
     - Use the `protoc` compiler to generate the classes. See [DeveloperGuide.md](../DeveloperGuide.md) for details.
 - The generated classes are used to serialize and deserialize the data format.
 - Use subdirectories to organize the proto files based on the service.
+- Note: Make sure to override the created component/service's `SUPPORTED_DATATYPES` set values to include the new data types to receive the data.
