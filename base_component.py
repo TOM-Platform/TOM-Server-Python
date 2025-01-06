@@ -122,17 +122,29 @@ class BaseComponent:
 
         return new_message
 
-    def __get_subscriber_func(self, subscriber, message):
-        instance = endpoint_utility.get_component_instance(subscriber)
-
-        # Send websocket data only if the subscriber is interested in the datatype
+    def _check_skip_websocket_message(self, subscriber_instance, message):
         if self.name == base_keys.WEBSOCKET_WIDGET:
             datatype = datatypes_helper.get_name_by_key(message[base_keys.WEBSOCKET_DATATYPE])
-            if not instance.is_supported_datatype(datatype):
-                # Subscriber not interested in messages of this datatype
+            if not subscriber_instance.is_supported_datatype(datatype):
+                # Skip if subscriber not interested in messages of this datatype
+                return True
+        return False
+
+    def __get_subscriber_func(self, subscriber, message):
+        # Tokenize by "|" to check for entry point of existing types
+        if "|" in subscriber:
+            (subscriber_name, subscriber_callnode) = subscriber.split("|")
+            instance = endpoint_utility.get_component_instance(subscriber_name)
+            if self._check_skip_websocket_message(instance, message):
+                # Skip if subscriber not interested in messages of this datatype
                 return None
-
-        entry_func = endpoint_utility.get_entry_func_of(subscriber)
-        entry_func = getattr(instance, entry_func)
-
-        return entry_func
+            else:
+                return getattr(instance, subscriber_callnode)
+        else:
+            instance = endpoint_utility.get_component_instance(subscriber)
+            if self._check_skip_websocket_message(instance, message):
+                # Skip if subscriber not interested in messages of this datatype
+                return None
+            else:
+                entry_func = endpoint_utility.get_entry_func_of(subscriber)
+                return getattr(instance, entry_func)

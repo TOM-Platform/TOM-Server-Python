@@ -97,7 +97,10 @@ def get_component_instance(component):
         class_name = get_class_of(component)
 
         submod = importlib.import_module(entrypoint)
-        instance = getattr(submod, class_name)(component)
+        try:
+            instance = getattr(submod, class_name)(component)
+        except Exception as e:
+            print(f"Error in creating instance of {component} with class {class_name}\n{e}")
 
         component_instances[component] = instance
 

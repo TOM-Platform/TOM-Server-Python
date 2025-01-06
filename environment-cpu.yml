@@ -21,7 +21,7 @@ dependencies:
       - pylint~=3.1.0
       - oauthlib~=3.2.2
       - fitbit~=0.3.1
-      - websockets~=10.4
+      - websockets~=14.1
       - matplotlib~=3.7.4
       - lxml~=4.9.4
       - tqdm~=4.65.2

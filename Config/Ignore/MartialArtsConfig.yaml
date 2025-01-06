@@ -9,8 +9,4 @@ service:
     entrypoint: "martial_arts_service.martial_arts_service.MartialArtsService.run"
     exitpoint: ""
     next:
-      - "output:websocket"
-output:
-  - name: "websocket"
-    entrypoint: "websocket_output.WebsocketOutput.send"
-    exitpoint: ""
+      - "input:websocket|output_send"

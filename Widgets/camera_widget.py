@@ -5,6 +5,8 @@ from base_component import BaseComponent
 from Utilities.video_stream import VideoStream
 from Utilities import environment_utility, time_utility, file_utility, logging_utility
 
+import asyncio
+
 _logger = logging_utility.setup_logger(__name__)
 
 
@@ -20,6 +22,8 @@ class CameraWidget(BaseComponent):
 
     def __init__(self, name) -> None:
         super().__init__(name)
+
+        self.running_camera_task = None
 
         self.video_path = environment_utility.get_env_int_or_string(base_keys.CAMERA_VIDEO_SOURCE)
 
@@ -38,12 +42,13 @@ class CameraWidget(BaseComponent):
 
         self.__set_video_source(self.video_path)
 
-    def start(self):
+    async def _camera_task(self):
         while self.setup_error:
             _logger.error("Error occurred setting up camera widget")
 
             if self.retry:
-                time_utility.sleep_seconds(1)
+                # Wait 1 second before retrying
+                await asyncio.sleep(1)
                 self.__set_video_source(self.video_path)
             else:
                 # If do not retry, stop execution of camera widget
@@ -57,7 +62,10 @@ class CameraWidget(BaseComponent):
                 if self.useStream:
                     frame = self.stream.read()
                 else:
-                    frame = self.capture.read()[1]
+                    (success, frame) = self.capture.read()
+                    if not success:
+                        await asyncio.sleep(0)
+                        continue
             except Exception:
                 _logger.exception("Error Reading Frame with message")
 
@@ -72,6 +80,14 @@ class CameraWidget(BaseComponent):
             which is not supported in SQLAlchemy.  An alternative would be to serialise it into Json which is accepted.
             Refer to this: https://stackoverflow.com/questions/61370118/storing-arrays-in-database-using-sqlalchemy
             """
+
+            # Allow other tasks to run
+            await asyncio.sleep(0)
+
+    async def start(self):
+        loop = asyncio.get_running_loop()
+        self.running_camera_task = loop.create_task(self._camera_task())
+        return self.running_camera_task
 
     def __set_video_source(self, new_video_path):
         _logger.info("Video Path: {path}", path=new_video_path)
