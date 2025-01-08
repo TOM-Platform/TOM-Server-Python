@@ -62,6 +62,14 @@ A Python implementation of the server that handles the client data and applicati
 - Makesure the clients (e.g., HoloLens, Xreal, WearOS Watch) are connected to the same Wi-Fi network of the Sever. Use a **private** network, as public networks may block certain ports used by websocket communication (e.g., 8090). Note: Campus network may not work.
 - Use `ipconfig` / `ifconfig` in your terminal to get the Server IP address. Look for the IPv4 address under the Wi-Fi section.
     ![image](https://github.com/NUS-SSI/TOM-Server-Python/assets/95197450/e26ee547-c132-4a14-af59-f85ec4210a5e)
+
+#### TOM-MRTK-Unity (Meta Quest)
+
+- Set up [TOM-MRTK-Unity](https://github.com/TOM-Platform/TOM-MRTK-Unity/tree/dev/meta_quest) for Meta Quest and make sure to update the IP address in  address is set correctly in  `ConfigData.cs`. (refer to Client Code README.md for details)
+
+
+#### Other Clients (TOM-Client-Unity / WearOS / Web)
+
 - Set up [TOM-Client-Unity](https://github.com/TOM-Platform/TOM-Client-Unity) on the HoloLens/Xreal and make sure to update the IP address in `Videos/TOM/tom_config.json`.
 - [Optional] Set up [TOM-Client-WearOS](https://github.com/TOM-Platform/TOM-Client-WearOS) on the Android smartwatch and make sure to update the IP address in `app/src/main/java/com/hci/tom/android/network/Credentials.kt`.
 - [Optional] Set up [TOM-Client-Web](https://github.com/TOM-Platform/TOM-Client-Web) on a computer and make sure to update the IP address in `src/constant/config.ts`.
