@@ -5,6 +5,9 @@ import numpy as np
 from Utilities import environment_utility
 from .object_detection_counter import ObjectDetectionCounter
 
+import cv2
+import os
+
 _YOLO_MODEL = environment_utility.get_env_string("YOLO_MODEL")
 _YOLO_CONFIDENCE_LEVEL = environment_utility.get_env_float("YOLO_CONFIDENCE_LEVEL")
 _YOLO_INFERENCE = environment_utility.get_env_bool("YOLO_INFERENCE")
@@ -28,6 +31,7 @@ class VideoDetection:
             detection_region=_YOLO_DETECTION_REGION,  # set to None to detect objects in the whole frame
             verbose=_YOLO_VERBOSE,  # set to True to show verbose output
             object_counter_duration=_YOLO_OBJECT_DETECTION_COUNTER_DURATION,  # set 0 to disable
+            exclude_class_ids = None
     ):
 
         self.model = model
@@ -43,6 +47,7 @@ class VideoDetection:
 
         self.last_detection = None
         self.class_labels = None
+        self.exclude_class_ids = exclude_class_ids
 
     def get_detect_object_percentage(self):
         if self.object_detection_counter:
@@ -66,6 +71,11 @@ class VideoDetection:
 
         # [[bounding_boxes, mask, confidence, class_id, tracker_id]
         detections = sv.Detections.from_yolov8(result)
+
+        if self.exclude_class_ids is not None and len(self.exclude_class_ids) > 0:
+            height, width = frame.shape[:2]
+            print(f"height: {height}, width: {width}")
+            detections = self.get_detection_in_region(detections, [0,0, width, height], self.exclude_class_ids)
 
         self.class_labels = model.model.names
 
@@ -116,12 +126,12 @@ class VideoDetection:
         tmp_class_id = []
         tmp_confidence = []
 
-        num_detections = len(detections['xyxy'])
+        num_detections = len(detections.xyxy)
 
         for i in range(0, num_detections):
-            bounding_boxes = detections['xyxy'][i]
-            class_id = detections['class_id'][i]
-            confidence = detections['confidence'][i]
+            bounding_boxes = detections.xyxy[i]
+            class_id = detections.class_id[i]
+            confidence = detections.confidence[i]
 
             # add to detection_results only if the object is in the specified region and not in exclude_class_ids
             if class_id not in exclude_class_ids and VideoDetection.intersects(bounding_boxes, detection_region):
@@ -132,7 +142,7 @@ class VideoDetection:
         detections_in_specified_region.xyxy = np.array(tmp_xyxy)
         detections_in_specified_region.class_id = np.array(tmp_class_id)
         detections_in_specified_region.confidence = np.array(tmp_confidence)
-
+        # print("bounding_boxes: ")
         return detections_in_specified_region
 
     @staticmethod

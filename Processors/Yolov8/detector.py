@@ -17,7 +17,7 @@ class Yolov8Detector(BaseComponent):
     def __init__(self, name):
         super().__init__(name)
 
-        self.detector = video_detector()
+        self.detector = video_detector(exclude_class_ids=list(range(1,100)))
 
     def run(self, raw_data):
         super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
@@ -29,3 +29,4 @@ class Yolov8Detector(BaseComponent):
                                   yolo_frame=yolo_frame,
                                   class_labels=self.detector.get_class_labels(),
                                   base_data=raw_data)
+
