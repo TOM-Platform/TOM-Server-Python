@@ -1,0 +1,36 @@
+input:
+  - name: "camera"
+    entrypoint: "camera_widget.CameraWidget.start"
+    exitpoint: ""
+    next:
+      - "processing:yolov8"
+  - name: "websocket"
+    entrypoint: "websocket_widget.WebsocketWidget.start"
+    exitpoint: ""
+    next:
+      - "service:template"
+processing:
+  - name: "yolov8"
+    entrypoint: "Yolov8.detector.Yolov8Detector.run"
+    exitpoint: ""
+    next:
+      - "processing:facial_expression"
+      - "output:video_output"
+  - name: "facial_expression"
+    entrypoint: "NewModel.detector.NewModelDetector.run"
+    exitpoint: ""
+    next:
+      - "service:template"
+service:
+  - name: "template"
+    entrypoint: "template_service.template_service.TemplateService.run"
+    exitpoint: ""
+    next:
+      - "output:websocket"
+output:
+  - name: "websocket"
+    entrypoint: "websocket_output.WebsocketOutput.send"
+    exitpoint: ""
+  - name: "video_output"
+    entrypoint: "video_output.VideoOutput.play"
+    exitpoint: "video_output.VideoOutput.stop"
