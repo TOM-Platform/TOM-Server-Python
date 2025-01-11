@@ -1,0 +1,27 @@
+input:
+  - name: "audio"
+    entrypoint: "audio_widget.AudioWidget.start"
+    exitpoint: ""
+    next:
+      - "processing:whisper"
+  - name: "websocket"
+    entrypoint: "websocket_widget.WebsocketWidget.start"
+    exitpoint: ""
+    next:
+      - "service:audioTesting"
+processing:
+  - name: "whisper"
+    entrypoint: "Whisper.transcribe.Transcriber.to_text"
+    exitpoint: ""
+    next:
+      - "service:audioTesting"
+service:
+  - name: "audioTesting"
+    entrypoint: "testing_service.audio_testing_service.AudioTestingService.run"
+    exitpoint: ""
+    next:
+      - "output:websocket"
+output:
+  - name: "websocket"
+    entrypoint: "websocket_output.WebsocketOutput.send"
+    exitpoint: ""
