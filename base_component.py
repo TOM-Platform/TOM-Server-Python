@@ -55,9 +55,13 @@ class BaseComponent:
         for subscriber in all_subscribers:
             entry_func = self.__get_subscriber_func(subscriber, message)
 
-            if entry_func:
-                entry_func(message)
+            try:
+                if entry_func:
+                    entry_func(message)
+            except Exception as e:
+                _logger.exception("Error in sending data to component: {subscriber}, {ex}", subscriber=subscriber, ex=e)
 
+   
     def is_supported_datatype(self, datatype) -> bool:
         """
         Check if the datatype is supported/handled by this component (by SUPPORTED_DATATYPES)
