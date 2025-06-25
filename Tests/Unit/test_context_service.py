@@ -2,10 +2,6 @@ from unittest import mock
 
 import pytest
 
-from Tests.Integration.test_db_util import set_test_db_environ
-
-set_test_db_environ()
-
 import base_keys
 from Memory import Memory
 from Utilities import config_utility

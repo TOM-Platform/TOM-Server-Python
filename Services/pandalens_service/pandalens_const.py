@@ -1,24 +1,23 @@
-import math
+DEFAULT_USER_PROFILE_NAME = "default_profile.json"
+SEQUENCE_PATH_TO_PROFILES_FROM_PROJECT_ROOT = ["Services", "pandalens_service", "profile"]
 
-MIN_PANDALENS_CONTENT_DISPLAY_DURATION_MILLIS = 10000  # use 12000 for demo if needed
-OBJECT_DETECTION_CONFIDENCE_THRESHOLD = 0.50
-POINTER_LLM_INVOKE_COOLDOWN_MILLIS = 30000  # 30 seconds
-FINGER_POINTING_TRIGGER_DURATION_SECONDS = 3
-POINTING_LOCATION_OFFSET_PERCENTAGE = 1  # 25% of the screen width/height
-FINGER_DETECTION_DURATION_SECONDS = 1  # seconds (depends on the client)
-FINGER_POINTING_BUFFER_SIZE = math.ceil(FINGER_POINTING_TRIGGER_DURATION_SECONDS / FINGER_DETECTION_DURATION_SECONDS)
-PANDALENS_QUESTION_LIMIT = 3
+DEFAULT_LLM_PROMPT_INDEX = "SSI"  # "Travel", "Conference", "SSI" # see pandalens_prompt.py for more details
+DEFAULT_LLM_TEMPERATURE = 0.3
 
-# Pandalens LLM Keywords
-LLM_NO_QUESTIONS = None
-LLM_JSON_AUTHORING_RESPONSE_SUMMARY_KEY = "summary of new content"
-LLM_JSON_AUTHORING_RESPONSE_QUESTION_KEY = "question to users"
-LLM_JSON_BLOGGING_RESPONSE_INTRO_KEY = "introduction of blog"
-LLM_JSON_BLOGGING_RESPONSE_CONCLUSION_KEY = "conclusion of blog"
+PANDALENS_QUESTION_LIMIT = 2
+
+LOCATION_QUERY_MINIMUM_MILLIS = 5 * 60 * 1000  # 5 minutes
+
+AI_INTEREST_DETECT_LLM_INVOKE_COOLDOWN_MILLIS = 30 * 1000  # 30 seconds
+
+POINTING_LOCATION_OFFSET_PERCENTAGE = 40  # 40% of the screen width/height
+
+# PandaLens LLM Keywords
+LLM_DEFAULT_QUESTION = "Any Comments?"
 
 # User Action Keys
-CAMERA_ACTION_FOR_LLM = "user took a camera photo"
-POINTER_INTEREST_ACTION_FOR_LLM = "user has been staring at this photo"
+CAMERA_ACTION_FOR_LLM = "User took this photo using camera."
+POINTER_INTEREST_ACTION_FOR_LLM = "User stared at this photo."
 IDLE_ACTION = "idle"
 
 # Client Input Event Keys
@@ -26,18 +25,41 @@ CAMERA_INPUT_EVENT_KEY = "photo"
 IDLE_INPUT_EVENT_KEY = "idle"
 SUMMARY_INPUT_KEY = "summary"
 
-# Database const
-MOMENTS_TABLE = "PandaLensMomentTable"
-SUMMARY_COLUMN_NAME = "summary"
-IMAGE_FILE_COLUMN_NAME = "image_filename"
-
 # Paths
-SEQUENCE_PATH_TO_IMAGES_FROM_PROJECT_ROOT = ["Services", "pandalens_service", "Images"]
-SEQUENCE_PATH_TO_BLOGS_FROM_PROJECT_ROOT = ["Services", "pandalens_service", "Blogs"]
+SEQUENCE_PATH_TO_IMAGES_FROM_PROJECT_ROOT = ["logs", "PandaLens", "Images"]
+SEQUENCE_PATH_TO_BLOGS_FROM_PROJECT_ROOT = ["logs", "PandaLens", "Blogs"]
 
-# Pandalens error messages
-MOMENT_LIST_EMPTY_MESSAGE = "There are no moments to blog about."
+# PandaLens error messages
+ERROR_MOMENT_LIST_EMPTY = "Error: No moments."
+MESSAGE_MOMENT_LIST_EMPTY_TEXT = "No moments captured yet."
+MESSAGE_MOMENT_LIST_EMPTY_AUDIO = ("I didn’t find any moments. "
+                                   "Try snapping a photo or pointing at something interesting!")
+MESSAGE_MOMENT_LIST_EMPTY_DURATION_SECONDS = 5
 
-# Pandalens database json structure
-DB_MOMENT_FILENAME_KEY = "image_filename"
+MESSAGE_BLOG_GENERATED_TEXT = "Your blog has been successfully generated!"
+MESSAGE_BLOG_GENERATED_AUDIO = "Your blog has been generated and sent to your email."
+MESSAGE_BLOG_GENERATED_DURATION_SECONDS = 6
+
+MESSAGE_MOMENTS_SUMMARY_TEXT = "Your Captured Moments"
+MESSAGE_MOMENTS_SUMMARY_TEXT_AUDIO = (
+    "Which moments would you like to include in your blog? "
+    "You can say the moment IDs, or just say 'select all' to include everything."
+)
+
+# These icons names match the Unity Client icons
+INTEREST_DETECT_ICON_GAZE = "fpv_photo_icon"
+INTEREST_DETECT_ICON_MANUAL = "robot_icon"
+INTEREST_DETECT_ICON_AUDIO = "audio_icon"
+INTEREST_DETECT_ICON_USER_PREFERENCE = "like_icon"
+
+# PandaLens database and json structure (See 'Database -> Models')
+MOMENTS_TABLE = "PandaLensMomentTable"
+DB_MOMENT_IDENTIFIER_KEY = "identifier"
 DB_MOMENT_SUMMARY_KEY = "summary"
+DB_MOMENT_FILENAME_KEY = "image_filename"
+
+# PandaLens LLM error messages
+LLM_REQUEST_MAX_RETRIES = 3
+LLM_REQUEST_BACKOFF_BASE_SECONDS = 2
+
+DATE_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"

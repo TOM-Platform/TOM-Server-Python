@@ -1,13 +1,11 @@
 import pytest
 
 from Services.running_service import running_data_handler
-from Tests.Integration.test_db_util import set_test_db_environ
 from APIs.maps.direction_data import DirectionData
 from APIs.maps.maps_config import MapsConfig
 from APIs.maps.route_data import RouteData
 from DataFormat.datatypes_helper import convert_json_to_protobuf
 
-set_test_db_environ()
 from Services.running_service.running_coach_service import RunningCoachService
 from Services.running_service.running_current_data import RunningCurrentData
 from Services.running_service.running_data_handler import (

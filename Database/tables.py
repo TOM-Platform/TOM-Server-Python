@@ -22,7 +22,7 @@ def insert_rows_to_table(table_name, data):
     - Key ==> Column Name
     - Value ==> Value to insert into Column
 
-    I.e. 
+    I.e.
     {
         "name": "John",
         "age": 10
@@ -35,21 +35,30 @@ def insert_rows_to_table(table_name, data):
     return database.execute_query(stmt)
 
 
-def get_rows_from_table(table_name, data: dict):
+def get_rows_from_table(table_name, criteria: dict):
     """
-    The required format of the 'data' argument is a dictionary s.t.:
-    - Key ==> Column Name
-    - Value ==> Value to filter by
+    Retrieve rows from the specified table with optional filtering.
 
-    I.e.
-    {
-        "name": "John",
-    }
+    Parameters:
+    - table_name: Name of the table to query.
+    - criteria: Dictionary of column-value pairs to filter rows.
+      - Key: Column Name
+      - Value: The value to filter by, or a tuple (start, end) for range queries.
+
+    Example usage:
+    - To filter by exact value:
+      get_rows_from_table('users', {'name': 'John'})
+      
+    - To filter by a range (e.g., dates between two values):
+      get_rows_from_table('orders', {'order_date': ('2025-01-01', '2025-12-31')})
+
+    Returns:
+    - List of rows matching the filter criteria.
     """
     TableClass = table_dict[table_name]
 
     filters = []
-    for col, val in data.items():
+    for col, val in criteria.items():
         # for range queries (e.g. between date range)
         if isinstance(val, tuple):
             start_val, end_val = val
@@ -58,7 +67,57 @@ def get_rows_from_table(table_name, data: dict):
             expr = getattr(TableClass, col) == val
         filters.append(expr)
 
+    # Construct the select statement
     stmt = db.select(TableClass).where(db.and_(*filters))
+
+    return database.execute_query(stmt)
+
+
+def get_ordered_rows_with_limit(table_name, criteria: dict, order_by: str = None, limit: int = None):
+    """
+    Retrieve rows from the specified table with optional filtering, ordering, and limiting.
+
+    Parameters:
+    - table_name: Name of the table to query.
+    - criteria: Dictionary of column-value pairs to filter rows.
+      - Key: Column Name
+      - Value: The value to filter by, or a tuple (start, end) for range queries.
+    - order_by: Column to order results by in descending order (optional). 
+      If specified, results are ordered by this column descending by default.
+    - limit: Maximum number of rows to return (optional).
+
+    Example usage:
+    - To filter by exact value and order by 'id' in ascending order:
+      get_ordered_rows_from_table('users', {'status': 'active'}, 'id')
+      
+    - To filter by a date range and limit the results:
+      get_ordered_rows_from_table('orders', {'order_date': ('2025-01-01', '2025-12-31')}, 'order_date', 10)
+
+    Returns:
+    - List of rows matching the filter, ordered, and limited as specified.
+    """
+    TableClass = table_dict[table_name]
+
+    filters = []
+    for col, val in criteria.items():
+        # for range queries (e.g. between date range)
+        if isinstance(val, tuple):
+            start_val, end_val = val
+            expr = (getattr(TableClass, col) >= start_val) & (getattr(TableClass, col) <= end_val)
+        else:
+            expr = getattr(TableClass, col) == val
+        filters.append(expr)
+
+    # Construct the select statement
+    stmt = db.select(TableClass).where(db.and_(*filters))
+
+    # Apply ordering if specified
+    if order_by:
+        stmt = stmt.order_by(getattr(TableClass, order_by).desc())
+
+    # Apply limiting if specified
+    if limit:
+        stmt = stmt.limit(limit)
 
     return database.execute_query(stmt)
 
@@ -81,8 +140,7 @@ def update_row_in_table(table_name, data: dict, row_id):
     update_data = {getattr(TableClass, col): val for col, val in data.items()}
 
     # Construct the update statement
-    stmt = db.update(TableClass).values(update_data).where(
-        getattr(TableClass, 'id') == row_id)
+    stmt = db.update(TableClass).values(update_data).where(getattr(TableClass, "id") == row_id)
 
     try:
         # Execute the update statement

@@ -1,0 +1,22 @@
+input:
+  - name: "camera"
+    entrypoint: "camera_widget.CameraWidget.start"
+    exitpoint: ""
+    next:
+      - "processing:poseLandmarkDetection"
+      - "processing:faceDetection"
+processing:
+  - name: "faceDetection"
+    entrypoint: "FaceDetection.detector.FaceDetector.run"
+    exitpoint: ""
+    next:
+      - "output:video_output"
+  - name: "poseLandmarkDetection"
+    entrypoint: "PoseLandmarkDetection.detector.PoseLandmarkDetector.run"
+    exitpoint: ""
+    next:
+      - "output:video_output"
+output:
+  - name: "video_output"
+    entrypoint: "video_output.VideoOutput.play"
+    exitpoint: "video_output.VideoOutput.stop"

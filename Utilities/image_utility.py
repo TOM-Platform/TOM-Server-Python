@@ -65,6 +65,39 @@ def get_png_image_bytes(opencv_frame):
     return encoded_image.tobytes()
 
 
+def get_jpg_image_bytes(opencv_frame):
+    _, encoded_image = cv2.imencode('.jpg', opencv_frame)
+    return encoded_image.tobytes()
+
+
+def get_frame(image_bytes):
+    """
+    :param image_bytes: encoded bytes of an image
+    :return: an OpenCV frame
+    """
+    return cv2.imdecode(np.frombuffer(image_bytes, np.uint8), cv2.IMREAD_COLOR)
+
+
+def get_frame_from_bytes(frame_bytes, frame_shape, frame_type):
+    """
+
+    :param frame_bytes: Non-encoded bytes of an image
+    :param frame_shape:
+    :param frame_type:
+    :return: an OpenCV frame
+    """
+    try:
+        frame = np.frombuffer(frame_bytes, dtype=frame_type).reshape(frame_shape)
+        return frame
+    except Exception:
+        return get_empty_frame(0, 0)
+
+
+def get_empty_frame(width=640, height=480, channels=3, dtype=np.uint8):
+    """Returns a black (empty) image frame of specified shape."""
+    return np.zeros((height, width, channels), dtype=dtype)
+
+
 def save_image(filename, opencv_frame):
     cv2.imwrite(filename, opencv_frame)
 

@@ -1,7 +1,5 @@
-from Tests.Integration.test_db_util import set_test_db_environ
 from base_keys import COMPONENT_NOT_STARTED_STATUS
 
-set_test_db_environ()
 from Services.running_service.running_service import RunningService
 
 mock_running_service = RunningService(name="RunningService")

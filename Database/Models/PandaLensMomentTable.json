@@ -8,7 +8,7 @@
       "unique": true
     },
     {
-      "name": "image_filename",
+      "name": "identifier",
       "type": "string",
       "nullable": false,
       "unique": false
@@ -17,6 +17,12 @@
       "name": "summary",
       "type": "string",
       "nullable": false,
+      "unique": false
+    },
+    {
+      "name": "image_filename",
+      "type": "string",
+      "nullable": true,
       "unique": false
     }
   ],

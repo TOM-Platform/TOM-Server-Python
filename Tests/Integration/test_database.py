@@ -1,18 +1,5 @@
-import os
-from os import remove
 import pytest
 from Database import database, tables
-from Tests.Integration.test_db_util import set_test_db_environ, get_integration_path
-
-set_test_db_environ()
-
-
-@pytest.fixture(scope='session', autouse=True)
-def teardown():
-    relative_path = get_integration_path()
-    db_path = os.path.join(relative_path, "Test.db")
-    remove(db_path)
-
 
 def test_tables_created_on_init():
     database.init()
@@ -56,3 +43,27 @@ def test_delete_all_rows_from_empty_table():
     assert rows_deleted == 0
     result = tables.get_rows_from_table("TestTable", {}).all()
     assert result == []
+
+
+def test_get_ordered_rows_with_limit_no_match():
+    result = tables.get_ordered_rows_with_limit("OtherTable", {"string_value": "Something"}).all()
+    assert result == []
+
+
+def test_get_ordered_rows_with_limit_filtering():
+    test_data = [
+        {"id": 101, "int_value": 1, "string_value": "A"},
+        {"id": 102, "int_value": 2, "string_value": "B"},
+        {"id": 103, "int_value": 3, "string_value": "C"},
+    ]
+    for data in test_data:
+        tables.insert_rows_to_table("OtherTable", data)
+
+    result = tables.get_ordered_rows_with_limit("OtherTable", {"string_value": "B"}, order_by="id").all()
+    assert len(result) == 1
+    assert result[0] == (102, 2, "B")
+
+
+def test_get_ordered_rows_with_limit_limiting():
+    result = tables.get_ordered_rows_with_limit("OtherTable", {}, order_by="id", limit=3).all()
+    assert len(result) == 3

@@ -2,9 +2,6 @@ import pytest
 
 from base_component import BaseComponent
 from Memory import Memory
-from Tests.Integration.test_db_util import set_test_db_environ
-
-set_test_db_environ()
 
 base_component = BaseComponent(name="Test")
 

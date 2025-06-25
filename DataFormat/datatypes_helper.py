@@ -130,7 +130,7 @@ def get_key_by_instance(proto):
     datatype_names = PROTO_TO_DATATYPE_MAP.get(proto_file)
 
     if datatype_names is None or len(datatype_names) != 1:
-        _logger.warn("Cannot find ONE datatype name for proto file {proto_file}", proto_file=proto_file)
+        _logger.warning("Cannot find ONE datatype name for proto file {proto_file}", proto_file=proto_file)
     datatype_name = datatype_names[0]  # get the first datatype name
 
     return get_key_by_name(datatype_name)
@@ -171,7 +171,7 @@ def wrap_socket_message_with_metadata(data, data_type=None):
 
 def decode_websocket_data(raw_data):
     if not raw_data or isinstance(raw_data, str):
-        _logger.warn("Received data is not a valid socket_data instance")
+        _logger.warning("Received data is not a valid socket_data instance")
         return None, None
 
     try:
@@ -181,7 +181,7 @@ def decode_websocket_data(raw_data):
         socket_data_type = msg.data_type
         socket_data = msg.data
     except DecodeError as e:
-        _logger.warn("Error decoding protobuf message : {exc}", exc=str(e))
+        _logger.warning("Error decoding protobuf message : {exc}", exc=str(e))
         return None, None
 
     try:

@@ -6,7 +6,7 @@ import re
 import base_keys
 from APIs.langchain_llm.langchain_openai import OpenAIClient
 from DataFormat import datatypes_helper
-from Utilities import image_utility, logging_utility, time_utility
+from Utilities import image_utility, logging_utility, time_utility, camera_utility
 from base_component import BaseComponent
 from . import learning_display, learning_keys
 from .learning_data_handler import build_highlight_point_data, build_learning_data
@@ -21,18 +21,18 @@ class LearningService(BaseComponent):
     '''
 
     SUPPORTED_DATATYPES = {
-        "FINGER_POINTING_DATA", 
-        "SPEECH_INPUT_DATA", 
-        "GAZE_POINTING_DATA", 
+        "FINGER_POINTING_DATA",
+        "SPEECH_INPUT_DATA",
+        "GAZE_POINTING_DATA",
         "HIGHLIGHT_POINT_DATA",
-        "LEARNING_DATA", 
-        "REQUEST_LEARNING_DATA", 
+        "LEARNING_DATA",
+        "REQUEST_LEARNING_DATA",
         "REQUEST_RESET_LEARNING"
     }
 
     def __init__(self, name):
         super().__init__(name)
-        self.text_generator = OpenAIClient(temperature=0.2, model="gpt-4o-mini")
+        self.text_generator = OpenAIClient(temperature=0.2, model="gpt-4.1-nano")
         self.learning_map = {}
         self.text_detection_sent_time = 0
         self.learning_data_sent_time = 0
@@ -264,7 +264,7 @@ class LearningService(BaseComponent):
 
         # FIXME: check if the data is valid
         if self.learning_data_has_sent:
-            _logger.warn("Skip point checking")
+            _logger.warning("Skip point checking")
             return False
 
         finger_x = finger_pose_data.camera_x
@@ -273,10 +273,11 @@ class LearningService(BaseComponent):
 
     def _get_cropped_from_camera(self, point_data, frame, frame_width, frame_height):
         is_hololens = frame_width == 1280 and frame_height == 720
-        finger_pointing_region = self._get_image_region_from_camera(
+        finger_pointing_region = camera_utility.get_image_region(
             point_data.camera_x,
             point_data.camera_y,
-            frame_width, frame_height,
+            frame_width,
+            frame_height,
             LearningConfig.POINTING_LOCATION_OFFSET_PERCENTAGE,
             is_hololens)
         return image_utility.get_cropped_frame(
@@ -285,46 +286,3 @@ class LearningService(BaseComponent):
             finger_pointing_region[1],
             finger_pointing_region[2],
             finger_pointing_region[3])
-
-    def _get_image_region_from_camera(self, camera_x, camera_y, image_width, image_height, offset_length,
-                                      camera_calibration: bool):
-        relative_x = camera_x
-        relative_y = camera_y
-
-        # FIXME: use camera calibration (instead of hard coded values for HL2), Add the calibration values to Camera
-        if camera_calibration:
-            relative_x = (relative_x + 0.18) / (0.20 + 0.18)
-            relative_y = (relative_y - 0.1) / (-0.12 - 0.1)
-
-        image_x = int(relative_x * image_width)
-        image_y = int(relative_y * image_height)
-        image_offset = int(offset_length * image_width / 2)
-        # offset cannot be 0
-        if image_offset == 0:
-            return [0, 0, image_width, image_height]
-
-        image_region = [self._get_value(image_x - image_offset, image_width),
-                        self._get_value(image_y - image_offset, image_height),
-                        self._get_value(image_x + image_offset, image_width),
-                        self._get_value(image_y + image_offset, image_height)]
-
-        if self._is_frame_out_of_bounds(image_region):
-            return [0, 0, image_width, image_height]
-
-        return image_region
-
-    @staticmethod
-    def _is_frame_out_of_bounds(image_region):
-        if (image_region[0] in [image_region[1], image_region[2], image_region[3]] or
-                image_region[1] in [image_region[2], image_region[3]] or
-                image_region[2] == image_region[3]):
-            return True
-        return False
-
-    @staticmethod
-    def _get_value(actual, max_value):
-        if actual < 0:
-            return 0
-        if actual > max_value:
-            return max_value
-        return actual

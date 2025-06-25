@@ -17,6 +17,8 @@ AUDIO_WIDGET = "input:audio"
 CAMERA_WIDGET = "input:camera"
 KEYBOARD_WIDGET = "input:keyboard"
 
+FACE_DETECTION_PROCESSOR = "processing:faceDetection"
+POSE_LANDMARK_DETECTION_PROCESSOR = "processing:poseLandmarkDetection"
 YOLOV8_PROCESSOR = "processing:yolov8"
 AUDIO_CONTEXT_PROCESSOR = "processing:audioContext"
 WHISPER_PROCESSOR = "processing:whisper"
@@ -84,6 +86,13 @@ KEYBOARD_EVENT_RELEASE = "key_event_release"
 YOLOV8_LAST_DETECTION = "last_detection"
 YOLOV8_CLASS_LABELS = "class_labels"
 YOLOV8_FRAME = "yolo_frame"
+
+# NOTE: Mediapipe
+FACE_FRAME = "face_frame"
+FACE_DETECTION = "face_detection"
+
+POSE_FRAME = "pose_frame"
+POSE_DETECTION = "pose_detection"
 
 ##############################################################################################################
 # keys identify values defined at environment variables

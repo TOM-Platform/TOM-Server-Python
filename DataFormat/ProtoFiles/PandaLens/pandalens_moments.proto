@@ -1,5 +1,7 @@
 syntax = "proto2";
 
 message PandaLensMoments {
-  repeated string moments = 1;
+    optional string title = 1 [default = ""];
+    repeated string moments = 2;
+    optional string speech = 3 [default = ""];
 }

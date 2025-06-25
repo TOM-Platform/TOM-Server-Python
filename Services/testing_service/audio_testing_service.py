@@ -18,4 +18,4 @@ class AudioTestingService(BaseComponent):
     def run(self, raw_data):
         if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
-        _logger.info("\nRaw_data: {data}", data=str(raw_data))
+        _logger.info("\nRaw_data: {data}", data=raw_data)

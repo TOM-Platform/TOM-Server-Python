@@ -2,4 +2,6 @@ syntax = "proto2";
 
 message PandaLensReset {
   optional string message = 1 [default = ""];
+  optional string audio = 2 [default = ""];
+  optional int32 duration_seconds = 3 [default = 0];
 }

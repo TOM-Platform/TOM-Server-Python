@@ -40,6 +40,13 @@ def create_directory(directory):
         return False
 
 
+def create_directory_for_file(file_path):
+    try:
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    except Exception:
+        _logger.exception("Failed to create directory for {file_path}", file_path=file_path)
+
+
 # return lines
 def read_file(file_name):
     with open(file_name) as f:

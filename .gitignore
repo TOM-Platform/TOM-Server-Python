@@ -15,6 +15,11 @@ credential
 # .env files
 .env*
 
+#mediapipe
+**/weights/*.tflite
+**/weights/*.task
+
+
 # yolo
 **/checkpoints/
 **/*.weights
@@ -27,9 +32,6 @@ credential
 **/valid/images/*
 **/test/images/*
 
-# Pandalens personal files
-Services/pandalens_service/Images
-Services/pandalens_service/Blogs
 
 # Milvus
 volumes/

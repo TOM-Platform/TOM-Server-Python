@@ -22,6 +22,7 @@ from Utilities.file_utility import get_credentials_file_path
 GOOGLE_MAPS_CREDENTIAL_FILE = get_credentials_file_path(base_keys.GOOGLE_MAPS_CREDENTIAL_FILE_KEY_NAME)
 KEY_MAP_API = 'map_api_key'
 GOOGLE_MAP_BASE_STATIC_MAP_URL = "https://maps.googleapis.com/maps/api/staticmap"
+GOOGLE_MAP_BASE_GEOLOCATE_URL = "https://www.googleapis.com/geolocation/v1/geolocate"
 
 _logger = logging_utility.setup_logger(__name__)
 
@@ -42,7 +43,7 @@ _client = None
 def get_google_maps_credential(key, credential=None):
     global _credential
 
-    if credential is None:
+    if credential is None or _credential is None:
         _credential = read_google_maps_credential()
     else:
         _credential = credential
@@ -51,20 +52,23 @@ def get_google_maps_credential(key, credential=None):
 
 
 def get_google_client():
-    return googlemaps.Client(key=get_google_maps_credential(KEY_MAP_API))
+    global _client
+
+    if _client is None:
+        api_key = get_google_maps_credential(KEY_MAP_API)
+        _client = googlemaps.Client(key=api_key)
+
+    return _client
 
 
 # example of search_text can be like "The Deck, Singapore"
 async def find_locations_google(search_text, location=None):
-    global _client
-    if _client is None:
-        _client = get_google_client()
-
     params = {"query": search_text}
     if location is not None:
         params["location"] = location
 
-    response = _client.places(**params)
+    client = get_google_client()
+    response = client.places(**params)
     ''' example of successful response:
     {
       'html_attributions': [],
@@ -134,15 +138,12 @@ async def find_locations_google(search_text, location=None):
 
 
 async def find_directions_google(start_time, coordinates, bearing):
-    global _client
-    if _client is None:
-        _client = get_google_client()
-
     src = coordinates[0]
     dest = coordinates[-1]
     waypoints = coordinates[1:-1]
 
-    response = _client.directions(
+    client = get_google_client()
+    response = client.directions(
         origin=src,
         destination=dest,
         waypoints=waypoints,
@@ -293,10 +294,6 @@ async def find_directions_google(start_time, coordinates, bearing):
 
 
 async def find_static_maps_google_default(coordinates, size):
-    global _client
-    if _client is None:
-        _client = get_google_client()
-
     path = StaticMapPath(points=coordinates, weight=3, color="red")
 
     markers = [StaticMapMarker(locations=coordinates[0], color="blue")]
@@ -304,7 +301,8 @@ async def find_static_maps_google_default(coordinates, size):
         markers.append(StaticMapMarker(locations=coordinates[-1], color="red"))
 
     # successful response just returns the image of origin to destination encoded as bytes
-    response = _client.static_map(size=size, path=path, format="jpg", markers=markers)
+    client = get_google_client()
+    response = client.static_map(size=size, path=path, format="jpg", markers=markers)
     static_map_bytes = b"".join(response)
 
     # Uncomment to save image in a jpg file
@@ -352,3 +350,66 @@ async def find_static_maps_google(coordinates, size):
     error_data = json.loads(response.content)
     error_message = error_data.get("message", "Unknown error")
     raise Exception(error_message)
+
+
+async def get_current_location_google(payload=None):
+    """
+    Uses Google Maps Python Client to get geolocation.
+    Note: googlemaps does not expose Geolocation API directly,
+    so we call it via HTTP manually (once-off).
+
+    @:param payload: additional payload information (e.g., {"considerIp": True, "wifiAccessPoints" : [...],
+        "cellTowers": [...]})
+
+    Returns:   {"lat": xx, "lng": yy,  "accuracy": zz}
+    """
+
+    if payload is None:
+        payload = {}
+    _logger.info('Requesting location from Google Geolocation API')
+
+    api_key = get_google_maps_credential(KEY_MAP_API)
+    url = f"{GOOGLE_MAP_BASE_GEOLOCATE_URL}?key={api_key}"
+
+    try:
+        response = requests.post(url, json=payload)
+        response.raise_for_status()
+        ''' example of successful response:
+        {
+            "location": {
+                "lat": 1.2944323,
+                "lng": 103.7725605
+            },
+            "accuracy": 50.0
+        }
+        '''
+        location_data = response.json()
+        return location_data['location'] | {"accuracy": location_data['accuracy']}
+    except requests.RequestException as e:
+        _logger.exception("Geolocation API request failed: {error}", error=str(e))
+        raise Exception(f"Geolocation Error: {str(e)}") from e
+
+
+def reverse_geocode_google(lat, lng):
+    """
+    Uses googlemaps.Client to reverse geocode coordinates into an address.
+    :param lat: Latitude of the location
+    :param lng: Longitude of the location
+    :return: Address string or empty string if not found
+    """
+
+    _logger.info(f'Reverse geocoding lat={lat}, lng={lng}')
+
+    client = get_google_client()
+
+    try:
+        results = client.reverse_geocode((lat, lng))
+        if results:
+            return results[0]['formatted_address']
+        return ""
+    except googlemaps.exceptions.ApiError as e:
+        _logger.exception("Google Maps API Error: {error}", error=str(e))
+        raise Exception(f"Reverse Geocoding Error: {str(e)}") from e
+    except Exception as e:
+        _logger.error("Unexpected error: {error}", error=str(e))
+        raise Exception(f"Unexpected Error: {str(e)}") from e

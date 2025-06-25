@@ -19,13 +19,7 @@ def get_current_millis():
 
 
 def sleep_seconds(seconds=0.05):
-    count = 0
-    delay_seconds = 0.05
-    total_count = seconds * 19  # instead of 20
-
-    while count < total_count:
-        count += 1
-        time.sleep(delay_seconds)
+    time.sleep(seconds)
 
 
 def sleep_milliseconds(milliseconds=1):

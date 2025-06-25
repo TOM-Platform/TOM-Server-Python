@@ -6,7 +6,7 @@ import whisper
 import base_keys
 from base_component import BaseComponent
 
-from Utilities import environment_utility, logging_utility
+from Utilities import environment_utility, logging_utility, file_utility
 
 _WHISPER_TRANSCRIPTION_MODEL = environment_utility.get_env_string("WHISPER_TRANSCRIPTION_MODEL")
 
@@ -25,6 +25,10 @@ class Transcriber(BaseComponent):
             self.temp_file = temp_file.name
         self.transcription_model = _WHISPER_TRANSCRIPTION_MODEL
         self.audio_model = whisper.load_model(self.transcription_model)
+
+        # Check if the file exists
+        if not file_utility.is_file_exists(self.temp_file):
+            _logger.error(f"Temporary file {self.temp_file} does not exist.")
 
     def to_text(self, raw_data):
         '''

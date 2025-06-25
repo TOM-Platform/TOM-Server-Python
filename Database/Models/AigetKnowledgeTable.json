@@ -1,0 +1,18 @@
+{
+  "table_name": "AigetKnowledgeTable",
+  "columns": [
+    {
+      "name": "id",
+      "type": "integer",
+      "nullable": false,
+      "unique": true
+    },
+    {
+      "name": "knowledge",
+      "type": "string",
+      "nullable": false,
+      "unique": false
+    }
+  ],
+  "primary_key": "id"
+}

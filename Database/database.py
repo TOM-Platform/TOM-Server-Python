@@ -45,13 +45,16 @@ class Database:
 
     def __init__(self) -> None:
 
+        env = environment_utility.get_env_string('ENV')
+        self.is_dev_or_test = env in ("dev", "test")
+
         self.database_url = environment_utility.get_env_string('DATABASE_URL')
         self.database_name = environment_utility.get_env_string('DATABASE_NAME')
-        self.is_dev = environment_utility.get_env_string('ENV') == "dev"
+
         self.models_file_path = environment_utility.get_env_string('MODELS_FILE_PATH')
         self.models_file_extension = environment_utility.get_env_string('MODELS_FILE_EXT')
 
-        if self.is_dev:
+        if self.is_dev_or_test:
             self.db_path = f"{self.database_url}/{self.database_name}.db"
         else:
             # NOTE: Example Path => postgresql+psycopg2://user:user@localhost:3000/TOM

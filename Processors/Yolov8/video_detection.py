@@ -14,6 +14,19 @@ _YOLO_VERBOSE = environment_utility.get_env_bool("YOLO_VERBOSE")
 _YOLO_OBJECT_DETECTION_COUNTER_DURATION = 0
 
 
+class Detection:
+    """
+    This class stores the detection results of the object detection model.
+    """
+
+    def __init__(self, xyxy, mask, confidence, class_id, tracker_id):
+        self.xyxy = xyxy
+        self.mask = mask
+        self.confidence = confidence
+        self.class_id = class_id
+        self.tracker_id = tracker_id
+
+
 class VideoDetection:
     """
     This class performs object detection on video frames using YOLO models,  with optional object counting and
@@ -91,15 +104,13 @@ class VideoDetection:
 
     # return the last detection results in the format of [[bounding_boxes, mask, confidence, class_id, tracker_id], ...]
     def get_last_detection(self):
-        last_detection = {
-            'xyxy': self.last_detection.xyxy,
-            'mask': self.last_detection.mask,
-            'confidence': self.last_detection.confidence,
-            'class_id': self.last_detection.class_id,
-            'tracker_id': self.last_detection.tracker_id,
-        }
-
-        return last_detection
+        return Detection(
+            xyxy=self.last_detection.xyxy,
+            mask=self.last_detection.mask,
+            confidence=self.last_detection.confidence,
+            class_id=self.last_detection.class_id,
+            tracker_id=self.last_detection.tracker_id,
+        )
 
     @staticmethod
     def get_detection_in_region(detections, detection_region, exclude_class_ids=None):
@@ -116,12 +127,12 @@ class VideoDetection:
         tmp_class_id = []
         tmp_confidence = []
 
-        num_detections = len(detections['xyxy'])
+        num_detections = len(detections.xyxy)
 
         for i in range(0, num_detections):
-            bounding_boxes = detections['xyxy'][i]
-            class_id = detections['class_id'][i]
-            confidence = detections['confidence'][i]
+            bounding_boxes = detections.xyxy[i]
+            class_id = detections.class_id[i]
+            confidence = detections.confidence[i]
 
             # add to detection_results only if the object is in the specified region and not in exclude_class_ids
             if class_id not in exclude_class_ids and VideoDetection.intersects(bounding_boxes, detection_region):

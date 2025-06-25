@@ -1,0 +1,31 @@
+{
+  "name": "Tom",
+  "age": 30,
+  "occupation": "Travel Writer",
+  "education": "MA in Journalism",
+  "residence": "Singapore",
+  "citizenship": "Singapore",
+  "travel_preferences": {
+    "interests": [
+      "unique moments",
+      "unexpected attractions or objects",
+      "local culture immersion",
+      "hidden cafes and local eats"
+    ],
+    "not_interested": [
+      "tourist traps",
+      "chain restaurants"
+    ],
+    "travel_style": [
+      "off-the-beaten-path",
+      "slow travel"
+    ]
+  },
+  "blog_writing_preferences": {
+    "tone": "warm and witty",
+    "format": "personal stories",
+    "purpose": "inspire wanderlust",
+    "style": "rich, emotional storytelling",
+    "media_style": "photo essays with storytelling captions"
+  }
+}

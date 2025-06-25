@@ -143,10 +143,6 @@
     "key": 303,
     "proto_file": "Common/request_data_pb2.py"
   },
-  "REQUEST_RESET_LEARNING": {
-    "key": 303,
-    "proto_file": "Common/request_data_pb2.py"
-  },
   "MA_UPDATE_SESSION_CONFIG_COMMAND": {
     "key": 401,
     "proto_file": "MartialArts/ma_session_config_data_pb2.py"
@@ -230,5 +226,17 @@
   "DASHBOARD_REQUEST_LIVE_DATA": {
     "key": 602,
     "proto_file": "Dashboard/dashboard_request_live_data_pb2.py"
+  },
+  "AIGET_DATA": {
+    "key": 801,
+    "proto_file": "Aiget/aiget_data_pb2.py"
+  },
+  "AIGET_DATA_REQUEST": {
+    "key": 802,
+    "proto_file": "Common/request_data_pb2.py"
+  },
+  "AIGET_RESET_REQUEST": {
+    "key": 803,
+    "proto_file": "Common/request_data_pb2.py"
   }
 }

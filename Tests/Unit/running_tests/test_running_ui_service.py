@@ -26,9 +26,7 @@ from Services.running_service.running_service_params import (
     DistanceTrainingParams,
     SpeedTrainingParams,
 )
-from Tests.Integration.test_db_util import set_test_db_environ
 
-set_test_db_environ()
 from Services.running_service.running_ui_service import RunningUiService
 
 mock_running_ui_service = RunningUiService("RunningUiService")

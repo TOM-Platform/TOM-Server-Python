@@ -8,6 +8,9 @@
 # To use multiprocessing.Lock on write operations of shared memory dict set environment variable
 SHARED_MEMORY_USE_LOCK=1
 
+# Shared memory size for data when multiprocessing is used
+SHARED_MEMORY_SIZE_MB=50
+
 # disable oneDNN optimizations by TensorFlow
 TF_ENABLE_ONEDNN_OPTS = 0
 
@@ -64,19 +67,21 @@ YOLO_CONFIDENCE_LEVEL = 0.5
 YOLO_INFERENCE = True
 YOLO_VERBOSE = False
 
+#NOTE: Mediapipe
+FACE_DETECTION_MODEL = "Processors/FaceDetection/weights/face_detector.tflite"
+POSE_LANDMARK_MODEL= "Processors/PoseLandmarkDetection/weights/pose_landmarker.task"
+YAMNET_SOUND_CLASSIFICATION_MODEL = "Processors/BackgroundAudioClassifier/weights/yamnet.tflite"
 
 #NOTE: Video Output
 VIDEO_OUTPUT_SAVE = False
 VIDEO_OUTPUT_PATH = "video_output.avi"
 
-#NOTE: Whisper
+#NOTE: Whisper, https://github.com/openai/whisper
 WHISPER_TRANSCRIPTION_MODEL = "base.en"
 # https://huggingface.co/j-hartmann/emotion-english-distilroberta-base
 EMOTION_MODEL_FROM_TEXT = "j-hartmann/emotion-english-distilroberta-base"
 
-WHISPER_MEDIAPIPE = "modules/recorder/classifier.tflite"
-WHISPER_YAMNET = "https://www.kaggle.com/models/google/yamnet/TensorFlow2/yamnet/1"
-
+#Note: Audio Input
 AUDIO_MIC = "pulse"
 AUDIO_MIC_SAMPLE_RATE = 16000
 
@@ -84,10 +89,12 @@ AUDIO_MIC_SAMPLE_RATE = 16000
 # the part of the phrase processed before the time limit was reached.
 # The resulting audio will be the phrase cut off at the time limit.
 # If ``SPEECH_RECOGNITION_WINDOW`` is ``None``, there will be no phrase time limit.
-SPEECH_RECOGNITION_WINDOW = 4
+SPEECH_RECOGNITION_WINDOW = 16
 # minimum number of seconds of audio so that this will be considered as a phrase, else it waits until the phrase is long enough
 SPEECH_RECOGNITION_PHRASE_THRESHOLD = 3
 SPEECH_RECOGNITION_ENERGY_THRESHOLD = 1000
+# speech pause duration (in seconds) to detect end of speech
+SPEECH_PAUSE_THRESHOLD = 3
 
 #NOTE: FPV
 # 0 is full length, 1 is short

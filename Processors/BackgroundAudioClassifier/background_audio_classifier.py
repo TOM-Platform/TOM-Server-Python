@@ -1,90 +1,75 @@
-import csv
-import numpy as np
-import scipy
-import tensorflow as tf
-import tensorflow_hub as hub
-
-from Utilities.audio_utility import to_wav
-from Utilities import environment_utility
-from base_component import BaseComponent
 import base_keys
+from Utilities import environment_utility
+from Utilities.audio_utility import to_wav
+from base_component import BaseComponent
+from .audio_classification import AudioClassification, AudioClassificationResult
 
-_YAMNET_MODEL = environment_utility.get_env_string("WHISPER_YAMNET")
-_DEFAULT_SAMPLE_RATE = environment_utility.get_env_int("WHISPER_SAMPLE_RATE")
+_DEFAULT_SAMPLE_RATE = environment_utility.get_env_int("AUDIO_MIC_SAMPLE_RATE")
 
 
 class BackgroundAudioClassifier(BaseComponent):
     """
-    Receives audio_data from audio_widget and sends the audio context labels to the next component
+    Receives audio_data and forwards audio context labels.
 
-    audio_data: Audio Data in BytesIO format
-    audio_context: Audio Context labels in numpy array (e.g. ["Speech", "Music", "Silence", "Small Room"])
+    Inputs:
+        raw_data: dict containing base_keys.AUDIO_DATA as BytesIO
+    Outputs:
+        audio_context: list of category names/labels from YamNet (e.g., ["Music", "Speech", "Conversation, ...])
+            labels: https://storage.googleapis.com/mediapipe-tasks/audio_classifier/yamnet_label_list.txt
+        audio_classification_result: AudioClassificationResult
     """
 
-    def __init__(self, name):
+    def __init__(self, name: str):
         super().__init__(name)
-        super().set_component_status(base_keys.COMPONENT_NOT_STARTED_STATUS)
-        self.model = _YAMNET_MODEL
+        self.set_component_status(base_keys.COMPONENT_NOT_STARTED_STATUS)
         self.max_results = 4
+        self.score_threshold = 0.1
 
-        self.init_model()
+        self.classifier = AudioClassification(
+            max_results=self.max_results,
+            score_threshold=self.score_threshold
+        )
 
-        # get list of labels from class map
-        self.labels = self.get_classes(self.clf.class_map_path().numpy())
+    def get_context(self, raw_data: dict) -> AudioClassificationResult:
+        """
+        Classify the given raw audio data and send results downstream.
+        """
 
-    def init_model(self):
-        '''
-        initialize model
-        '''
-        # load model
-        self.clf = hub.load(self.model)
-
-    def check_rate(self, original_rate, waveform, desired_rate=_DEFAULT_SAMPLE_RATE):
-        '''
-        resample waveform if required
-        '''
-        if original_rate != desired_rate:
-            desired_len = int(round(float(len(waveform)) / desired_rate))
-
-            waveform = scipy.signal.resample(waveform, desired_len)
-
-        return desired_rate, waveform
-
-    def get_classes(self, class_map):
-        '''
-        get list of labels corresponding to score vector
-        '''
-        labels = []
-
-        with tf.io.gfile.GFile(class_map) as f:
-            reader = csv.DictReader(f)
-
-            for row in reader:
-                labels.append(row["display_name"])
-
-        return labels
-
-    def get_context(self, raw_data):
-        '''
-        get context of audio
-        # read wav
-        # sr, wav_data = wavfile.read(f, 'rb')
-        # sr, wav_data = self.check_rate(sr, wav_data)
-        '''
         if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
             super().set_component_status(base_keys.COMPONENT_IS_RUNNING_STATUS)
 
-        # seek(0) is needed because transcribe.py writes the BytesIO audio data to temp file which sets the internal file pointer to the end of the file.
-        # This helps to reset the file pointer back to the beginning
+        # Reset file pointer to beginning of audio data
         raw_data[base_keys.AUDIO_DATA].seek(0)
+
+        # Convert audio data to WAV format
         wav_data = to_wav(raw_data[base_keys.AUDIO_DATA], _DEFAULT_SAMPLE_RATE)
 
-        waveform = wav_data / tf.int16.max
+        # Convert TensorFlow Tensor to NumPy array if needed
+        if hasattr(wav_data, 'numpy'):
+            # It's a TensorFlow Tensor, convert to numpy
+            wav_array = wav_data.numpy()
+        else:
+            # It's already a numpy array
+            wav_array = wav_data
 
-        # run model
-        scores, _, _ = self.clf(waveform)
+        # Run audio classification using MediaPipe
+        classification_result = self.classifier.classify(
+            wav_array,
+            _DEFAULT_SAMPLE_RATE
+        )
 
-        # get top k classes
-        result = np.array(self.labels)[np.argsort(scores.numpy().mean(axis=0))[:: -1][: self.max_results]]
+        # Extract top category names for backward compatibility
+        result = classification_result.get_top_categories(self.max_results)
 
-        super().send_to_component(audio_context=result)
+        # Forward classification result downstream
+        super().send_to_component(
+            audio_context=result,
+            audio_classification_result=classification_result
+        )
+
+        return classification_result
+
+    def close(self):
+        """Close the component and release resources"""
+        super().set_component_status(base_keys.COMPONENT_IS_STOPPED_STATUS)
+        self.classifier.close()

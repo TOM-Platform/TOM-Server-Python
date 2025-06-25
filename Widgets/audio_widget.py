@@ -8,15 +8,28 @@ import base_keys
 from Utilities import environment_utility, logging_utility, time_utility
 from base_component import BaseComponent
 
+# Variables from the environment
+
 _MIC = environment_utility.get_env_string("AUDIO_MIC")
+""" Microphone name """
+
 _MIC_SAMPLE_RATE = environment_utility.get_env_int("AUDIO_MIC_SAMPLE_RATE")
+""" Sampling rate (Hz) for audio recording """
+
 _SPEECH_RECOGNITION_WINDOW = environment_utility.get_env_float("SPEECH_RECOGNITION_WINDOW")
+""" Max length (seconds) for speech recognition per phrase"""
+
 _SPEECH_RECOGNITION_PHRASE_THRESHOLD = environment_utility.get_env_float("SPEECH_RECOGNITION_PHRASE_THRESHOLD")
+""" Duration threshold (seconds) to consider a phrase complete """
+
 _SPEECH_RECOGNITION_ENERGY_THRESHOLD = environment_utility.get_env_float("SPEECH_RECOGNITION_ENERGY_THRESHOLD")
+""" Minimum audio energy for speech detection """
+
+_PAUSE_THRESHOLD = environment_utility.get_env_float("SPEECH_PAUSE_THRESHOLD")
+""" Pause duration to detect end of speech (seconds) """
 
 _SPEECH_RECOGNITION_DYNAMIC_ENERGY_THRESHOLD = False
-
-_PAUSE_THRESHOLD = 3
+""" Disable dynamic adjustment of energy threshold (set False for stable recording) """
 
 _logger = logging_utility.setup_logger(__name__)
 
@@ -32,14 +45,14 @@ class AudioWidget(BaseComponent):
         super().__init__(name)
         super().set_component_status(base_keys.COMPONENT_NOT_STARTED_STATUS)
 
-        self.src = None  # Microphone source, initialized later
-        self.data_queue = Queue()
-        self.phrase_time = None  # timestamp of last retrieved from queue
-        self.last_sample = io.BytesIO()  # Efficient buffer to hold audio data
-        self.phrase_complete = True
-        self.current_time = None
+        self.src = None  # Audio input source (microphone), initialized later
+        self.data_queue = Queue()  # Thread-safe queue to store audio data chunks
+        self.phrase_time = None  # Timestamp of the last processed audio data chunk
+        self.last_sample = io.BytesIO()  # Buffer holding audio data bytes
+        self.phrase_complete = True  # Indicates whether the current speech phrase has completed
+        self.current_time = None  # Indicates whether the current speech phrase has completed
 
-        # in sec
+        # in seconds
         self.recognition_window = _SPEECH_RECOGNITION_WINDOW
         self.phrase_threshold = _SPEECH_RECOGNITION_PHRASE_THRESHOLD
 
@@ -50,8 +63,9 @@ class AudioWidget(BaseComponent):
         # lowers energy threshold dramatically to a point where recording never stops
         self.recognizer.dynamic_energy_threshold = _SPEECH_RECOGNITION_DYNAMIC_ENERGY_THRESHOLD
         self.recognizer.pause_threshold = _PAUSE_THRESHOLD
-        # needed to ensure that the audio widget does not run into performance issues
+
         self.listen_delay = 0.05
+        """ Sleep duration (seconds) between listening cycles to reduce CPU usage """
 
     def start(self):
         if super().get_component_status() != base_keys.COMPONENT_IS_RUNNING_STATUS:
@@ -60,32 +74,32 @@ class AudioWidget(BaseComponent):
         try:
             self.__check_source(_MIC)
         except Exception:
-            _logger.exception("Error while checking/setting up the audio source")
+            _logger.exception("Failed the audio source validation/setup.")
 
         if not self.src:
-            _logger.error("No valid audio source found. Exiting start method.")
+            _logger.error("No valid audio source detected. Exiting audio widget.")
             super().set_component_status(base_keys.COMPONENT_IS_STOPPED_STATUS)
             return
 
         with self.src as source:
             try:
                 self.recognizer.adjust_for_ambient_noise(source)
-                _logger.info("Adjusted for ambient noise using microphone source.")
+                _logger.info("Ambient noise level adjusted successfully.")
             except Exception:
-                _logger.exception("Failed to adjust for ambient noise")
+                _logger.exception("Failed to adjust ambient noise.")
                 super().set_component_status(base_keys.COMPONENT_IS_STOPPED_STATUS)
                 return
 
         # background thread to pass raw audio bytes
         self.recognizer.listen_in_background(self.src, self.record_callback, phrase_time_limit=self.recognition_window)
-        _logger.debug("Listening to AudioWidget")
+        _logger.debug("AudioWidget background listening thread started.")
 
         while super().get_component_status() == base_keys.COMPONENT_IS_RUNNING_STATUS:
             try:
                 self._listen_and_send_audio()
                 time_utility.sleep_seconds(self.listen_delay)
-            except Exception as e:
-                _logger.debug("An error occurred while listening and sending audio data: {e}", e=e)
+            except Exception:
+                _logger.exception("An error occurred while listening and sending audio data")
 
     def _listen_and_send_audio(self):
         if not self.data_queue.empty():
@@ -113,10 +127,10 @@ class AudioWidget(BaseComponent):
             self.last_sample = io.BytesIO()
 
     def record_callback(self, _, audio):
-        '''
+        """
         threaded callback function to store audio data
         audio: AudioData containing the recorded bytes
-        '''
+        """
         try:
             # get bytes and send to next component(s)
             data = audio.get_raw_data()
@@ -125,9 +139,9 @@ class AudioWidget(BaseComponent):
             _logger.exception("Failed to process audio in record_callback")
 
     def __check_phrase(self):
-        '''
+        """
         clear current working audio buffer
-        '''
+        """
         self.current_time = datetime.utcnow()
 
         # check phrase complete threshold
@@ -137,9 +151,9 @@ class AudioWidget(BaseComponent):
             self.phrase_complete = True
 
     def __check_source(self, mic_name):
-        '''
+        """
         validate audio source
-        '''
+        """
 
         # List all available microphones
         available_mics = sr.Microphone.list_microphone_names()
@@ -154,15 +168,15 @@ class AudioWidget(BaseComponent):
         if mic_name in available_mics:
             mic_index = available_mics.index(mic_name)
             self.src = sr.Microphone(sample_rate=self.sample_rate, device_index=mic_index)
-            _logger.info(f"Microphone '{mic_name}' selected (index: {mic_index}).")
+            _logger.info("Microphone '{name}' selected (index: {mic_index}).", name=mic_name, mic_index=mic_index)
         else:
             _logger.error("Microphone '{mic_name}' not found among available devices.", mic_name=mic_name)
-            _logger.warn("Selecting default microphone.")
+            _logger.warning("Selecting default microphone.")
             self.src = sr.Microphone(sample_rate=self.sample_rate)
 
     def stop(self):
-        '''
+        """
         Gracefully stops the audio widget by setting the shutdown event
-        '''
+        """
         super().set_component_status(base_keys.COMPONENT_IS_STOPPED_STATUS)
         _logger.info("AudioWidget shutdown event set. Stopping audio processing.")

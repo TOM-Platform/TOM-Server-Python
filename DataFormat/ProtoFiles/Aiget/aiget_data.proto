@@ -1,0 +1,8 @@
+syntax = "proto2";
+
+message AigetData {
+  optional string text = 1 [default = ""];
+  optional bytes image = 2;
+  optional string audio_text = 3 [default = ""];
+  optional int32 display_duration = 4 [default = 0];
+}

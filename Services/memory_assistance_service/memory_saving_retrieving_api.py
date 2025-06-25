@@ -67,7 +67,7 @@ def insert_image_memory(image_frame):
     image_entities = milvus_api.generate_entities(image_features, [image_path])
     insert_result = milvus_api.insert_milvus(image_entities, _COLLECTION_NAME)
     if insert_result is None:
-        _logger.warn("Image memory insertion failed")
+        _logger.warning("Image memory insertion failed")
         raise MilvusException(message="Image memory insertion failed")
 
 
@@ -85,7 +85,7 @@ def insert_text_memory(text: str):
     text_entities = milvus_api.generate_entities(text_features, [text])
     insert_result = milvus_api.insert_milvus(text_entities, _COLLECTION_NAME)
     if insert_result is None:
-        _logger.warn("Text memory insertion failed")
+        _logger.warning("Text memory insertion failed")
         raise MilvusException(message="Text memory insertion failed")
 
 
@@ -109,7 +109,7 @@ def insert_image_text_memory(image_frame, text: str):
 
     if not (milvus_api.insert_milvus(image_entities, _COLLECTION_NAME) and
             milvus_api.insert_milvus(text_entities, _COLLECTION_NAME)):
-        _logger.warn("Image+Text memory insertion failed")
+        _logger.warning("Image+Text memory insertion failed")
         raise MilvusException(message="Image+Text memory insertion failed")
 
 

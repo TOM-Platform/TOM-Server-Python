@@ -1,4 +1,7 @@
 from google.cloud import translate_v2 as translate
+from Utilities import logging_utility
+
+_logger = logging_utility.setup_logger(__name__)
 
 
 class TranslationClient:
@@ -18,13 +21,13 @@ class TranslationClient:
         # languages = self.client.get_languages()
 
         # for language in languages:
-        #     print("{name} ({language})".format(**language))
+        #     _logger.info("{name} ({language})".format(**language))
 
         result = self.client.translate(text, target_language=target)
 
-        # print("Text: {}".format(result["input"]))
-        # print("Translation: {}".format(result["translatedText"]))
-        # print("Detected source language: {}".format(result["detectedSourceLanguage"]))
+        # _logger.info("Text: {}".format(result["input"]))
+        # _logger.info("Translation: {}".format(result["translatedText"]))
+        # _logger.info("Detected source language: {}".format(result["detectedSourceLanguage"]))
 
         # FIXME: format in the required format
         return result

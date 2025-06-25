@@ -7,7 +7,9 @@ from shapely import Point, LineString
 from shapely.ops import nearest_points
 
 from APIs.google_maps import google_maps_api
-from APIs.google_maps.google_maps_api import find_locations_google, find_directions_google, find_static_maps_google
+
+from APIs.google_maps.google_maps_api import find_locations_google, find_directions_google, find_static_maps_google, \
+    get_current_location_google, reverse_geocode_google
 from APIs.maps.direction_data import DirectionData
 from APIs.maps.location_data import LocationData
 from APIs.maps.maps import get_locations
@@ -167,3 +169,17 @@ async def test_static_maps_google_success():
     expected_image = Image.open(file_path)
     similarity = get_similarity_images(actual_image, expected_image, 5)
     assert similarity > 0.9
+
+
+@pytest.mark.asyncio
+async def test_get_current_location_success():
+    result = await get_current_location_google()
+
+    assert result['lat'] != 0
+    assert result['lng'] != 0
+    assert result['accuracy'] != 0
+
+
+def test_reverse_geocode_success():
+    address = reverse_geocode_google(37.4219999, -122.0840575)
+    assert ("Mountain View" in address)
